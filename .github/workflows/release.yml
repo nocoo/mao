@@ -18,16 +18,39 @@ permissions:
   actions: read
 
 jobs:
-  deploy:
-    name: Deploy Mao Worker
-    # Automatic deploys remain disabled until production credentials are configured.
+  credentials:
+    name: Check deployment readiness
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (vars.DEPLOY_WORKER_ENABLED == 'true' &&
-       github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push' &&
        github.event.workflow_run.head_branch == 'main' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Check credentials without printing them
+        id: check
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo '## 未发布：请配置 Cloudflare 凭据后重新触发部署。' >> "$GITHUB_STEP_SUMMARY"
+            echo '::notice::Cloudflare 凭据未配置，部署未执行。'
+            if [ "$TRIGGER" = 'workflow_dispatch' ]; then exit 1; fi
+          fi
+
+  deploy:
+    name: Deploy Mao Worker
+    needs: credentials
+    if: needs.credentials.outputs.ready == 'true'
     uses: nocoo/base-ci/.github/workflows/deploy-worker.yml@1ea10ecab22b72512399485391603fe03a161016  # v2026.12
     with:
       expected-workflow-path: .github/workflows/ci.yml

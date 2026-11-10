@@ -58,18 +58,16 @@ pnpm test:fullscreen # 临时 preview 4176，检查六种视口、长诗滚动�
 
 [CI 工作流](<.github/workflows/ci.yml>)固定调用 `nocoo/base-ci` v2026.12 的完整提交 SHA，在推送 `main`、PR 和手动触发时执行工作流检查、Gitleaks、OSV、静态构建、Wrangler dry-run、Node 单测及覆盖率报告、Chromium 浏览器交互检查。覆盖率报告为 `coverage/lcov.info`，目前**没有设定覆盖率阈值**。项目尚无 TypeScript 类型检查或应用 lint 规则，CI 中已明确标注，不能视为已完成这些检查。
 
-[部署工作流](<.github/workflows/release.yml>)使用同版本 base-ci 部署到 Cloudflare Workers，目标域名为 `mao.hexly.ai`。它只自动部署同仓库 `main` 的成功 push-CI；base-ci 会校验 CI 运行来源、提交 SHA 和当前分支头，重新构建该提交，并在发布后检查首页、同源 JS 和 `build-info.json` 的提交 SHA。自动部署默认关闭，等待凭据配置。
+[部署工作流](<.github/workflows/release.yml>)使用同版本 base-ci 部署到 Cloudflare Workers，目标域名为 `mao.hexly.ai`。它只自动部署同仓库 `main` 的成功 push-CI；base-ci 会校验 CI 运行来源、提交 SHA 和当前分支头，重新构建该提交，并在发布后检查首页、同源 JS 和 `build-info.json` 的提交 SHA。凭据缺失时，自动流程会在运行摘要中注明“未发布”并跳过部署；手动触发缺凭据则失败。
 
 ### 首次启用
 
 1. 在 GitHub 仓库配置 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` 两个 Actions secrets。Token 需有该 Cloudflare 账户的 Workers 部署权限以及 `hexly.ai` 自定义域名所需权限。不要将密钥写入项目文件。
-2. 将仓库变量 `DEPLOY_WORKER_ENABLED` 设为字符串 `true`。此后新的 `main` push-CI 成功时自动部署；关闭变量后不会自动发布。
-3. 要部署此前已通过的 `main` push-CI，可在 GitHub Actions 手动运行 Release 并输入该 CI 的 run ID。启用部署后缺少密钥、CI 来源不符或线上 SHA 不匹配都会失败，不会伪报已发布。
+2. 凭据配置后，新的 `main` push-CI 成功时会自动部署，无需另设开关。要立即部署此前已通过的 `main` push-CI，可在 GitHub Actions 手动运行 Release 并输入该 CI 的 run ID。CI 来源不符或线上 SHA 不匹配都会失败。
 
 ```bash
 gh secret set CLOUDFLARE_API_TOKEN --repo nocoo/mao
 gh secret set CLOUDFLARE_ACCOUNT_ID --repo nocoo/mao
-gh variable set DEPLOY_WORKER_ENABLED --repo nocoo/mao --body true
 gh run list --repo nocoo/mao --workflow CI
 gh workflow run release.yml --repo nocoo/mao --ref main -f source-run-id=成功的推送CI运行ID
 ```
