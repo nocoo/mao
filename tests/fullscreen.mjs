@@ -22,7 +22,11 @@ try {
     await page.setViewportSize({ width, height });
     await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    // Headless Chromium can update viewport units after the resize event and initial paints.
+    await page.waitForFunction(({ width: expectedWidth, height: expectedHeight }) => {
+      const frame = document.querySelector('.page-frame')?.getBoundingClientRect();
+      return frame && Math.abs(frame.width - expectedWidth) < 1 && Math.abs(frame.height - expectedHeight) < 1;
+    }, { width, height }, { timeout: 5000 });
     const layout = await page.evaluate(() => {
       const rect = selector => {
         const r = document.querySelector(selector).getBoundingClientRect();
