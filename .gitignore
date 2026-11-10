@@ -2,6 +2,8 @@ node_modules/
 .pnpm-store/
 dist/
 test-results/
+coverage/
+.wrangler/
 .DS_Store
 .env
 .env.*

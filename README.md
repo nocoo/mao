@@ -4,7 +4,7 @@
 
 ## 启动
 
-需要 Node.js 20.19+ 或 22.12+ 及 pnpm。
+需要 Node.js 22.13+ 及 pnpm；CI 固定 Node.js 26.12.1 和 pnpm 11.28.5。
 
 ```bash
 pnpm install
@@ -17,6 +17,8 @@ pnpm dev
 pnpm build         # 转换 Markdown，再构建静态站点
 pnpm preview       # 预览生产构建；与 dev 互斥使用 4173 端口
 pnpm test          # 数据、正文边界、注释和原始版本校验
+pnpm test:coverage # Node 测试与 coverage/lcov.info 报告
+pnpm deploy:check  # Wrangler 本地 dry-run，不执行部署
 pnpm test:browser  # 先 build；启动临时 Vite preview 4175，执行浏览器交互检查
 pnpm test:fullscreen # 临时 preview 4176，检查六种视口、长诗滚动、凭据隔离
 ```
@@ -52,8 +54,26 @@ pnpm test:fullscreen # 临时 preview 4176，检查六种视口、长诗滚动�
 
 设计过程参考 Damir Sokolovsky（[@heydamir](https://x.com/heydamir)）的 Unslop 方法，CC BY 4.0。主视觉按本项目提示词生成，图像 API 仅在本地制作阶段调用；私密配置不进入前端，阅读时不调用图片服务。
 
-## 部署与边界
+## CI 与部署
 
-`pnpm build` 产出静态目录 `dist/`，可部署到静态托管服务。相对资源路径支持子目录部署；原始资料一起复制，页面中的「原始文档」链接也可用。
+[CI 工作流](<.github/workflows/ci.yml>)固定调用 `nocoo/base-ci` v2026.12 的完整提交 SHA，在推送 `main`、PR 和手动触发时执行工作流检查、Gitleaks、OSV、静态构建、Wrangler dry-run、Node 单测及覆盖率报告、Chromium 浏览器交互检查。覆盖率报告为 `coverage/lcov.info`，目前**没有设定覆盖率阈值**。项目尚无 TypeScript 类型检查或应用 lint 规则，CI 中已明确标注，不能视为已完成这些检查。
 
-本次浏览器验收使用 Chromium：15 项数据校验、12 组交互检查，以及 1440×900、1920×1080、1024×768、390×844、320×740、800×450 六种全屏视口检查，包含长诗内部滚动、固定操作区与凭据隔离。未做 Safari / Firefox 真机验收；没有新增史料校勘，也没有添加账号、云同步或分析追踪。
+[部署工作流](<.github/workflows/release.yml>)使用同版本 base-ci 部署到 Cloudflare Workers，目标域名为 `mao.hexly.ai`。它只自动部署同仓库 `main` 的成功 push-CI；base-ci 会校验 CI 运行来源、提交 SHA 和当前分支头，重新构建该提交，并在发布后检查首页、同源 JS 和 `build-info.json` 的提交 SHA。自动部署默认关闭，等待凭据配置。
+
+### 首次启用
+
+1. 在 GitHub 仓库配置 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` 两个 Actions secrets。Token 需有该 Cloudflare 账户的 Workers 部署权限以及 `hexly.ai` 自定义域名所需权限。不要将密钥写入项目文件。
+2. 将仓库变量 `DEPLOY_WORKER_ENABLED` 设为字符串 `true`。此后新的 `main` push-CI 成功时自动部署；关闭变量后不会自动发布。
+3. 要部署此前已通过的 `main` push-CI，可在 GitHub Actions 手动运行 Release 并输入该 CI 的 run ID。启用部署后缺少密钥、CI 来源不符或线上 SHA 不匹配都会失败，不会伪报已发布。
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --repo nocoo/mao
+gh secret set CLOUDFLARE_ACCOUNT_ID --repo nocoo/mao
+gh variable set DEPLOY_WORKER_ENABLED --repo nocoo/mao --body true
+gh run list --repo nocoo/mao --workflow CI
+gh workflow run release.yml --repo nocoo/mao --ref main -f source-run-id=成功的推送CI运行ID
+```
+
+Cloudflare 域名所有权、Token 权限和线上路由仍需在首次真实部署时验证；CI 成功或部署任务跳过都不代表网站已发布。`pnpm build` 也可生成普通静态站点 `dist/`：原始资料和字体许可会一同复制；Git 不可用时构建标记为 `unknown`，不能通过生产 SHA 校验。
+
+浏览器检查使用 Chromium，包含 100 条正文、目录与注释交互和六种全屏视口。未做 Safari / Firefox 真机验收；没有新增史料校勘，也没有添加账号、云同步或分析追踪。

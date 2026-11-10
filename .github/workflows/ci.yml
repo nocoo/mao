@@ -1,0 +1,63 @@
+# base-ci v2026.12; slot status reflects the checks actually run by this project.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mao-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    uses: nocoo/base-ci/.github/workflows/quality.yml@1ea10ecab22b72512399485391603fe03a161016  # v2026.12
+    with:
+      package-manager: pnpm
+      runtime-version: "11.28.5"
+      node-version: "26.12.1"
+      install-policy: blocked
+      typecheck: false
+      lint: false
+      disabled-check-reasons: >-
+        {"typecheck": "Plain JavaScript without a TypeScript typecheck configuration.",
+        "lint": "No application lint rules are configured yet."}
+      unit: true
+      test-command: pnpm run test:coverage
+      coverage-path: coverage/lcov.info
+      security: true
+      lockfiles: pnpm-lock.yaml
+      build: true
+      build-command: pnpm run build && pnpm run deploy:check
+      artifact-name: mao-static-site
+      artifact-paths: dist
+      workflow-lint: true
+      workflow-lint-required-workflow: nocoo/base-ci/.github/workflows/deploy-worker.yml
+      workflow-lint-yamllint: true
+      l3: true
+      l3-browsers: chromium
+      l3-prepare-command: pnpm run build
+      l3-command: pnpm run test:browser && pnpm run test:fullscreen
+      l3-artifact-name: mao-browser-evidence
+      l3-artifact-path: test-results/
+      l3-artifact-retention-days: 14
+      env-json: '{"CI":"true","WRANGLER_SEND_METRICS":"false"}'
+      slot-status: >-
+        {"S1":{"status":"na","reason":"Plain JavaScript without TypeScript sources"},
+        "S2":{"status":"todo","reason":"No application lint rules configured"},
+        "S3":{"status":"impl"},
+        "G1":{"status":"impl"},
+        "G2":{"status":"impl"},
+        "B1":{"status":"impl"},
+        "L1":{"status":"impl","reason":"Node tests and LCOV report; no coverage threshold claimed"},
+        "L1.5":{"status":"na","reason":"Static assets only; no Worker runtime test suite"},
+        "L2":{"status":"na","reason":"No application API"},
+        "L3":{"status":"impl"},
+        "P1":{"status":"na","reason":"Private package, not published to npm"},
+        "Z1":{"status":"impl"}}

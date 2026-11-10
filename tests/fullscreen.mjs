@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { preview } from 'vite';
+import { verifyDeployment } from '../scripts/verify-production.mjs';
 
 if (!existsSync('dist/index.html')) throw new Error('Run pnpm build first');
 const server = await preview({ preview: { host: '127.0.0.1', port: 4176, strictPort: true, open: false } });
@@ -64,6 +66,13 @@ try {
   await page.locator('#notes-dialog [data-close]').click();
   assert.deepEqual(errors, []);
   console.log('✓ Notes close control remains accessible after scrolling');
+
+  let expectedRevision = 'unknown';
+  try { expectedRevision = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { /* Source archives have no Git metadata. */ }
+  const metadata = JSON.parse(await readFile('dist/build-info.json', 'utf8'));
+  assert.equal(metadata.revision, expectedRevision);
+  if (expectedRevision !== 'unknown') await verifyDeployment(origin, expectedRevision);
+  console.log('✓ Build metadata and deployment verifier match the local preview');
 
   const ignore = await readFile('.gitignore', 'utf8');
   assert.match(ignore, /^\.env$/m);
