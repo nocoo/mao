@@ -1,5 +1,9 @@
 # Retrospective
 
+## Verify image encoder availability
+
+I assumed the installed FFmpeg included the `libwebp` encoder, but the conversion failed because it was not available. Check the installed encoders or image-library format support before choosing the conversion command.
+
 ## Scope secret scans to the deliverable
 
 A no-git scan included ignored local files and dependencies rather than just the release snapshot, producing unrelated findings. Scan the staged changes or the committed tree explicitly; do not broaden a release check to unrelated local files.
