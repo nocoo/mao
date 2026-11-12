@@ -2,7 +2,7 @@
 
 See [README.md](README.md) for project setup and checks, and [Retrospective.md](Retrospective.md) for incident history.
 
-For poem illustration work, use the [mao-poetry-illustration skill](.agents/skills/mao-poetry-illustration/SKILL.md).
+For poem illustration work, use the [mao-poetry-illustration skill](.agents/skills/mao-poetry-illustration/SKILL.md). For media uploads and CDN migration, use the [mao-media-cdn skill](.agents/skills/mao-media-cdn/SKILL.md).
 
 ## Local development
 
