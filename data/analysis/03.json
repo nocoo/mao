@@ -1,0 +1,100 @@
+{
+  "id": "03",
+  "structure": {
+    "formLabel": "词 · 菩萨蛮（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "国"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "北"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 4,
+        "character": "苍"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "江"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 4,
+        "character": "去"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 4,
+        "character": "处"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 4,
+        "character": "滔"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 4,
+        "character": "高"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "九派",
+      "source": "品读版",
+      "sourceKey": "九派"
+    },
+    {
+      "key": "中国",
+      "source": "品读版",
+      "sourceKey": "中国"
+    },
+    {
+      "key": "一线",
+      "source": "品读版",
+      "sourceKey": "一线"
+    },
+    {
+      "key": "龟蛇锁大江",
+      "source": "品读版",
+      "sourceKey": "龟蛇锁大江"
+    },
+    {
+      "key": "酹",
+      "source": "品读版",
+      "sourceKey": "把酒酹(lèi泪)滔滔"
+    },
+    {
+      "key": "心潮",
+      "source": "品读版",
+      "sourceKey": "心潮"
+    }
+  ]
+}

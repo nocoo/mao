@@ -1,0 +1,122 @@
+{
+  "id": "17",
+  "structure": {
+    "formLabel": "词 · 念奴娇（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 2,
+        "offset": 5,
+        "character": "色"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 5,
+        "character": "彻"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 4,
+        "character": "鳖"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 5,
+        "character": "说"
+      },
+      {
+        "lineIndex": 12,
+        "offset": 4,
+        "character": "雪"
+      },
+      {
+        "lineIndex": 14,
+        "offset": 5,
+        "character": "截"
+      },
+      {
+        "lineIndex": 17,
+        "offset": 4,
+        "character": "国"
+      },
+      {
+        "lineIndex": 19,
+        "offset": 5,
+        "character": "热"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "横空出世",
+      "source": "品读版",
+      "sourceKey": "横空出世"
+    },
+    {
+      "key": "昆仑",
+      "source": "品读版",
+      "sourceKey": "昆仑"
+    },
+    {
+      "key": "玉龙",
+      "source": "品读版",
+      "sourceKey": "飞起玉龙三百万"
+    },
+    {
+      "key": "周天寒彻",
+      "source": "品读版",
+      "sourceKey": "周天寒彻"
+    },
+    {
+      "key": "人或为鱼鳖",
+      "source": "品读版",
+      "sourceKey": "人或为鱼鳖"
+    },
+    {
+      "key": "安得",
+      "source": "初始文本",
+      "sourceKey": "安得"
+    },
+    {
+      "key": "倚天抽宝剑",
+      "source": "品读版",
+      "sourceKey": "倚天抽宝剑"
+    },
+    {
+      "key": "还东国",
+      "source": "品读版",
+      "sourceKey": "还东国"
+    }
+  ]
+}

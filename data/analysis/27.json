@@ -1,0 +1,105 @@
+{
+  "id": "27",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "川"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "前"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "鞭"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "天"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "烟"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "别梦",
+      "source": "初始文本",
+      "sourceKey": "别梦"
+    },
+    {
+      "key": "逝川",
+      "source": "初始文本",
+      "sourceKey": "逝川"
+    },
+    {
+      "key": "戟",
+      "source": "品读版",
+      "sourceKey": "戟(jǐ己)"
+    },
+    {
+      "key": "黑手",
+      "source": "初始文本",
+      "sourceKey": "黑手"
+    },
+    {
+      "key": "霸主鞭",
+      "source": "初始文本",
+      "sourceKey": "霸主鞭"
+    },
+    {
+      "key": "为有",
+      "source": "初始文本",
+      "sourceKey": "为有"
+    },
+    {
+      "key": "菽",
+      "source": "品读版",
+      "sourceKey": "菽"
+    },
+    {
+      "key": "下夕烟",
+      "source": "初始文本",
+      "sourceKey": "下夕烟"
+    }
+  ]
+}

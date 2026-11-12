@@ -1,0 +1,85 @@
+{
+  "id": "43",
+  "structure": {
+    "formLabel": "词 · 西江月",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 5,
+        "character": "头"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "留"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 5,
+        "character": "进"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 5,
+        "character": "仇"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "愁"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 5,
+        "character": "动"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "斧头",
+      "source": "品读版",
+      "sourceKey": "斧头"
+    },
+    {
+      "key": "匡庐",
+      "source": "品读版",
+      "sourceKey": "匡庐"
+    },
+    {
+      "key": "潇湘",
+      "source": "品读版",
+      "sourceKey": "潇湘"
+    },
+    {
+      "key": "同仇",
+      "source": "品读版",
+      "sourceKey": "同仇"
+    },
+    {
+      "key": "暮云愁",
+      "source": "初始文本",
+      "sourceKey": "暮云愁"
+    }
+  ]
+}

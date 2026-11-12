@@ -1,0 +1,19 @@
+{
+  "id": "96",
+  "structure": {
+    "formLabel": "五言韵语",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

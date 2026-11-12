@@ -1,0 +1,33 @@
+{
+  "id": "66",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "关"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 14,
+        "character": "还"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 14,
+        "character": "山"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

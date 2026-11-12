@@ -1,0 +1,30 @@
+{
+  "id": "80",
+  "structure": {
+    "formLabel": "诗 · 四言四句",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 3,
+        "character": "波"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 3,
+        "character": "何"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

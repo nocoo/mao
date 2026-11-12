@@ -1,0 +1,22 @@
+{
+  "id": "94",
+  "structure": {
+    "formLabel": "词 · 诉衷情（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

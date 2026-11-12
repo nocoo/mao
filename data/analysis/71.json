@@ -1,0 +1,17 @@
+{
+  "id": "71",
+  "structure": {
+    "formLabel": "诗 · 七言绝句（共同署名）",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

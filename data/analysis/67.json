@@ -1,0 +1,40 @@
+{
+  "id": "67",
+  "structure": {
+    "formLabel": "诗 · 五言排律（残篇）",
+    "stanzas": [
+      {
+        "label": "现存第一联",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "现存第二联",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "现存第三联",
+        "lineIndexes": [
+          2
+        ]
+      },
+      {
+        "label": "现存第四联",
+        "lineIndexes": [
+          3
+        ]
+      },
+      {
+        "label": "佚文标记",
+        "lineIndexes": [
+          4
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

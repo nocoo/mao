@@ -1,0 +1,61 @@
+{
+  "id": "56",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "骚"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "刀"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "涛"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "屈子",
+      "source": "品读版",
+      "sourceKey": "屈子"
+    },
+    {
+      "key": "杀人刀",
+      "source": "品读版",
+      "sourceKey": "手中握有杀人刀"
+    },
+    {
+      "key": "艾萧",
+      "source": "品读版",
+      "sourceKey": "艾萧太盛椒兰少"
+    },
+    {
+      "key": "椒兰",
+      "source": "品读版",
+      "sourceKey": "艾萧太盛椒兰少"
+    },
+    {
+      "key": "冲向万里涛",
+      "source": "品读版",
+      "sourceKey": "一跃冲向万里涛"
+    }
+  ]
+}

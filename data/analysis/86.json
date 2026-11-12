@@ -1,0 +1,43 @@
+{
+  "id": "86",
+  "structure": {
+    "formLabel": "词 · 卜算子（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 10,
+        "character": "前"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 24,
+        "character": "残"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 10,
+        "character": "烦"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 24,
+        "character": "年"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

@@ -1,0 +1,80 @@
+{
+  "id": "05",
+  "structure": {
+    "formLabel": "词 · 清平乐（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 3,
+        "character": "变"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "战"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "怨"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 5,
+        "character": "现"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 5,
+        "character": "江"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 5,
+        "character": "杭"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 5,
+        "character": "忙"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "黄粱",
+      "source": "品读版",
+      "sourceKey": "洒向人间都是怨，一枕黄粱再现"
+    },
+    {
+      "key": "汀江",
+      "source": "品读版",
+      "sourceKey": "汀江"
+    },
+    {
+      "key": "金瓯",
+      "source": "品读版",
+      "sourceKey": "金瓯(ōu欧)"
+    }
+  ]
+}

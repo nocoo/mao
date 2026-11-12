@@ -1,0 +1,110 @@
+{
+  "id": "26-1",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "多"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "何"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "歌"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "河"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "波"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "枉自多",
+      "source": "初始文本",
+      "sourceKey": "枉自多"
+    },
+    {
+      "key": "华佗",
+      "source": "品读版",
+      "sourceKey": "华佗无奈小虫何"
+    },
+    {
+      "key": "薜荔",
+      "source": "品读版",
+      "sourceKey": "千村薜荔(bìlì必利)人遗矢"
+    },
+    {
+      "key": "人遗矢",
+      "source": "初始文本",
+      "sourceKey": "遗矢"
+    },
+    {
+      "key": "鬼唱歌",
+      "source": "初始文本",
+      "sourceKey": "鬼唱歌"
+    },
+    {
+      "key": "坐地日行八万里",
+      "source": "品读版",
+      "sourceKey": "坐地日行八万里，巡天遥看一千河"
+    },
+    {
+      "key": "一千河",
+      "source": "品读版",
+      "sourceKey": "坐地日行八万里，巡天遥看一千河"
+    },
+    {
+      "key": "牛郎",
+      "source": "品读版",
+      "sourceKey": "牛郎"
+    },
+    {
+      "key": "逝波",
+      "source": "品读版",
+      "sourceKey": "一样悲欢逐逝波"
+    }
+  ]
+}

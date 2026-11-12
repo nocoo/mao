@@ -1,0 +1,59 @@
+{
+  "id": "95",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "端"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "官"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "寒"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "干"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "53",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "五云山",
+      "source": "品读版",
+      "sourceKey": "五云山"
+    },
+    {
+      "key": "堤",
+      "source": "品读版",
+      "sourceKey": "堤"
+    }
+  ]
+}

@@ -4,6 +4,18 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Check literary annotations independently of their data
+
+Several proposed rhyme positions followed an inferred pattern despite conflicting source notes or the actual verse form; a data-derived test repeated the same mistake. Cross-check selected examples against original annotations and explicit expected characters, and represent multiple verse endings within one source line precisely instead of assuming every source line is one verse.
+
+## Choose scroll fixtures by rendered length
+
+After grouping source verses into reading lines, the 40-line poem could fit on the largest viewport, so an old test incorrectly assumed it must scroll. Use a sufficiently long actual work and assert its rendered scroll range rather than assuming raw source-line count determines overflow.
+
+## Use returned pane identifiers
+
+I assumed newly created Herdr pane IDs would continue with decimal digits; they switched to letters, so subsequent pane commands failed. Read each split response and use its returned ID instead of predicting the next identifier.
+
 ## Ignore stale scroll events when opening notes
 
 A delayed scroll event from navigating to the study section closed a newly opened annotation immediately. Close the popover only if its anchor actually moved after opening, and test navigation within both inline and study annotations.

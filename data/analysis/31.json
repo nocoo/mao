@@ -1,0 +1,46 @@
+{
+  "id": "31",
+  "structure": {
+    "formLabel": "诗 · 七言绝句",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "松"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "容"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "峰"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "仍从容",
+      "source": "品读版",
+      "sourceKey": "仍从容"
+    },
+    {
+      "key": "仙人洞",
+      "source": "品读版",
+      "sourceKey": "为李进同志题所摄庐山仙人洞照"
+    }
+  ]
+}

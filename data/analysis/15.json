@@ -1,0 +1,102 @@
+{
+  "id": "15",
+  "structure": {
+    "formLabel": "词 · 忆秦娥（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 2,
+        "character": "烈"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "月"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 2,
+        "character": "月"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 3,
+        "character": "咽"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "铁"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "越"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 2,
+        "character": "越"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 3,
+        "character": "血"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "霜晨月",
+      "source": "初始文本",
+      "sourceKey": "霜晨月"
+    },
+    {
+      "key": "咽",
+      "source": "品读版",
+      "sourceKey": "咽(yè页)"
+    },
+    {
+      "key": "漫道",
+      "source": "初始文本",
+      "sourceKey": "漫道"
+    },
+    {
+      "key": "从头越",
+      "source": "品读版",
+      "sourceKey": "从头越"
+    },
+    {
+      "key": "苍山如海",
+      "source": "品读版",
+      "sourceKey": "苍山如海，残阳如血"
+    },
+    {
+      "key": "残阳如血",
+      "source": "品读版",
+      "sourceKey": "苍山如海，残阳如血"
+    }
+  ]
+}

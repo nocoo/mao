@@ -1,0 +1,82 @@
+{
+  "id": "45",
+  "structure": {
+    "formLabel": "词 · 临江仙",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 5,
+        "character": "城"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "新"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 4,
+        "character": "人"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 5,
+        "character": "兵"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "东"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 4,
+        "character": "军"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "保安",
+      "source": "品读版",
+      "sourceKey": "保安"
+    },
+    {
+      "key": "纤笔",
+      "source": "品读版",
+      "sourceKey": "纤笔"
+    },
+    {
+      "key": "毛瑟",
+      "source": "品读版",
+      "sourceKey": "毛瑟"
+    },
+    {
+      "key": "陇山",
+      "source": "品读版",
+      "sourceKey": "陇山"
+    }
+  ]
+}

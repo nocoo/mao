@@ -1,0 +1,17 @@
+{
+  "id": "68",
+  "structure": {
+    "formLabel": "诗 · 四言诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

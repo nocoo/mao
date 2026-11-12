@@ -1,0 +1,157 @@
+{
+  "id": "19",
+  "structure": {
+    "formLabel": "词 · 沁园春（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 2,
+        "offset": 3,
+        "character": "飘"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 3,
+        "character": "滔"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 6,
+        "character": "高"
+      },
+      {
+        "lineIndex": 12,
+        "offset": 3,
+        "character": "娆"
+      },
+      {
+        "lineIndex": 13,
+        "offset": 5,
+        "character": "娇"
+      },
+      {
+        "lineIndex": 14,
+        "offset": 7,
+        "character": "腰"
+      },
+      {
+        "lineIndex": 18,
+        "offset": 3,
+        "character": "骚"
+      },
+      {
+        "lineIndex": 21,
+        "offset": 6,
+        "character": "雕"
+      },
+      {
+        "lineIndex": 24,
+        "offset": 3,
+        "character": "朝"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "莽莽",
+      "source": "初始文本",
+      "sourceKey": "莽莽"
+    },
+    {
+      "key": "顿失滔滔",
+      "source": "品读版",
+      "sourceKey": "顿失滔滔"
+    },
+    {
+      "key": "山舞银蛇",
+      "source": "初始文本",
+      "sourceKey": "山舞银蛇"
+    },
+    {
+      "key": "原驰蜡象",
+      "source": "初始文本",
+      "sourceKey": "原驰蜡象"
+    },
+    {
+      "key": "红装素裹",
+      "source": "初始文本",
+      "sourceKey": "红装素裹"
+    },
+    {
+      "key": "竞折腰",
+      "source": "品读版",
+      "sourceKey": "竞折腰"
+    },
+    {
+      "key": "秦皇汉武",
+      "source": "品读版",
+      "sourceKey": "秦皇汉武"
+    },
+    {
+      "key": "略输文采",
+      "source": "品读版",
+      "sourceKey": "略输文采"
+    },
+    {
+      "key": "唐宗宋祖",
+      "source": "品读版",
+      "sourceKey": "唐宗宋祖"
+    },
+    {
+      "key": "稍逊风骚",
+      "source": "品读版",
+      "sourceKey": "稍逊风骚"
+    },
+    {
+      "key": "天骄",
+      "source": "品读版",
+      "sourceKey": "天骄"
+    },
+    {
+      "key": "成吉思汗",
+      "source": "品读版",
+      "sourceKey": "成吉思汗(hán寒)"
+    },
+    {
+      "key": "只识弯弓射大雕",
+      "source": "品读版",
+      "sourceKey": "只识弯弓射大雕"
+    }
+  ]
+}

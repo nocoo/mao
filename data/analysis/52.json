@@ -1,0 +1,51 @@
+{
+  "id": "52",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "房"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "苍"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "塘"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "七人房",
+      "source": "品读版",
+      "sourceKey": "七人房"
+    },
+    {
+      "key": "四十八盘",
+      "source": "品读版",
+      "sourceKey": "四十八盘"
+    },
+    {
+      "key": "钱塘",
+      "source": "品读版",
+      "sourceKey": "钱塘"
+    }
+  ]
+}

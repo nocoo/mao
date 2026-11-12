@@ -1,0 +1,105 @@
+{
+  "id": "60",
+  "structure": {
+    "formLabel": "诗 · 七言律诗五十六字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "年"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "传"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "鞭"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "天"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "鲜"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "洪都",
+      "source": "品读版",
+      "sourceKey": "洪都"
+    },
+    {
+      "key": "祖生击楫",
+      "source": "品读版",
+      "sourceKey": "祖生击楫"
+    },
+    {
+      "key": "闻鸡",
+      "source": "品读版",
+      "sourceKey": "闻鸡"
+    },
+    {
+      "key": "南天雨",
+      "source": "初始文本",
+      "sourceKey": "南天雨"
+    },
+    {
+      "key": "挥北地鞭",
+      "source": "初始文本",
+      "sourceKey": "挥北地鞭"
+    },
+    {
+      "key": "鬓雪",
+      "source": "初始文本",
+      "sourceKey": "鬓雪"
+    },
+    {
+      "key": "彩云",
+      "source": "初始文本",
+      "sourceKey": "彩云"
+    },
+    {
+      "key": "处处鲜",
+      "source": "初始文本",
+      "sourceKey": "处处鲜"
+    }
+  ]
+}

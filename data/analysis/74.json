@@ -1,0 +1,16 @@
+{
+  "id": "74",
+  "structure": {
+    "formLabel": "诗 · 五言残句",
+    "stanzas": [
+      {
+        "label": "残句",
+        "lineIndexes": [
+          0
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

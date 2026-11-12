@@ -1,0 +1,105 @@
+{
+  "id": "28",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "边"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "旋"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "边"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "烟"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "田"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "飞峙",
+      "source": "初始文本",
+      "sourceKey": "飞峙"
+    },
+    {
+      "key": "跃上",
+      "source": "初始文本",
+      "sourceKey": "跃上"
+    },
+    {
+      "key": "葱茏",
+      "source": "初始文本",
+      "sourceKey": "葱茏"
+    },
+    {
+      "key": "九派",
+      "source": "品读版",
+      "sourceKey": "九派"
+    },
+    {
+      "key": "浮黄鹤",
+      "source": "初始文本",
+      "sourceKey": "浮黄鹤"
+    },
+    {
+      "key": "三吴",
+      "source": "品读版",
+      "sourceKey": "三吴"
+    },
+    {
+      "key": "陶令",
+      "source": "品读版",
+      "sourceKey": "陶令"
+    },
+    {
+      "key": "桃花源",
+      "source": "品读版",
+      "sourceKey": "桃花源"
+    }
+  ]
+}

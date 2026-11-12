@@ -1,0 +1,28 @@
+{
+  "id": "89",
+  "structure": {
+    "formLabel": "诗 · 四言三句",
+    "stanzas": [
+      {
+        "label": "第一句",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "第二句",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "第三句",
+        "lineIndexes": [
+          2
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

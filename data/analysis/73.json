@@ -1,0 +1,22 @@
+{
+  "id": "73",
+  "structure": {
+    "formLabel": "词 · 归国谣",
+    "stanzas": [
+      {
+        "label": "第一段",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "第二段",
+        "lineIndexes": [
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

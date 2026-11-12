@@ -1,0 +1,58 @@
+{
+  "id": "07",
+  "structure": {
+    "formLabel": "词 · 如梦令（单调）",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 7,
+        "character": "化"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 5,
+        "character": "滑"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 5,
+        "character": "下"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 3,
+        "character": "下"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 5,
+        "character": "画"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "宁化、清流、归化",
+      "source": "初始文本",
+      "sourceKey": "宁化、清流、归化"
+    },
+    {
+      "key": "武夷山",
+      "source": "品读版",
+      "sourceKey": "武夷山"
+    }
+  ]
+}

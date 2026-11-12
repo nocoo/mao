@@ -50,7 +50,7 @@ try {
       assert.ok(index.x >= 0 && index.x + index.width <= width + 1, `${width}: catalog clipped`);
       await page.locator('#tIndex').click();
     }
-    await page.evaluate(() => { history.replaceState(null, '', '#poem=40'); dispatchEvent(new HashChangeEvent('hashchange')); });
+    await page.evaluate(() => { history.replaceState(null, '', '#poem=75'); dispatchEvent(new HashChangeEvent('hashchange')); });
     const longPoem = await page.locator('#poemWrap').evaluate(node => { node.scrollTop = node.scrollHeight; return { height: node.scrollHeight, client: node.clientHeight, top: node.scrollTop }; });
     assert.ok(longPoem.height > longPoem.client && longPoem.top > 0, `${width}: long poem should scroll`);
     await page.locator('#aVert').click();
@@ -62,7 +62,7 @@ try {
     assert.ok(await firstLineVisible(), `${width}: vertical first line is off screen`);
     await page.locator('#nextL').evaluate(node => node.click());
     assert.ok(await firstLineVisible(), `${width}: vertical first line after navigation is off screen`);
-    assert.equal(await page.locator('#hero').getAttribute('data-poem-id'), '41');
+    assert.equal(await page.locator('#hero').getAttribute('data-poem-id'), '76');
     assert.equal(await page.locator('#poemWrap').evaluate(node => node.scrollTop), 0);
     console.log(`✓ ${width}×${height}: fullscreen, player and long-poem scrolling`);
   }

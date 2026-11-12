@@ -1,0 +1,41 @@
+{
+  "id": "29",
+  "structure": {
+    "formLabel": "诗 · 七言绝句",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "枪"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "场"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "装"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "红装",
+      "source": "初始文本",
+      "sourceKey": "红装"
+    }
+  ]
+}

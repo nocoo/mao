@@ -1,12 +1,13 @@
 import './assets/poems.js';
 import manifest from './audio/manifest.json';
-import analysis16 from './data/analysis/16.json';
 import { createLibraryViewModel } from './src/view-model.js';
 import { createPlayer } from './src/player.js';
 import { artwork } from './src/art.js';
 
 const $ = selector => document.querySelector(selector);
-const library = createLibraryViewModel(window.POEM_LIBRARY, manifest, { '16': analysis16 });
+const analysisFiles = import.meta.glob('./data/analysis/*.json', { eager: true, import: 'default' });
+const analyses = Object.fromEntries(Object.values(analysisFiles).map(analysis => [analysis.id, analysis]));
+const library = createLibraryViewModel(window.POEM_LIBRARY, manifest, analyses);
 const byId = new Map(library.map(poem => [poem.id, poem]));
 const groups = ['正编', '副编', '补编'];
 const app = $('#app');
@@ -115,20 +116,17 @@ function linesForDisplay(body) {
 
 const punctuation = /[，。；、：？！“”《》—·]/;
 
-function renderLine(text, annotations, used, rhymeOffsets = null) {
+function renderLine(text, annotations, used, rhymeOffsets) {
   const line = el('p', 'ln');
-  let clause = rhymeOffsets && el('span', 'cl');
-  if (clause) line.append(clause);
+  let clause = el('span', 'cl');
+  line.append(clause);
   function append(textPart, start, term = null) {
-    if (!rhymeOffsets) {
-      (term || line).append(document.createTextNode(textPart));
-      return;
-    }
-    for (let i = 0; i < textPart.length; i++) {
-      const character = textPart[i];
+    for (let i = 0; i < textPart.length;) {
+      const character = String.fromCodePoint(textPart.codePointAt(i));
       const glyph = el('span', `c${punctuation.test(character) ? ' pu' : ''}${rhymeOffsets.has(start + i) ? ' rh' : ''}`, character);
       (term || clause).append(glyph);
-      if (punctuation.test(character) && start + i + 1 < text.length && !punctuation.test(text[start + i + 1])) {
+      i += character.length;
+      if (punctuation.test(character) && start + i < text.length && !punctuation.test(text[start + i])) {
         clause = el('span', 'cl');
         line.append(clause);
       }
@@ -149,7 +147,7 @@ function renderLine(text, annotations, used, rhymeOffsets = null) {
     term.disabled = !notesVisible;
     term.dataset.k = String(match.index + 1);
     term.setAttribute('aria-label', `注释 ${match.index + 1}：${match.key}`);
-    (clause || line).append(term);
+    clause.append(term);
     append(match.key, match.at, term);
     used.add(match.index);
     pos = match.at + match.key.length;
@@ -159,57 +157,66 @@ function renderLine(text, annotations, used, rhymeOffsets = null) {
 
 function renderBody(p) {
   poemNode.replaceChildren();
-  poemNode.classList.toggle('structured', Boolean(p.structure));
+  poemNode.classList.add('structured');
   if (p.preface) poemNode.append(el('p', 'pre', p.preface));
-  const annotations = p.inlineAnnotations || p.annotations;
+  const annotations = p.inlineAnnotations;
   const used = new Set();
-  if (p.structure) {
-    const rhymeLines = new Set(p.structure.rhymeLineIndexes);
-    for (const part of p.structure.stanzas) {
-      const stanza = el('div', 'st');
-      stanza.dataset.l = part.label;
-      stanza.setAttribute('role', 'group');
-      stanza.setAttribute('aria-label', part.label);
-      let text = '';
-      const rhymeOffsets = new Set();
-      for (const index of part.lineIndexes) {
-        const verse = p.body[index].replace(/,/g, '，').replace(/\./g, '。').trim();
-        if (rhymeLines.has(index)) {
-          const last = verse.match(/[^\s，。；、：？！“”《》—·]+(?=[\s，。；、：？！“”《》—·]*$)/);
-          if (last) rhymeOffsets.add(text.length + last.index + last[0].length - 1);
-        }
-        text += verse;
-      }
-      stanza.append(renderLine(text, annotations, used, rhymeOffsets));
-      poemNode.append(stanza);
-    }
-  } else {
+  const rhymeMarks = new Map();
+  for (const mark of p.structure.rhymeMarks) {
+    if (!rhymeMarks.has(mark.lineIndex)) rhymeMarks.set(mark.lineIndex, []);
+    rhymeMarks.get(mark.lineIndex).push(mark.offset);
+  }
+  for (const part of p.structure.stanzas) {
     const stanza = el('div', 'st');
-    stanza.dataset.l = '正文';
-    for (const line of linesForDisplay(p.body)) stanza.append(renderLine(line, annotations, used));
+    stanza.dataset.l = part.label;
+    stanza.setAttribute('role', 'group');
+    stanza.setAttribute('aria-label', part.label);
+    let text = '';
+    let rhymeOffsets = new Set();
+    function flush() {
+      if (!text) return;
+      stanza.append(renderLine(text, annotations, used, rhymeOffsets));
+      text = '';
+      rhymeOffsets = new Set();
+    }
+    for (const index of part.lineIndexes) {
+      const verse = p.body[index].replace(/,/g, '，').replace(/\./g, '。').trim();
+      const offsets = rhymeMarks.get(index) || [];
+      const pieces = verse.length > 24 ? [...verse.matchAll(/.+?[，。；？！!?;]|.+$/g)] : [{ 0: verse, index: 0 }];
+      for (const piece of pieces) {
+        if (text && [...text + piece[0]].length > 24) flush();
+        for (const offset of offsets) {
+          if (offset >= piece.index && offset < piece.index + piece[0].length) {
+            rhymeOffsets.add(text.length + offset - piece.index);
+          }
+        }
+        text += piece[0];
+        if (/[。！？!?；;）]$/.test(text) || [...text].length >= 20) flush();
+      }
+    }
+    flush();
     poemNode.append(stanza);
   }
   poemNode.classList.toggle('no-notes', !notesVisible);
   poemNode.classList.remove('show-rhyme');
-  $('#aRhyme').disabled = !p.structure?.rhymeLineIndexes?.length;
-  $('#aRhyme').title = p.structure?.rhymeLineIndexes?.length ? '显示或隐藏韵脚' : '资料未提供逐篇韵脚';
+  $('#aRhyme').disabled = !p.structure.rhymeMarks.length;
+  $('#aRhyme').title = p.structure.rhymeMarks.length ? p.structure.rhymeNote || '显示或隐藏韵脚' : '韵脚暂未核定';
+  $('#aRhyme').setAttribute('aria-label', p.structure.rhymeNote ? `韵脚：${p.structure.rhymeNote}` : '显示或隐藏韵脚');
   $('#aRhyme').setAttribute('aria-pressed', 'false');
   $('#aNotesN').textContent = annotations.length;
   $('#aNotes').disabled = !annotations.length;
 }
 
 function fitPoem() {
-  if (!current?.structure) {
-    poemNode.style.removeProperty('--fs');
-    poemNode.style.removeProperty('--lh');
-    return;
-  }
+  if (!current) return;
   const wrap = $('#poemWrap');
   const width = wrap.clientWidth;
   const height = wrap.clientHeight;
   if (!width || !height) return;
   const lines = [...poemNode.querySelectorAll('.ln')];
   const stanzas = current.structure.stanzas.length;
+  const gap = current.structure.stanzas.some(part => part.label === '首联') ? .42 : .7;
+  poemNode.style.setProperty('--sg', `${gap}em`);
   const maxLength = Math.max(...lines.map(line => line.textContent.length * 1.1 + line.querySelectorAll('.term').length * .4));
   const mobile = matchMedia('(max-width:820px)').matches;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -217,11 +224,11 @@ function fitPoem() {
   if (vertical) {
     poemNode.style.removeProperty('--lh');
     const byHeight = (height - 48) / (maxLength + .2);
-    const columns = lines.length * 1.86 + (stanzas - 1) * .42;
+    const columns = lines.length * 1.86 + (stanzas - 1) * gap;
     size = clamp(Math.min(byHeight, width / columns), 18, 44);
   } else {
     const byWidth = (width - (mobile ? 34 : 46) - 4) / (maxLength + .2);
-    const rows = lines.length * 1.66 + (stanzas - 1) * .42;
+    const rows = lines.length * 1.66 + (stanzas - 1) * gap;
     size = mobile ? clamp(byWidth, 18, 26) : clamp(Math.min(byWidth, height / rows), 18, 52);
     const spare = mobile ? 0 : height - rows * size;
     const lineHeight = spare > 0 ? clamp(1.66 + spare / (size * (lines.length + stanzas)) * .6, 1.66, 2.3) : 1.66;
@@ -248,6 +255,11 @@ function addTextBlocks(container, records, empty) {
   }
 }
 
+function displayAnnotation(note) {
+  const text = note.text.replace(/\n\s*\n(\d{1,4})\s*$/, '\n\n原文末尾另列数字：$1');
+  return `${note.source} · ${text}`;
+}
+
 function renderStudy(p) {
   const study = $('#study');
   study.replaceChildren();
@@ -256,7 +268,9 @@ function renderStudy(p) {
   study.append(header);
   const facts = block('01', '档案', 'b-facts');
   const dl = el('dl', 'facts');
-  for (const [label, value] of [['编次', p.id], ['编目', p.collection], ['体裁', p.form], ['时间', p.date], ['录音', p.audio ? '合成朗诵 · 待听审' : '待补']]) {
+  const factsRows = [['编次', p.id], ['编目', p.collection], ['体裁', p.form], ['时间', p.date], ['录音', p.audio ? '合成朗诵 · 待听审' : '待补']];
+  if (p.structure.rhymeNote) factsRows.push(['用韵', p.structure.rhymeNote]);
+  for (const [label, value] of factsRows) {
     const row = el('div'); row.append(el('dt', '', label), el('dd', '', value)); dl.append(row);
   }
   facts.append(dl); study.append(facts);
@@ -277,7 +291,7 @@ function renderStudy(p) {
     const li = el('li');
     const button = el('button'); button.dataset.note = String(index);
     const text = el('span');
-    text.append(el('span', 'k', note.key || '注释'), el('span', 'd', `${note.source} · ${note.text}`));
+    text.append(el('span', 'k', note.key || '注释'), el('span', 'd', displayAnnotation(note)));
     button.append(el('span', 'n', String(index + 1).padStart(2, '0')), text); li.append(button); list.append(li);
   });
   if (p.annotations.length) annotations.append(list); else annotations.append(el('p', 'empty', '这篇资料未附注释。'));
@@ -307,14 +321,14 @@ function closeNote() {
 }
 
 function openNote(index, anchor, type = 'inline') {
-  const notes = type === 'inline' ? current.inlineAnnotations || current.annotations : current.annotations;
+  const notes = type === 'inline' ? current.inlineAnnotations : current.annotations;
   const note = notes[index];
   if (!note || !anchor) return;
   closeNote(); activeNote = index; activeNoteType = type; noteAnchor = anchor;
   anchor.classList.add('sel');
   $('#popN').textContent = String(index + 1).padStart(2, '0');
   $('#popK').textContent = note.key || '注释';
-  $('#popT').textContent = `${note.source} · ${note.text}`;
+  $('#popT').textContent = displayAnnotation(note);
   $('#popI').textContent = `${index + 1} / ${notes.length}`;
   const pop = $('#pop');
   const rect = anchor.getBoundingClientRect();
@@ -336,11 +350,11 @@ function render(p) {
   $('#hero').dataset.poemId = p.id;
   const folio = p.id.padStart(3, '0');
   $('#hudNo').textContent = folio;
-  $('#hudForm').textContent = p.structure?.formLabel || p.form;
+  $('#hudForm').textContent = p.structure.formLabel;
   $('#hudPlace').textContent = p.year ? `${p.year} · ${p.collection}` : p.collection;
   $('#bignum').textContent = folio;
   $('#plNo').textContent = folio;
-  $('#dt').textContent = p.structure?.displayDate || p.date;
+  $('#dt').textContent = p.structure.displayDate || p.date;
   $('#author').textContent = p.collection === '补编' ? '补编资料' : '毛泽东';
   $('#cp').textContent = p.title.includes('·') ? p.form : '诗词选读';
   const title = p.title.includes('·') ? p.subject : p.title;
@@ -432,10 +446,10 @@ poemNode.addEventListener('click', event => { const term = event.target.closest(
 $('#study').addEventListener('click', event => { const button = event.target.closest('[data-note]'); if (button) openNote(Number(button.dataset.note), button, 'source'); });
 $('#popX').addEventListener('click', closeNote);
 function stepNote(delta) {
-  const notes = activeNoteType === 'inline' ? current.inlineAnnotations || current.annotations : current.annotations;
+  const notes = activeNoteType === 'inline' ? current.inlineAnnotations : current.annotations;
   const index = (activeNote + delta + notes.length) % notes.length;
   const anchor = activeNoteType === 'inline'
-    ? poemNode.querySelector(`[data-note="${index}"]`) || (!current.inlineAnnotations && document.querySelector(`#study [data-note="${index}"]`))
+    ? poemNode.querySelector(`[data-note="${index}"]`)
     : document.querySelector(`#study [data-note="${index}"]`);
   openNote(index, anchor, activeNoteType);
 }

@@ -1,0 +1,23 @@
+{
+  "id": "79",
+  "structure": {
+    "formLabel": "诗 · 四言诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

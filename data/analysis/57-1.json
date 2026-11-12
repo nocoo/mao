@@ -1,0 +1,51 @@
+{
+  "id": "57-1",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "坚"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "旋"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "弦"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "龙华喋血",
+      "source": "品读版",
+      "sourceKey": "龙华喋血不眠夜"
+    },
+    {
+      "key": "犹制小诗",
+      "source": "品读版",
+      "sourceKey": "犹制小诗赋管弦"
+    },
+    {
+      "key": "赋管弦",
+      "source": "品读版",
+      "sourceKey": "犹制小诗赋管弦"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "88",
+  "structure": {
+    "formLabel": "诗 · 七言绝句",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "门"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "村"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "昏"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

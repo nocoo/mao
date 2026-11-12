@@ -1,0 +1,100 @@
+{
+  "id": "21",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "忘"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "黄"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "章"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "量"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "江"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "饮茶粤海未能忘",
+      "source": "品读版",
+      "sourceKey": "饮茶粤海未能忘"
+    },
+    {
+      "key": "索句渝州叶正黄",
+      "source": "品读版",
+      "sourceKey": "索句渝州叶正黄"
+    },
+    {
+      "key": "三十一年还旧国",
+      "source": "品读版",
+      "sourceKey": "三十一年还旧国"
+    },
+    {
+      "key": "落花时节读华章",
+      "source": "品读版",
+      "sourceKey": "落花时节读华章"
+    },
+    {
+      "key": "放眼量",
+      "source": "品读版",
+      "sourceKey": "放眼量"
+    },
+    {
+      "key": "昆明池",
+      "source": "品读版",
+      "sourceKey": "昆明池"
+    },
+    {
+      "key": "观鱼胜过富春江",
+      "source": "品读版",
+      "sourceKey": "观鱼胜过富春江"
+    }
+  ]
+}

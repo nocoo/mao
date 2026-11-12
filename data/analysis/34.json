@@ -1,0 +1,81 @@
+{
+  "id": "34",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeNote": "“飞、稀”为借韵，详见品读版的作法。",
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "飞"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "稀"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "吹"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "罴"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "奇"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "雪压冬云",
+      "source": "初始文本",
+      "sourceKey": "雪压冬云"
+    },
+    {
+      "key": "暖气",
+      "source": "初始文本",
+      "sourceKey": "暖气"
+    },
+    {
+      "key": "罴",
+      "source": "品读版",
+      "sourceKey": "罴(pí皮)"
+    }
+  ]
+}

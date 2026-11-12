@@ -1,0 +1,60 @@
+{
+  "id": "48",
+  "structure": {
+    "formLabel": "诗 · 五言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          2
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "度",
+      "source": "品读版",
+      "sourceKey": "度"
+    },
+    {
+      "key": "大野入苍穹",
+      "source": "品读版",
+      "sourceKey": "大野入苍穹"
+    },
+    {
+      "key": "佳令",
+      "source": "品读版",
+      "sourceKey": "佳令"
+    },
+    {
+      "key": "鸿音绝",
+      "source": "品读版",
+      "sourceKey": "鸿音绝"
+    },
+    {
+      "key": "凯歌奏边城",
+      "source": "品读版",
+      "sourceKey": "凯歌奏边城"
+    }
+  ]
+}

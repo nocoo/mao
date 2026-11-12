@@ -1,0 +1,90 @@
+{
+  "id": "46",
+  "structure": {
+    "formLabel": "诗 · 五言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "薇"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "威"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 4,
+        "character": "归"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 4,
+        "character": "违"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "赋采薇",
+      "source": "品读版",
+      "sourceKey": "将军赋采薇"
+    },
+    {
+      "key": "机械化",
+      "source": "初始文本",
+      "sourceKey": "机械化"
+    },
+    {
+      "key": "虎罴",
+      "source": "品读版",
+      "sourceKey": "虎罴(pí皮)"
+    },
+    {
+      "key": "东瓜",
+      "source": "品读版",
+      "sourceKey": "东瓜"
+    },
+    {
+      "key": "棠吉",
+      "source": "品读版",
+      "sourceKey": "棠吉"
+    },
+    {
+      "key": "无违",
+      "source": "初始文本",
+      "sourceKey": "无违"
+    }
+  ]
+}

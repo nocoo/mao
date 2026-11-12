@@ -1,44 +1,136 @@
 {
   "id": "16",
-  "pilot": true,
-  "pilotNote": "仅为试点",
   "structure": {
     "formLabel": "诗 · 七言律诗五十六字",
     "displayDate": "一九三五年十月",
     "stanzas": [
       {
         "label": "首联",
-        "lineIndexes": [0, 1]
+        "lineIndexes": [
+          0,
+          1
+        ]
       },
       {
         "label": "颔联",
-        "lineIndexes": [2, 3]
+        "lineIndexes": [
+          2,
+          3
+        ]
       },
       {
         "label": "颈联",
-        "lineIndexes": [4, 5]
+        "lineIndexes": [
+          4,
+          5
+        ]
       },
       {
         "label": "尾联",
-        "lineIndexes": [6, 7]
+        "lineIndexes": [
+          6,
+          7
+        ]
       }
     ],
-    "rhymeLineIndexes": [0, 1, 3, 5, 7]
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "难"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "闲"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "丸"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "寒"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "颜"
+      }
+    ]
   },
   "inlineTerms": [
-    { "key": "远征", "source": "品读版", "sourceKey": "长征" },
-    { "key": "等闲", "source": "初始文本", "sourceKey": "等闲" },
-    { "key": "五岭", "source": "品读版", "sourceKey": "五岭逶迤(wēiyí威移)腾细浪" },
-    { "key": "逶迤", "source": "品读版", "sourceKey": "五岭逶迤(wēiyí威移)腾细浪" },
-    { "key": "细浪", "source": "品读版", "sourceKey": "五岭逶迤(wēiyí威移)腾细浪" },
-    { "key": "乌蒙", "source": "初始文本", "sourceKey": "乌蒙" },
-    { "key": "走泥丸", "source": "初始文本", "sourceKey": "走泥丸" },
-    { "key": "金沙", "source": "品读版", "sourceKey": "金沙水拍云崖暖" },
-    { "key": "水拍", "source": "品读版", "sourceKey": "金沙水拍云崖暖" },
-    { "key": "云崖", "source": "初始文本", "sourceKey": "云崖" },
-    { "key": "大渡桥", "source": "品读版", "sourceKey": "大渡桥横铁索寒" },
-    { "key": "铁索寒", "source": "品读版", "sourceKey": "大渡桥横铁索寒" },
-    { "key": "岷山", "source": "品读版", "sourceKey": "岷山" },
-    { "key": "三军", "source": "品读版", "sourceKey": "三军" }
+    {
+      "key": "远征",
+      "source": "品读版",
+      "sourceKey": "长征"
+    },
+    {
+      "key": "等闲",
+      "source": "初始文本",
+      "sourceKey": "等闲"
+    },
+    {
+      "key": "五岭",
+      "source": "品读版",
+      "sourceKey": "五岭逶迤(wēiyí威移)腾细浪"
+    },
+    {
+      "key": "逶迤",
+      "source": "品读版",
+      "sourceKey": "五岭逶迤(wēiyí威移)腾细浪"
+    },
+    {
+      "key": "细浪",
+      "source": "品读版",
+      "sourceKey": "五岭逶迤(wēiyí威移)腾细浪"
+    },
+    {
+      "key": "乌蒙",
+      "source": "初始文本",
+      "sourceKey": "乌蒙"
+    },
+    {
+      "key": "走泥丸",
+      "source": "初始文本",
+      "sourceKey": "走泥丸"
+    },
+    {
+      "key": "金沙",
+      "source": "品读版",
+      "sourceKey": "金沙水拍云崖暖"
+    },
+    {
+      "key": "水拍",
+      "source": "品读版",
+      "sourceKey": "金沙水拍云崖暖"
+    },
+    {
+      "key": "云崖",
+      "source": "初始文本",
+      "sourceKey": "云崖"
+    },
+    {
+      "key": "大渡桥",
+      "source": "品读版",
+      "sourceKey": "大渡桥横铁索寒"
+    },
+    {
+      "key": "铁索寒",
+      "source": "品读版",
+      "sourceKey": "大渡桥横铁索寒"
+    },
+    {
+      "key": "岷山",
+      "source": "品读版",
+      "sourceKey": "岷山"
+    },
+    {
+      "key": "三军",
+      "source": "品读版",
+      "sourceKey": "三军"
+    }
   ]
 }

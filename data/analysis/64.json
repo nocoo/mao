@@ -1,0 +1,39 @@
+{
+  "id": "64",
+  "structure": {
+    "formLabel": "诗 · 五言古诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 4,
+        "character": "方"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 10,
+        "character": "墙"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 10,
+        "character": "央"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 10,
+        "character": "长"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

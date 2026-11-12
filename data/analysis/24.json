@@ -1,0 +1,140 @@
+{
+  "id": "24",
+  "structure": {
+    "formLabel": "词 · 水调歌头（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "鱼"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "舒"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 4,
+        "character": "余"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 4,
+        "character": "夫"
+      },
+      {
+        "lineIndex": 10,
+        "offset": 2,
+        "character": "图"
+      },
+      {
+        "lineIndex": 12,
+        "offset": 4,
+        "character": "途"
+      },
+      {
+        "lineIndex": 15,
+        "offset": 4,
+        "character": "湖"
+      },
+      {
+        "lineIndex": 17,
+        "offset": 4,
+        "character": "殊"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "长沙水",
+      "source": "品读版",
+      "sourceKey": "长沙水"
+    },
+    {
+      "key": "武昌鱼",
+      "source": "品读版",
+      "sourceKey": "武昌鱼"
+    },
+    {
+      "key": "极目楚天舒",
+      "source": "品读版",
+      "sourceKey": "极目楚天舒"
+    },
+    {
+      "key": "宽余",
+      "source": "初始文本",
+      "sourceKey": "宽余"
+    },
+    {
+      "key": "逝者如斯夫",
+      "source": "品读版",
+      "sourceKey": "子在川上曰：逝者如斯夫"
+    },
+    {
+      "key": "风樯",
+      "source": "品读版",
+      "sourceKey": "风樯(qiáng墙)"
+    },
+    {
+      "key": "龟蛇",
+      "source": "品读版",
+      "sourceKey": "龟蛇"
+    },
+    {
+      "key": "一桥飞架南北",
+      "source": "品读版",
+      "sourceKey": "一桥飞架南北"
+    },
+    {
+      "key": "天堑",
+      "source": "品读版",
+      "sourceKey": "天堑(qiàn欠)"
+    },
+    {
+      "key": "西江",
+      "source": "初始文本",
+      "sourceKey": "西江"
+    },
+    {
+      "key": "巫山云雨",
+      "source": "初始文本",
+      "sourceKey": "巫山云雨"
+    },
+    {
+      "key": "神女",
+      "source": "初始文本",
+      "sourceKey": "神女"
+    }
+  ]
+}

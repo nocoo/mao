@@ -1,0 +1,137 @@
+{
+  "id": "01",
+  "structure": {
+    "formLabel": "词 · 贺新郎（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 4,
+        "character": "去"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 3,
+        "character": "诉"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 5,
+        "character": "住"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "语"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 7,
+        "character": "汝"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 2,
+        "character": "否"
+      },
+      {
+        "lineIndex": 10,
+        "offset": 6,
+        "character": "路"
+      },
+      {
+        "lineIndex": 12,
+        "offset": 3,
+        "character": "许"
+      },
+      {
+        "lineIndex": 14,
+        "offset": 5,
+        "character": "旅"
+      },
+      {
+        "lineIndex": 15,
+        "offset": 6,
+        "character": "缕"
+      },
+      {
+        "lineIndex": 17,
+        "offset": 7,
+        "character": "宇"
+      },
+      {
+        "lineIndex": 19,
+        "offset": 2,
+        "character": "翥"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "挥手从兹去",
+      "source": "品读版",
+      "sourceKey": "挥手从兹去"
+    },
+    {
+      "key": "过眼滔滔云共雾",
+      "source": "品读版",
+      "sourceKey": "过眼滔滔云共雾"
+    },
+    {
+      "key": "东门",
+      "source": "品读版",
+      "sourceKey": "东门"
+    },
+    {
+      "key": "横塘",
+      "source": "品读版",
+      "sourceKey": "横塘"
+    },
+    {
+      "key": "凭",
+      "source": "品读版",
+      "sourceKey": "凭"
+    },
+    {
+      "key": "昆仑崩绝壁",
+      "source": "品读版",
+      "sourceKey": "昆仑崩绝壁"
+    },
+    {
+      "key": "和云翥",
+      "source": "品读版",
+      "sourceKey": "重比翼，和云翥"
+    }
+  ]
+}

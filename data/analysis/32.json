@@ -1,0 +1,100 @@
+{
+  "id": "32",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "雷"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "堆"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "灾"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "埃"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "来"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "一从",
+      "source": "初始文本",
+      "sourceKey": "一从"
+    },
+    {
+      "key": "僧",
+      "source": "初始文本",
+      "sourceKey": "僧"
+    },
+    {
+      "key": "愚氓",
+      "source": "品读版",
+      "sourceKey": "愚氓(méng萌)"
+    },
+    {
+      "key": "鬼蜮",
+      "source": "品读版",
+      "sourceKey": "鬼蜮(yù玉)"
+    },
+    {
+      "key": "玉宇",
+      "source": "初始文本",
+      "sourceKey": "玉宇"
+    },
+    {
+      "key": "埃",
+      "source": "初始文本",
+      "sourceKey": "埃"
+    },
+    {
+      "key": "妖雾",
+      "source": "初始文本",
+      "sourceKey": "妖雾"
+    }
+  ]
+}

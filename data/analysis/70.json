@@ -1,0 +1,16 @@
+{
+  "id": "70",
+  "structure": {
+    "formLabel": "诗 · 七言古诗（残句）",
+    "stanzas": [
+      {
+        "label": "残句",
+        "lineIndexes": [
+          0
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": []
+}

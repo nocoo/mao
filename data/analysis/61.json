@@ -1,0 +1,100 @@
+{
+  "id": "61",
+  "structure": {
+    "formLabel": "诗 · 七言律诗五十六字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "时"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "枝"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "驰"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "旗"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "思"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "神都",
+      "source": "品读版",
+      "sourceKey": "神都"
+    },
+    {
+      "key": "有事",
+      "source": "初始文本",
+      "sourceKey": "有事"
+    },
+    {
+      "key": "南国",
+      "source": "品读版",
+      "sourceKey": "南国"
+    },
+    {
+      "key": "踏芳枝",
+      "source": "初始文本",
+      "sourceKey": "踏芳枝"
+    },
+    {
+      "key": "凭阑",
+      "source": "品读版",
+      "sourceKey": "凭阑静听潇潇雨"
+    },
+    {
+      "key": "潇潇雨",
+      "source": "品读版",
+      "sourceKey": "凭阑静听潇潇雨"
+    },
+    {
+      "key": "故国",
+      "source": "品读版",
+      "sourceKey": "故国"
+    }
+  ]
+}

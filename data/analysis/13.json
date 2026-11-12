@@ -1,0 +1,86 @@
+{
+  "id": "13",
+  "structure": {
+    "formLabel": "词 · 清平乐（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeNote": "上阕韵脚已标；下阕韵部尚待核对。",
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 3,
+        "character": "晓"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "早"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "老"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 5,
+        "character": "好"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "莫道君行早",
+      "source": "品读版",
+      "sourceKey": "莫道君行早"
+    },
+    {
+      "key": "未老",
+      "source": "初始文本",
+      "sourceKey": "未老"
+    },
+    {
+      "key": "这边",
+      "source": "品读版",
+      "sourceKey": "这边"
+    },
+    {
+      "key": "会昌城外高峰",
+      "source": "品读版",
+      "sourceKey": "会昌城外高峰"
+    },
+    {
+      "key": "颠连",
+      "source": "品读版",
+      "sourceKey": "颠连"
+    },
+    {
+      "key": "东溟",
+      "source": "品读版",
+      "sourceKey": "东溟(míng明)"
+    },
+    {
+      "key": "南粤",
+      "source": "品读版",
+      "sourceKey": "南粤"
+    }
+  ]
+}

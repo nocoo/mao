@@ -1,0 +1,85 @@
+{
+  "id": "50",
+  "structure": {
+    "formLabel": "诗 · 七言律诗五十六字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "徊"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "开"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "来"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "哀"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "台"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "尊前",
+      "source": "品读版",
+      "sourceKey": "尊前"
+    },
+    {
+      "key": "鸡虫",
+      "source": "品读版",
+      "sourceKey": "域外鸡虫事可哀"
+    },
+    {
+      "key": "韶华",
+      "source": "品读版",
+      "sourceKey": "韶华"
+    },
+    {
+      "key": "赫曦台",
+      "source": "品读版",
+      "sourceKey": "赫曦(xī西)台"
+    }
+  ]
+}

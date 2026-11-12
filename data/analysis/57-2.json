@@ -1,0 +1,61 @@
+{
+  "id": "57-2",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "乡"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "肠"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "囊"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "鉴湖",
+      "source": "品读版",
+      "sourceKey": "鉴湖越台名士乡"
+    },
+    {
+      "key": "越台",
+      "source": "品读版",
+      "sourceKey": "鉴湖越台名士乡"
+    },
+    {
+      "key": "剑南歌",
+      "source": "品读版",
+      "sourceKey": "剑南歌接秋风吟"
+    },
+    {
+      "key": "氤氲",
+      "source": "品读版",
+      "sourceKey": "一例氤氲入诗囊"
+    },
+    {
+      "key": "诗囊",
+      "source": "品读版",
+      "sourceKey": "一例氤氲入诗囊"
+    }
+  ]
+}

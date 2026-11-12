@@ -1,0 +1,120 @@
+{
+  "id": "25",
+  "structure": {
+    "formLabel": "词 · 蝶恋花（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "柳"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 8,
+        "character": "九"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "有"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "酒"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "袖"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 8,
+        "character": "舞"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "虎"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "雨"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "骄杨",
+      "source": "品读版",
+      "sourceKey": "骄杨"
+    },
+    {
+      "key": "飏",
+      "source": "品读版",
+      "sourceKey": "飏(yáng扬)"
+    },
+    {
+      "key": "重霄九",
+      "source": "品读版",
+      "sourceKey": "重霄九"
+    },
+    {
+      "key": "问讯",
+      "source": "初始文本",
+      "sourceKey": "问讯"
+    },
+    {
+      "key": "吴刚",
+      "source": "品读版",
+      "sourceKey": "吴刚"
+    },
+    {
+      "key": "桂花酒",
+      "source": "初始文本",
+      "sourceKey": "吴刚捧出桂花酒"
+    },
+    {
+      "key": "嫦娥",
+      "source": "品读版",
+      "sourceKey": "嫦娥"
+    },
+    {
+      "key": "舒广袖",
+      "source": "品读版",
+      "sourceKey": "舒广袖"
+    },
+    {
+      "key": "伏虎",
+      "source": "初始文本",
+      "sourceKey": "伏虎"
+    },
+    {
+      "key": "泪飞顿作倾盆雨",
+      "source": "初始文本",
+      "sourceKey": "泪飞顿作倾盆雨"
+    }
+  ]
+}

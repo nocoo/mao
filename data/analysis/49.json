@@ -1,0 +1,64 @@
+{
+  "id": "49",
+  "structure": {
+    "formLabel": "词 · 浣溪沙",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "前"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 14,
+        "character": "边"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 22,
+        "character": "元"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 14,
+        "character": "联"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 22,
+        "character": "妍"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "颜斶",
+      "source": "品读版",
+      "sourceKey": "颜斶(chù触)齐王各命前"
+    },
+    {
+      "key": "前线捷音",
+      "source": "品读版",
+      "sourceKey": "前线捷音"
+    },
+    {
+      "key": "妙香山",
+      "source": "品读版",
+      "sourceKey": "妙香山"
+    }
+  ]
+}

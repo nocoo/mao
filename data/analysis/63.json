@@ -1,0 +1,116 @@
+{
+  "id": "63",
+  "structure": {
+    "formLabel": "诗 · 七言律诗五十六字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          2
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "才"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 14,
+        "character": "哀"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 14,
+        "character": "台"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 14,
+        "character": "猜"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 14,
+        "character": "埃"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "少年倜傥",
+      "source": "品读版",
+      "sourceKey": "少年倜傥(tìtǎng替淌)廊庙才"
+    },
+    {
+      "key": "廊庙才",
+      "source": "品读版",
+      "sourceKey": "少年倜傥(tìtǎng替淌)廊庙才"
+    },
+    {
+      "key": "胸罗文章",
+      "source": "品读版",
+      "sourceKey": "胸罗文章兵百万"
+    },
+    {
+      "key": "兵百万",
+      "source": "品读版",
+      "sourceKey": "胸罗文章兵百万"
+    },
+    {
+      "key": "胆照华国",
+      "source": "品读版",
+      "sourceKey": "胆照华国树千台"
+    },
+    {
+      "key": "树千台",
+      "source": "品读版",
+      "sourceKey": "胆照华国树千台"
+    },
+    {
+      "key": "雄英",
+      "source": "品读版",
+      "sourceKey": "雄英"
+    },
+    {
+      "key": "圣主",
+      "source": "品读版",
+      "sourceKey": "圣主"
+    },
+    {
+      "key": "长沙傅",
+      "source": "品读版",
+      "sourceKey": "长沙傅"
+    },
+    {
+      "key": "汩罗",
+      "source": "品读版",
+      "sourceKey": "空白汨罗步尘埃"
+    },
+    {
+      "key": "步尘埃",
+      "source": "品读版",
+      "sourceKey": "空白汨罗步尘埃"
+    }
+  ]
+}

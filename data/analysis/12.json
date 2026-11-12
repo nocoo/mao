@@ -1,0 +1,90 @@
+{
+  "id": "12",
+  "structure": {
+    "formLabel": "词 · 菩萨蛮（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "紫"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "舞"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 4,
+        "character": "阳"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "苍"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 4,
+        "character": "急"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 4,
+        "character": "壁"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 4,
+        "character": "山"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 4,
+        "character": "看"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "彩练",
+      "source": "品读版",
+      "sourceKey": "彩练"
+    },
+    {
+      "key": "雨后复斜阳",
+      "source": "品读版",
+      "sourceKey": "雨后复斜阳"
+    },
+    {
+      "key": "鏖战",
+      "source": "初始文本",
+      "sourceKey": "鏖战"
+    },
+    {
+      "key": "弹洞",
+      "source": "初始文本",
+      "sourceKey": "弹洞"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-const BRACKET_ANNOTATION = /^〔([^〕]+)〕\s*(.*)$/;
+const BRACKET_ANNOTATION = /^[①-⑳]?\s*〔([^〕]+)〕\s*(.*)$/;
 const NUMBERED_ANNOTATION = /^[（(](\d+)[)）]\s*(.*)$/;
 const PLAIN_ANNOTATION = /^([^。！？；…\n]{1,40}?)[：:∶；;]\s*(.*)$/;
 
@@ -73,10 +73,12 @@ function validateAnalyses(poems, analyses) {
     if (!isRecord(analysis)) throw new TypeError(`分析 ${id} 必须是对象`);
     if (analysis.id !== id) throw new Error(`分析 ${id} 的 id 必须与编号键一致`);
   }
+  for (const id of ids) {
+    if (!Object.hasOwn(analyses, id)) throw new Error(`分析 ${id} 缺失`);
+  }
 }
 
 function structureFor(poem, analysis) {
-  if (!analysis) return null;
   const { structure } = analysis;
   if (!isRecord(structure)) throw new TypeError(`分析 ${poem.id} 缺少 structure 对象`);
   if (typeof structure.formLabel !== 'string' || !structure.formLabel.trim()) {
@@ -113,28 +115,44 @@ function structureFor(poem, analysis) {
     throw new Error(`分析 ${poem.id} 的 stanzas 必须按顺序完整覆盖正文`);
   }
 
-  if (!Array.isArray(structure.rhymeLineIndexes)) {
-    throw new TypeError(`分析 ${poem.id} 的 rhymeLineIndexes 必须是数组`);
+  if (!Array.isArray(structure.rhymeMarks)) {
+    throw new TypeError(`分析 ${poem.id} 的 rhymeMarks 必须是数组`);
   }
-  const rhymeLineIndexes = [...structure.rhymeLineIndexes];
-  if (rhymeLineIndexes.some((lineIndex, index) =>
-    !Number.isInteger(lineIndex)
-    || lineIndex < 0
-    || lineIndex >= poem.body.length
-    || (index > 0 && lineIndex <= rhymeLineIndexes[index - 1]))) {
-    throw new RangeError(`分析 ${poem.id} 的 rhymeLineIndexes 必须按正文顺序且不重复`);
+  if (structure.rhymeNote !== undefined && (typeof structure.rhymeNote !== 'string' || !structure.rhymeNote.trim())) {
+    throw new TypeError(`分析 ${poem.id} 的 rhymeNote 必须是非空字符串`);
   }
+  let previousLine = -1;
+  let previousOffset = -1;
+  const rhymeMarks = structure.rhymeMarks.map(mark => {
+    if (!isRecord(mark) || !Number.isInteger(mark.lineIndex) || !Number.isInteger(mark.offset)
+      || mark.lineIndex < 0 || mark.lineIndex >= poem.body.length
+      || mark.offset < 0 || mark.offset >= poem.body[mark.lineIndex].length
+      || typeof mark.character !== 'string' || !/^\p{Script=Han}$/u.test(mark.character)
+      || poem.body[mark.lineIndex].slice(mark.offset, mark.offset + mark.character.length) !== mark.character) {
+      throw new RangeError(`分析 ${poem.id} 的韵脚位置与正文不符`);
+    }
+    if (mark.lineIndex < previousLine || (mark.lineIndex === previousLine && mark.offset <= previousOffset)) {
+      throw new RangeError(`分析 ${poem.id} 的韵脚必须按正文顺序且不重复`);
+    }
+    const next = poem.body[mark.lineIndex].slice(mark.offset + mark.character.length);
+    if (next && !/^\s*[，。；、：？！“”《》—·,.!?;]/.test(next)) {
+      throw new RangeError(`分析 ${poem.id} 的韵脚必须位于句末`);
+    }
+    previousLine = mark.lineIndex;
+    previousOffset = mark.offset;
+    return { lineIndex: mark.lineIndex, offset: mark.offset, character: mark.character };
+  });
 
   return {
     formLabel: structure.formLabel,
     ...(structure.displayDate === undefined ? {} : { displayDate: structure.displayDate }),
+    ...(structure.rhymeNote === undefined ? {} : { rhymeNote: structure.rhymeNote }),
     stanzas,
-    rhymeLineIndexes,
+    rhymeMarks,
   };
 }
 
 function inlineAnnotationsFor(poem, analysis, annotations) {
-  if (!analysis || !Object.hasOwn(analysis, 'inlineTerms')) return null;
   if (!Array.isArray(analysis.inlineTerms)) throw new TypeError(`分析 ${poem.id} 的 inlineTerms 必须是数组`);
   const body = poem.body.join('\n');
   const keys = new Set();
@@ -156,13 +174,13 @@ function inlineAnnotationsFor(poem, analysis, annotations) {
   });
 }
 
-export function createLibraryViewModel(library, manifest, analyses = {}) {
+export function createLibraryViewModel(library, manifest, analyses) {
   const poems = library?.poems ?? [];
   const recordings = new Map((manifest?.poems ?? []).map(poem => [poem.id, poem]));
   validateAnalyses(poems, analyses);
   return poems.map(poem => {
     const annotations = notesOfType(poem, '注释', true);
-    const analysis = Object.hasOwn(analyses, poem.id) ? analyses[poem.id] : undefined;
+    const analysis = analyses[poem.id];
     return {
       id: poem.id,
       title: poem.title,

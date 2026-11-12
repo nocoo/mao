@@ -1,0 +1,112 @@
+{
+  "id": "11",
+  "structure": {
+    "formLabel": "词 · 渔家傲（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "立"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "急"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "力"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 2,
+        "character": "逼"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "入"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "日"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "碧"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "席"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 2,
+        "character": "泣"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 6,
+        "character": "及"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "白云山",
+      "source": "品读版",
+      "sourceKey": "白云山"
+    },
+    {
+      "key": "枯木朽株齐努力",
+      "source": "品读版",
+      "sourceKey": "枯木朽株齐努力"
+    },
+    {
+      "key": "飞将军",
+      "source": "品读版",
+      "sourceKey": "枪林逼，飞将军自重霄入"
+    },
+    {
+      "key": "七百里驱十五日",
+      "source": "初始文本",
+      "sourceKey": "七百里驱十五日"
+    },
+    {
+      "key": "有人",
+      "source": "初始文本",
+      "sourceKey": "有人"
+    },
+    {
+      "key": "为营步步",
+      "source": "初始文本",
+      "sourceKey": "为营步步"
+    }
+  ]
+}

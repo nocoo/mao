@@ -1,0 +1,141 @@
+{
+  "id": "40",
+  "structure": {
+    "formLabel": "诗 · 五言古诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "去去",
+      "source": "品读版",
+      "sourceKey": "去去"
+    },
+    {
+      "key": "衡阳雁声彻",
+      "source": "品读版",
+      "sourceKey": "衡阳雁声彻"
+    },
+    {
+      "key": "春溜",
+      "source": "品读版",
+      "sourceKey": "春溜(liù六)"
+    },
+    {
+      "key": "踯躅城南隈",
+      "source": "品读版",
+      "sourceKey": "踯躅南城隈"
+    },
+    {
+      "key": "涔泪",
+      "source": "品读版",
+      "sourceKey": "涔(cén岑)泪"
+    },
+    {
+      "key": "采采余孤景",
+      "source": "品读版",
+      "sourceKey": "采采馀孤景"
+    },
+    {
+      "key": "日落衡云西",
+      "source": "品读版",
+      "sourceKey": "日落衡云西"
+    },
+    {
+      "key": "沆瀁",
+      "source": "品读版",
+      "sourceKey": "沆瀁(hàngyǎng杭去养)"
+    },
+    {
+      "key": "零落匪所思",
+      "source": "品读版",
+      "sourceKey": "零落匪所思"
+    },
+    {
+      "key": "汗漫东皋上",
+      "source": "品读版",
+      "sourceKey": "汗漫东皋上"
+    },
+    {
+      "key": "关山蹇骥足",
+      "source": "品读版",
+      "sourceKey": "关山蹇(jiǎn简)骥足"
+    },
+    {
+      "key": "岛夷",
+      "source": "品读版",
+      "sourceKey": "岛夷"
+    },
+    {
+      "key": "北山尽仇怨",
+      "source": "品读版",
+      "sourceKey": "北山尽仇怨"
+    },
+    {
+      "key": "子期竟早亡",
+      "source": "品读版",
+      "sourceKey": "子期竟早亡，牙琴从此绝"
+    },
+    {
+      "key": "牙琴从此绝",
+      "source": "品读版",
+      "sourceKey": "子期竟早亡，牙琴从此绝"
+    },
+    {
+      "key": "铭旌",
+      "source": "品读版",
+      "sourceKey": "铭旌"
+    },
+    {
+      "key": "一泓",
+      "source": "品读版",
+      "sourceKey": "泓(hóng洪)"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "69",
+  "structure": {
+    "formLabel": "诗 · 五言律诗四十字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          2
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 10,
+        "character": "汀"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 10,
+        "character": "冥"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 10,
+        "character": "翎"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 10,
+        "character": "馨"
+      }
+    ]
+  },
+  "inlineTerms": []
+}

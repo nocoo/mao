@@ -1,0 +1,142 @@
+{
+  "id": "02",
+  "structure": {
+    "formLabel": "词 · 沁园春（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 2,
+        "offset": 3,
+        "character": "头"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 3,
+        "character": "流"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 6,
+        "character": "由"
+      },
+      {
+        "lineIndex": 12,
+        "offset": 3,
+        "character": "浮"
+      },
+      {
+        "lineIndex": 13,
+        "offset": 5,
+        "character": "游"
+      },
+      {
+        "lineIndex": 14,
+        "offset": 7,
+        "character": "稠"
+      },
+      {
+        "lineIndex": 18,
+        "offset": 3,
+        "character": "遒"
+      },
+      {
+        "lineIndex": 21,
+        "offset": 6,
+        "character": "侯"
+      },
+      {
+        "lineIndex": 24,
+        "offset": 3,
+        "character": "舟"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "寒秋",
+      "source": "初始文本",
+      "sourceKey": "寒秋"
+    },
+    {
+      "key": "湘江",
+      "source": "品读版",
+      "sourceKey": "湘江"
+    },
+    {
+      "key": "橘子洲",
+      "source": "品读版",
+      "sourceKey": "橘子洲"
+    },
+    {
+      "key": "舸",
+      "source": "品读版",
+      "sourceKey": "舸(gě戈上)"
+    },
+    {
+      "key": "浅底",
+      "source": "品读版",
+      "sourceKey": "浅底"
+    },
+    {
+      "key": "万类霜天竞自由",
+      "source": "品读版",
+      "sourceKey": "万类霜天竞自由"
+    },
+    {
+      "key": "寥廓",
+      "source": "品读版",
+      "sourceKey": "寥廓"
+    },
+    {
+      "key": "谁主沉浮",
+      "source": "品读版",
+      "sourceKey": "谁主沉浮"
+    },
+    {
+      "key": "挥斥方遒",
+      "source": "品读版",
+      "sourceKey": "挥斥方遒(qiú求)"
+    },
+    {
+      "key": "击水",
+      "source": "品读版",
+      "sourceKey": "击水"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "id": "04",
+  "structure": {
+    "formLabel": "词 · 西江月（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "旌旗在望",
+      "source": "品读版",
+      "sourceKey": "旌旗在望"
+    },
+    {
+      "key": "鼓角",
+      "source": "品读版",
+      "sourceKey": "鼓角"
+    },
+    {
+      "key": "岿然",
+      "source": "品读版",
+      "sourceKey": "岿(kuī亏)然"
+    },
+    {
+      "key": "众志成城",
+      "source": "品读版",
+      "sourceKey": "众志成城"
+    },
+    {
+      "key": "宵遁",
+      "source": "初始文本",
+      "sourceKey": "宵遁"
+    }
+  ]
+}

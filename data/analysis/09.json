@@ -1,0 +1,110 @@
+{
+  "id": "09",
+  "structure": {
+    "formLabel": "词 · 蝶恋花（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "恶"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 8,
+        "character": "缚"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "角"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "略"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "跃"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 8,
+        "character": "鄂"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "曲"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "落"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "天兵",
+      "source": "初始文本",
+      "sourceKey": "天兵"
+    },
+    {
+      "key": "鲲鹏",
+      "source": "初始文本",
+      "sourceKey": "鲲鹏"
+    },
+    {
+      "key": "赣水那边红一角",
+      "source": "品读版",
+      "sourceKey": "赣水那边红一角"
+    },
+    {
+      "key": "偏师",
+      "source": "初始文本",
+      "sourceKey": "偏师"
+    },
+    {
+      "key": "借重",
+      "source": "初始文本",
+      "sourceKey": "借重"
+    },
+    {
+      "key": "黄公略",
+      "source": "品读版",
+      "sourceKey": "黄公略"
+    },
+    {
+      "key": "国际悲歌",
+      "source": "初始文本",
+      "sourceKey": "国际悲歌"
+    },
+    {
+      "key": "狂飙",
+      "source": "品读版",
+      "sourceKey": "狂飙(biāo标)"
+    }
+  ]
+}

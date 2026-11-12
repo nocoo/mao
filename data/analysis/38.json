@@ -1,0 +1,111 @@
+{
+  "id": "38",
+  "structure": {
+    "formLabel": "词 · 水调歌头",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "山"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "颜"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 4,
+        "character": "端"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 4,
+        "character": "看"
+      },
+      {
+        "lineIndex": 11,
+        "offset": 2,
+        "character": "寰"
+      },
+      {
+        "lineIndex": 13,
+        "offset": 4,
+        "character": "间"
+      },
+      {
+        "lineIndex": 16,
+        "offset": 4,
+        "character": "还"
+      },
+      {
+        "lineIndex": 18,
+        "offset": 4,
+        "character": "攀"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "重上井冈山",
+      "source": "品读版",
+      "sourceKey": "重上井冈山"
+    },
+    {
+      "key": "黄洋界",
+      "source": "品读版",
+      "sourceKey": "黄洋界"
+    },
+    {
+      "key": "三十八年过去",
+      "source": "品读版",
+      "sourceKey": "三十八年过去，弹指一挥间"
+    },
+    {
+      "key": "弹指一挥间",
+      "source": "品读版",
+      "sourceKey": "三十八年过去，弹指一挥间"
+    },
+    {
+      "key": "九天揽月",
+      "source": "品读版",
+      "sourceKey": "九天揽月"
+    },
+    {
+      "key": "捉鳖",
+      "source": "品读版",
+      "sourceKey": "捉鳖"
+    }
+  ]
+}

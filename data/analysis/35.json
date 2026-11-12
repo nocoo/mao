@@ -1,0 +1,110 @@
+{
+  "id": "35",
+  "structure": {
+    "formLabel": "词 · 满江红",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "壁"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 3,
+        "character": "泣"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "易"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 2,
+        "character": "镝"
+      },
+      {
+        "lineIndex": 10,
+        "offset": 2,
+        "character": "急"
+      },
+      {
+        "lineIndex": 11,
+        "offset": 6,
+        "character": "迫"
+      },
+      {
+        "lineIndex": 13,
+        "offset": 3,
+        "character": "夕"
+      },
+      {
+        "lineIndex": 15,
+        "offset": 6,
+        "character": "激"
+      },
+      {
+        "lineIndex": 17,
+        "offset": 2,
+        "character": "敌"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "寰球",
+      "source": "品读版",
+      "sourceKey": "寰(huán环)球"
+    },
+    {
+      "key": "蚂蚁缘槐夸大国",
+      "source": "品读版",
+      "sourceKey": "蚂蚁缘槐夸大国"
+    },
+    {
+      "key": "蚍蜉撼树",
+      "source": "品读版",
+      "sourceKey": "蚍蜉撼树"
+    },
+    {
+      "key": "西风落叶下长安",
+      "source": "初始文本",
+      "sourceKey": "西风落叶下长安"
+    },
+    {
+      "key": "鸣镝",
+      "source": "初始文本",
+      "sourceKey": "鸣镝"
+    }
+  ]
+}

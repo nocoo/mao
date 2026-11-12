@@ -1,0 +1,59 @@
+{
+  "id": "51",
+  "structure": {
+    "formLabel": "诗 · 五言律诗四十字",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "北高峰",
+      "source": "品读版",
+      "sourceKey": "北高峰"
+    },
+    {
+      "key": "扇子",
+      "source": "品读版",
+      "sourceKey": "北高峰"
+    },
+    {
+      "key": "佳人",
+      "source": "品读版",
+      "sourceKey": "北高峰"
+    },
+    {
+      "key": "飘飖",
+      "source": "品读版",
+      "sourceKey": "飘飖"
+    }
+  ]
+}

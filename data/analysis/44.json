@@ -1,0 +1,28 @@
+{
+  "id": "44",
+  "structure": {
+    "formLabel": "诗 · 六言诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "坑深",
+      "source": "品读版",
+      "sourceKey": "给彭德怀同志"
+    },
+    {
+      "key": "彭大将军",
+      "source": "品读版",
+      "sourceKey": "给彭德怀同志"
+    }
+  ]
+}

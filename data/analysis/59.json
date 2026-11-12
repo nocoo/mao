@@ -1,0 +1,33 @@
+{
+  "id": "59",
+  "structure": {
+    "formLabel": "词 · 念奴娇（双调）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "五井碑",
+      "source": "品读版",
+      "sourceKey": "五井碑"
+    },
+    {
+      "key": "古代曾云海绿",
+      "source": "品读版",
+      "sourceKey": "古代曾云海绿"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "62",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "贾生",
+      "source": "品读版",
+      "sourceKey": "贾生才调世无伦"
+    },
+    {
+      "key": "才调",
+      "source": "品读版",
+      "sourceKey": "贾生才调世无伦"
+    },
+    {
+      "key": "吊屈文",
+      "source": "品读版",
+      "sourceKey": "吊屈文"
+    },
+    {
+      "key": "梁王堕马",
+      "source": "品读版",
+      "sourceKey": "梁王堕马寻常事，何用哀伤付一生"
+    },
+    {
+      "key": "哀伤",
+      "source": "品读版",
+      "sourceKey": "梁王堕马寻常事，何用哀伤付一生"
+    }
+  ]
+}

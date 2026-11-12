@@ -1,0 +1,115 @@
+{
+  "id": "30",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "飞"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "微"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "衣"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "诗"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "晖"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "九嶷山",
+      "source": "品读版",
+      "sourceKey": "九嶷(yí疑)山"
+    },
+    {
+      "key": "帝子",
+      "source": "品读版",
+      "sourceKey": "帝子"
+    },
+    {
+      "key": "翠微",
+      "source": "品读版",
+      "sourceKey": "翠微"
+    },
+    {
+      "key": "斑竹",
+      "source": "初始文本",
+      "sourceKey": "斑竹"
+    },
+    {
+      "key": "洞庭",
+      "source": "品读版",
+      "sourceKey": "洞庭"
+    },
+    {
+      "key": "雪",
+      "source": "品读版",
+      "sourceKey": "雪"
+    },
+    {
+      "key": "长岛",
+      "source": "品读版",
+      "sourceKey": "长岛"
+    },
+    {
+      "key": "我欲因之梦寥廓",
+      "source": "品读版",
+      "sourceKey": "我欲因之梦寥廓"
+    },
+    {
+      "key": "芙蓉国",
+      "source": "品读版",
+      "sourceKey": "芙蓉国"
+    },
+    {
+      "key": "尽朝晖",
+      "source": "初始文本",
+      "sourceKey": "尽朝晖"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "14-3",
+  "structure": {
+    "formLabel": "词 · 十六字令（单调）",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 0,
+        "character": "山"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 8,
+        "character": "残"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 8,
+        "character": "间"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "锷",
+      "source": "品读版",
+      "sourceKey": "锷(è鄂)"
+    },
+    {
+      "key": "拄",
+      "source": "初始文本",
+      "sourceKey": "拄"
+    }
+  ]
+}

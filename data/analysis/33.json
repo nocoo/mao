@@ -1,0 +1,60 @@
+{
+  "id": "33",
+  "structure": {
+    "formLabel": "词 · 卜算子",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 1,
+        "offset": 4,
+        "character": "到"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 4,
+        "character": "俏"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 4,
+        "character": "报"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 4,
+        "character": "笑"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "送春归",
+      "source": "初始文本",
+      "sourceKey": "送春归"
+    },
+    {
+      "key": "烂漫",
+      "source": "初始文本",
+      "sourceKey": "烂漫"
+    }
+  ]
+}

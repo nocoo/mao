@@ -1,0 +1,93 @@
+{
+  "id": "41",
+  "structure": {
+    "formLabel": "诗 · 七言古诗",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "天马凤凰",
+      "source": "品读版",
+      "sourceKey": "天马凤凰"
+    },
+    {
+      "key": "屈贾",
+      "source": "品读版",
+      "sourceKey": "屈贾"
+    },
+    {
+      "key": "钟",
+      "source": "品读版",
+      "sourceKey": "钟"
+    },
+    {
+      "key": "艟艨",
+      "source": "品读版",
+      "sourceKey": "艟艨(chōngméng充萌)"
+    },
+    {
+      "key": "宇宙看稊米",
+      "source": "品读版",
+      "sourceKey": "宇宙看稊米"
+    },
+    {
+      "key": "世事纷纭",
+      "source": "品读版",
+      "sourceKey": "世事纷纭从君理"
+    },
+    {
+      "key": "名世",
+      "source": "品读版",
+      "sourceKey": "名世于今五百年"
+    },
+    {
+      "key": "诸公",
+      "source": "品读版",
+      "sourceKey": "诸公碌碌皆馀子"
+    },
+    {
+      "key": "崇明对马衣带水",
+      "source": "品读版",
+      "sourceKey": "崇明对马衣带水"
+    },
+    {
+      "key": "东瀛",
+      "source": "品读版",
+      "sourceKey": "东瀛(yíng营)"
+    },
+    {
+      "key": "我返自崖君去矣",
+      "source": "品读版",
+      "sourceKey": "我返自崖君去矣"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "id": "10",
+  "structure": {
+    "formLabel": "词 · 渔家傲（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "漫"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "汉"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "暗"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 2,
+        "character": "唤"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "瓒"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "赣"
+      },
+      {
+        "lineIndex": 6,
+        "offset": 6,
+        "character": "半"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "万"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 2,
+        "character": "干"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 6,
+        "character": "乱"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "霄汉",
+      "source": "品读版",
+      "sourceKey": "霄汉"
+    },
+    {
+      "key": "龙冈",
+      "source": "品读版",
+      "sourceKey": "龙冈"
+    },
+    {
+      "key": "嶂",
+      "source": "品读版",
+      "sourceKey": "嶂(zhàng障)"
+    },
+    {
+      "key": "张辉瓒",
+      "source": "初始文本",
+      "sourceKey": "张辉瓒"
+    },
+    {
+      "key": "二十万军重入赣",
+      "source": "品读版",
+      "sourceKey": "二十万军重入赣"
+    },
+    {
+      "key": "来天半",
+      "source": "初始文本",
+      "sourceKey": "来天半"
+    },
+    {
+      "key": "不周山",
+      "source": "初始文本",
+      "sourceKey": "不周山"
+    }
+  ]
+}

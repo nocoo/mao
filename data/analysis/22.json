@@ -1,0 +1,78 @@
+{
+  "id": "22",
+  "structure": {
+    "formLabel": "词 · 浣溪沙（双阕）",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          3,
+          4,
+          5
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "天"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "跹"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 6,
+        "character": "圆"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "阗"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "前"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "赤县",
+      "source": "品读版",
+      "sourceKey": "赤县"
+    },
+    {
+      "key": "百年魔怪舞翩跹",
+      "source": "品读版",
+      "sourceKey": "百年魔怪舞翩跹(piānxiān偏仙)"
+    },
+    {
+      "key": "一唱雄鸡天下白",
+      "source": "品读版",
+      "sourceKey": "一唱雄鸡天下白"
+    },
+    {
+      "key": "乐奏",
+      "source": "品读版",
+      "sourceKey": "乐奏"
+    },
+    {
+      "key": "于阗",
+      "source": "品读版",
+      "sourceKey": "于阗(tián田)"
+    }
+  ]
+}

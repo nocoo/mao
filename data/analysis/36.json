@@ -1,0 +1,95 @@
+{
+  "id": "36",
+  "structure": {
+    "formLabel": "诗 · 七言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          6,
+          7
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "飞"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "违"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "题"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "非"
+      },
+      {
+        "lineIndex": 7,
+        "offset": 6,
+        "character": "谁"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "草上飞",
+      "source": "品读版",
+      "sourceKey": "记得当年草上飞"
+    },
+    {
+      "key": "每相违",
+      "source": "品读版",
+      "sourceKey": "每相违"
+    },
+    {
+      "key": "长征",
+      "source": "品读版",
+      "sourceKey": "长征不是难堪日，战锦方为大问题"
+    },
+    {
+      "key": "战锦",
+      "source": "品读版",
+      "sourceKey": "长征不是难堪日，战锦方为大问题"
+    },
+    {
+      "key": "斥鷃",
+      "source": "品读版",
+      "sourceKey": "斥鷃每闻欺大鸟"
+    },
+    {
+      "key": "昆鸡",
+      "source": "品读版",
+      "sourceKey": "昆鸡长笑老鹰非"
+    }
+  ]
+}

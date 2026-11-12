@@ -1,0 +1,81 @@
+{
+  "id": "39",
+  "structure": {
+    "formLabel": "词 · 念奴娇",
+    "stanzas": [
+      {
+        "label": "上阕",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "label": "下阕",
+        "lineIndexes": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "鲲鹏",
+      "source": "品读版",
+      "sourceKey": "鲲鹏"
+    },
+    {
+      "key": "九万里",
+      "source": "品读版",
+      "sourceKey": "九万里，翻动扶摇羊角"
+    },
+    {
+      "key": "扶摇羊角",
+      "source": "品读版",
+      "sourceKey": "九万里，翻动扶摇羊角"
+    },
+    {
+      "key": "蓬间雀",
+      "source": "品读版",
+      "sourceKey": "蓬间雀"
+    },
+    {
+      "key": "琼阁",
+      "source": "品读版",
+      "sourceKey": "琼阁"
+    },
+    {
+      "key": "订了三家条约",
+      "source": "品读版",
+      "sourceKey": "订了三家条约"
+    },
+    {
+      "key": "土豆烧熟了",
+      "source": "品读版",
+      "sourceKey": "土豆烧熟了，再加牛肉"
+    },
+    {
+      "key": "再加牛肉",
+      "source": "品读版",
+      "sourceKey": "土豆烧熟了，再加牛肉"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "54",
+  "structure": {
+    "formLabel": "诗 · 七言绝句二十八字",
+    "stanzas": [
+      {
+        "label": "正文",
+        "lineIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 6,
+        "character": "来"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 6,
+        "character": "台"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 6,
+        "character": "回"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "钓鱼台",
+      "source": "品读版",
+      "sourceKey": "钓鱼台"
+    },
+    {
+      "key": "铁马",
+      "source": "品读版",
+      "sourceKey": "铁马"
+    }
+  ]
+}

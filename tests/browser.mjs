@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import { preview } from 'vite';
 
 if (!existsSync('dist/index.html')) throw new Error('Run pnpm build first');
 const server = await preview({ preview: { host: '127.0.0.1', port: 4175, strictPort: true, open: false } });
 const origin = 'http://127.0.0.1:4175';
+const analyses = Object.fromEntries(readdirSync('data/analysis').filter(name => name.endsWith('.json')).map(name => [name.slice(0, -5), JSON.parse(readFileSync(`data/analysis/${name}`, 'utf8'))]));
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [], failedRequests = [], externalRequests = [];
@@ -84,8 +85,9 @@ try {
   await page.locator('.cell[data-id="19"]').click();
   await waitPoem(page, '19');
   assert.equal(await page.locator('#matrix').getAttribute('aria-hidden'), 'true');
-  assert.equal(await page.locator('#aRhyme').isDisabled(), true);
-  assert.equal(await page.locator('#poem .st').count(), 1);
+  assert.equal(await page.locator('#aRhyme').isEnabled(), true);
+  assert.deepEqual(await page.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), ['上阕', '下阕']);
+  assert.deepEqual(await page.locator('#poem .c.rh').allTextContents(), ['飘', '滔', '高', '娆', '娇', '腰', '骚', '雕', '朝']);
   await page.locator('#aVert').click();
   assert.equal(await page.locator('#aVert').getAttribute('aria-pressed'), 'true');
   await page.locator('#aVert').click();
@@ -149,23 +151,48 @@ try {
   await retry.close();
   pass('Recording retry recovers from a temporary HTTP failure');
 
-  const allIssues = await page.evaluate(() => {
+  await page.goto(`${origin}/#poem=49`, { waitUntil: 'networkidle' });
+  await waitPoem(page, '49');
+  assert.deepEqual(await page.locator('#poem .c.rh').allTextContents(), ['前', '边', '元', '联', '妍']);
+  await page.locator('#poem .term').filter({ hasText: '颜斶' }).click();
+  assert.match(await page.locator('#popT').textContent(), /战国时齐国人/);
+  await page.keyboard.press('Escape');
+  await page.goto(`${origin}/#poem=63`, { waitUntil: 'networkidle' });
+  await waitPoem(page, '63');
+  assert.deepEqual(await page.locator('#poem .c.rh').allTextContents(), ['才', '哀', '台', '猜', '埃']);
+  await page.locator('#poem .term').filter({ hasText: '汩罗' }).click();
+  assert.match(await page.locator('#popT').textContent(), /原文末尾另列数字：28/);
+  await page.keyboard.press('Escape');
+  await page.goto(`${origin}/#poem=13`, { waitUntil: 'networkidle' });
+  await waitPoem(page, '13');
+  assert.match(await page.locator('#aRhyme').getAttribute('title'), /下阕.*待核/);
+  assert.match(await page.locator('#study').textContent(), /下阕.*待核/);
+  pass('Rhyme positions within combined lines and source-bound annotations');
+
+  const allIssues = await page.evaluate(analysesById => {
     const normalize = text => text.replace(/\s/g, '').replace(/,/g, '，').replace(/\./g, '。');
     const issues = [];
     for (const poem of window.POEM_LIBRARY.poems) {
       history.replaceState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
       dispatchEvent(new HashChangeEvent('hashchange'));
       if (document.querySelector('#hero').dataset.poemId !== poem.id) issues.push(`${poem.id}: selection`);
-      if (normalize([...document.querySelectorAll('#poem .st')].map(node => node.textContent).join('')) !== normalize(poem.body.join(''))) issues.push(`${poem.id}: body changed`);
+      const analysis = analysesById[poem.id];
+      const sections = [...document.querySelectorAll('#poem .st')];
+      if (normalize(sections.map(node => node.textContent).join('')) !== normalize(poem.body.join(''))) issues.push(`${poem.id}: body changed`);
+      if (sections.map(node => node.dataset.l).join('|') !== analysis.structure.stanzas.map(part => part.label).join('|')) issues.push(`${poem.id}: structure`);
+      const terms = [...document.querySelectorAll('#poem .term')];
+      if (terms.length !== analysis.inlineTerms.length || terms.some((term, index) => Number(term.dataset.note) !== index)) issues.push(`${poem.id}: inline annotations`);
+      const expectedRhymes = analysis.structure.rhymeMarks.map(mark => mark.character).join('');
+      if ([...document.querySelectorAll('#poem .c.rh')].map(node => node.textContent).join('') !== expectedRhymes) issues.push(`${poem.id}: rhyme markers`);
       const title = document.querySelector('#tt').getBoundingClientRect();
       const sheet = document.querySelector('.sheet').getBoundingClientRect();
       const reader = document.querySelector('#poemWrap').getBoundingClientRect();
       if (title.right > sheet.right + 1 || reader.height < 60) issues.push(`${poem.id}: title or reader layout`);
     }
     return issues;
-  });
+  }, analyses);
   assert.deepEqual(allIssues, []);
-  pass('All 100 texts render completely without rewritten characters');
+  pass('All 100 texts, structural sections, inline notes and rhyme markers render correctly');
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   monitor(mobile);

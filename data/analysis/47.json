@@ -1,0 +1,70 @@
+{
+  "id": "47",
+  "structure": {
+    "formLabel": "诗 · 五言律诗",
+    "stanzas": [
+      {
+        "label": "首联",
+        "lineIndexes": [
+          0
+        ]
+      },
+      {
+        "label": "颔联",
+        "lineIndexes": [
+          1
+        ]
+      },
+      {
+        "label": "颈联",
+        "lineIndexes": [
+          2
+        ]
+      },
+      {
+        "label": "尾联",
+        "lineIndexes": [
+          3
+        ]
+      }
+    ],
+    "rhymeMarks": []
+  },
+  "inlineTerms": [
+    {
+      "key": "琼宇",
+      "source": "品读版",
+      "sourceKey": "琼宇"
+    },
+    {
+      "key": "征马嘶北风",
+      "source": "品读版",
+      "sourceKey": "征马嘶北风"
+    },
+    {
+      "key": "露湿尘难染",
+      "source": "品读版",
+      "sourceKey": "露湿尘难染"
+    },
+    {
+      "key": "戎衣犹铁甲",
+      "source": "品读版",
+      "sourceKey": "戎衣犹铁甲"
+    },
+    {
+      "key": "踟蹰",
+      "source": "品读版",
+      "sourceKey": "踟蹰(chíchù池除)"
+    },
+    {
+      "key": "张冠道",
+      "source": "品读版",
+      "sourceKey": "张冠道中"
+    },
+    {
+      "key": "塞上",
+      "source": "品读版",
+      "sourceKey": "塞上"
+    }
+  ]
+}
