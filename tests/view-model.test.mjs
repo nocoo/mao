@@ -1,17 +1,19 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { buildLibrary } from '../scripts/build-data.mjs';
+import { buildLibrary, normalizeDate } from '../scripts/build-data.mjs';
 import { createLibraryViewModel, parseAnnotations } from '../src/view-model.js';
 
 const ROOT = new URL('../', import.meta.url);
 const library = await buildLibrary();
 const manifest = JSON.parse(await readFile(new URL('audio/manifest.json', ROOT), 'utf8'));
-const viewModel = createLibraryViewModel(library, manifest);
+const analysis16 = JSON.parse(await readFile(new URL('data/analysis/16.json', ROOT), 'utf8'));
+const viewModel = createLibraryViewModel(library, manifest, { 16: analysis16 });
 const byId = new Map(viewModel.map(poem => [poem.id, poem]));
 const fields = [
   'id', 'title', 'form', 'subject', 'collection', 'date', 'year', 'body',
   'preface', 'path', 'versions', 'audio', 'annotations', 'context', 'appreciation', 'remarks',
+  'structure', 'inlineAnnotations',
 ];
 
 function payload(line) {
@@ -48,6 +50,51 @@ test('日期、正文逐行文字和长诗内容原样进入 View Model', () => 
   assert.deepEqual(byId.get('40').body, library.poems.find(poem => poem.id === '40').body);
   assert.equal(byId.get('40').body.length, 40);
   assert.deepEqual(byId.get('70').body, ['自信人生二百年， 会当水击三千里。']);
+  assert.deepEqual(
+    viewModel.map(poem => ({ id: poem.id, body: poem.body })),
+    library.poems.map(poem => ({ id: poem.id, body: poem.body })),
+  );
+});
+
+test('只为长征映射原型结构与已有词注', () => {
+  const poem = byId.get('16');
+  assert.deepEqual(poem.structure, analysis16.structure);
+  assert.equal(poem.structure.formLabel, '诗 · 七言律诗五十六字');
+  assert.equal(poem.structure.displayDate, '一九三五年十月');
+  assert.equal(normalizeDate(poem.structure.displayDate), poem.date);
+  assert.deepEqual(poem.structure.stanzas, [
+    { label: '首联', lineIndexes: [0, 1] },
+    { label: '颔联', lineIndexes: [2, 3] },
+    { label: '颈联', lineIndexes: [4, 5] },
+    { label: '尾联', lineIndexes: [6, 7] },
+  ]);
+  assert.deepEqual(poem.structure.rhymeLineIndexes, [0, 1, 3, 5, 7]);
+  assert.deepEqual(viewModel.filter(item => item.structure !== null).map(item => item.id), ['16']);
+  assert.deepEqual(viewModel.filter(item => item.structure === null).map(item => item.id), library.poems.map(item => item.id).filter(id => id !== '16'));
+
+  assert.equal(poem.annotations.length, 12);
+  assert.deepEqual(poem.inlineAnnotations.map(item => item.key), analysis16.inlineTerms.map(item => item.key));
+  for (const [index, term] of analysis16.inlineTerms.entries()) {
+    assert.ok(poem.body.some(line => line.includes(term.key)), term.key);
+    const source = poem.annotations.find(item => item.key === term.sourceKey && item.source === term.source);
+    assert.ok(source, `${term.source}：${term.sourceKey}`);
+    assert.deepEqual(poem.inlineAnnotations[index], { key: term.key, text: source.text, source: term.source });
+  }
+  assert.deepEqual(viewModel.filter(item => item.inlineAnnotations !== null).map(item => item.id), ['16']);
+});
+
+test('分析数据必须完整覆盖正文并唯一引用可见词项', () => {
+  const missingLine = structuredClone(analysis16);
+  missingLine.structure.stanzas[3].lineIndexes.pop();
+  assert.throws(() => createLibraryViewModel(library, manifest, { 16: missingLine }), /stanzas 必须按顺序完整覆盖正文/);
+
+  const wrongSource = structuredClone(analysis16);
+  wrongSource.inlineTerms[0].sourceKey = '不存在的注释';
+  assert.throws(() => createLibraryViewModel(library, manifest, { 16: wrongSource }), /必须唯一引用/);
+
+  const hiddenTerm = structuredClone(analysis16);
+  hiddenTerm.inlineTerms[0].key = '不存在的词项';
+  assert.throws(() => createLibraryViewModel(library, manifest, { 16: hiddenTerm }), /不在正文中/);
 });
 
 test('音频只保留 manifest 中成功生成的四个展示字段', () => {

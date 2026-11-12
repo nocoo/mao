@@ -29,6 +29,33 @@ try {
   assert.equal(await page.locator('.cell').count(), 100);
   assert.equal(await page.locator('input[type=file]').count(), 0);
   assert.equal(await page.locator('#plArt svg').count(), 1);
+  assert.deepEqual(await page.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), ['首联', '颔联', '颈联', '尾联']);
+  assert.equal(await page.locator('#tt .ch').count(), 2);
+  assert.equal(await page.locator('#poem .term').count(), 14);
+  assert.equal(await page.locator('#dt').textContent(), '一九三五年十月');
+  assert.match(await page.locator('#hudForm').textContent(), /七言律诗五十六字/);
+  const fontSize = await page.locator('#poem').evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  assert.ok(Math.abs(fontSize - 27.12) < .1, `Prototype body size: ${fontSize}`);
+  assert.deepEqual(await page.locator('#poem .c.rh').allTextContents(), ['难', '闲', '丸', '寒', '颜']);
+  await page.locator('#aRhyme').click();
+  assert.equal(await page.locator('#aRhyme').getAttribute('aria-pressed'), 'true');
+  await page.locator('#aRhyme').click();
+  await page.locator('#poem .term').first().click();
+  assert.equal(await page.locator('#popK').textContent(), '远征');
+  assert.match(await page.locator('#popT').textContent(), /品读版/);
+  await page.locator('#popNext').click();
+  assert.equal(await page.locator('#popK').textContent(), '等闲');
+  assert.match(await page.locator('#popT').textContent(), /初始文本/);
+  await page.keyboard.press('Escape');
+  await page.locator('#aStudy').click();
+  await page.locator('#study [data-note="0"]').click();
+  assert.equal(await page.locator('#popK').textContent(), '等闲');
+  assert.match(await page.locator('#popT').textContent(), /初始文本/);
+  await page.locator('#popNext').click();
+  assert.equal(await page.locator('#popK').textContent(), '乌蒙');
+  await page.keyboard.press('Escape');
+  await page.locator('#scroll').evaluate(node => { node.scrollTop = 0; });
+  pass('Prototype title, four couplets, source-backed annotations and rhyme');
   pass('Prototype layout, all records and random placeholder art without upload');
 
   await page.locator('[data-filter="正编"]').click();
@@ -57,6 +84,8 @@ try {
   await page.locator('.cell[data-id="19"]').click();
   await waitPoem(page, '19');
   assert.equal(await page.locator('#matrix').getAttribute('aria-hidden'), 'true');
+  assert.equal(await page.locator('#aRhyme').isDisabled(), true);
+  assert.equal(await page.locator('#poem .st').count(), 1);
   await page.locator('#aVert').click();
   assert.equal(await page.locator('#aVert').getAttribute('aria-pressed'), 'true');
   await page.locator('#aVert').click();
@@ -127,7 +156,11 @@ try {
       history.replaceState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
       dispatchEvent(new HashChangeEvent('hashchange'));
       if (document.querySelector('#hero').dataset.poemId !== poem.id) issues.push(`${poem.id}: selection`);
-      if (normalize(document.querySelector('#poem .st').textContent) !== normalize(poem.body.join(''))) issues.push(`${poem.id}: body changed`);
+      if (normalize([...document.querySelectorAll('#poem .st')].map(node => node.textContent).join('')) !== normalize(poem.body.join(''))) issues.push(`${poem.id}: body changed`);
+      const title = document.querySelector('#tt').getBoundingClientRect();
+      const sheet = document.querySelector('.sheet').getBoundingClientRect();
+      const reader = document.querySelector('#poemWrap').getBoundingClientRect();
+      if (title.right > sheet.right + 1 || reader.height < 60) issues.push(`${poem.id}: title or reader layout`);
     }
     return issues;
   });

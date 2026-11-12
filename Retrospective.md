@@ -4,6 +4,18 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Ignore stale scroll events when opening notes
+
+A delayed scroll event from navigating to the study section closed a newly opened annotation immediately. Close the popover only if its anchor actually moved after opening, and test navigation within both inline and study annotations.
+
+## Fit vertical text to its actual container
+
+The first structured-poem fit calculation used the prototype's viewport height while the current vertical container was shorter, causing couplets to split on mobile. Match the container height to the design, calculate against that actual height, and test visible column counts at narrow viewports.
+
+## Do not enable transitions while reducing motion
+
+Setting only `transition-duration` on every element unintentionally enabled transitions on properties that previously had none, leaving title sizing stale during rapid navigation. Disable transitions explicitly in the reduced-motion rule and check long titles after successive selections.
+
 ## Keep operational logs free of sensitive values
 
 Inspecting unrelated commit subjects and complete development WebSocket URLs can expose credential-like strings or ephemeral tokens in command output. Restrict Git queries to task-specific paths and redact URL query strings before printing diagnostics.

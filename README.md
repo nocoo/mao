@@ -15,14 +15,14 @@ pnpm test             # data, view model, player, deployment tests
 pnpm test:coverage    # Node tests and coverage/lcov.info
 pnpm deploy:check     # Wrangler local dry run; no deployment
 pnpm test:browser     # build first; preview on 4175 and check interactions
-pnpm test:fullscreen  # build first; preview on 4176 and check six viewports
+pnpm test:fullscreen  # build first; preview on 4176 and check seven viewports
 ```
 
 Browser tests use local Google Chrome on macOS, or `CHROME_PATH` / Playwright Chromium on other systems. Test servers stop automatically. The development and preview commands use a fixed port and cannot run together.
 
 ## Reading
 
-The catalog contains 100 indexed records: 42 正编, 25 副编, and 33 补编. Search by title, year, number, or verse; the matrix opens any record. Each page presents its reading text, available notes, context, appreciation, editorial remarks, and original versions. Sources remain separate, and missing material is identified rather than invented. Three prototype illustrations are randomly reused as placeholders; they are not historical images.
+The catalog contains 100 indexed records: 42 正编, 25 副编, and 33 补编. Search by title, year, number, or verse; the matrix opens any record. Each page presents its reading text, available notes, context, appreciation, editorial remarks, and original versions. Sources remain separate, and missing material is identified rather than invented. 《长征》 is the only pilot with explicit couplet and rhyme annotations, pending review; the other poems have not yet been analyzed. Three prototype illustrations are randomly reused as placeholders; they are not historical images.
 
 The player uses the local MP3 for the selected poem. It supports play/pause, seeking, speed, and previous/next poem. No sentence timestamps are available, so the interface does not claim word- or line-synchronized highlighting. Three missing recordings are marked unavailable. Keyboard shortcuts: `Space` play/pause, `←` / `→` seek, `↑` / `↓` change poem, `/` search, `L` catalog, `M` matrix, `T` theme, `V` vertical text, `N` notes, `Esc` close.
 
@@ -30,7 +30,7 @@ The 97 MP3s are locally generated synthetic recitations, not historical broadcas
 
 ## Data and architecture
 
-[`data/诗词/index.md`](data/诗词/index.md) and the indexed Markdown files are authoritative. [`scripts/build-data.mjs`](scripts/build-data.mjs) extracts the reading text, prefaces, source-specific annotations and original versions into [`assets/poems.js`](assets/poems.js). Edit Markdown, not the generated file. [`src/view-model.js`](src/view-model.js) maps those records and the audio manifest into presentation data; [`src/player.js`](src/player.js) controls real media playback, while [`app.js`](app.js) renders the views and connects user actions. No interpretations or rhyme data are fabricated.
+[`data/诗词/index.md`](data/诗词/index.md) and the indexed Markdown files are authoritative. [`scripts/build-data.mjs`](scripts/build-data.mjs) extracts the reading text, prefaces, source-specific annotations and original versions into [`assets/poems.js`](assets/poems.js). Edit Markdown, not the generated file. The experimental [`data/analysis/16.json`](data/analysis/16.json) references the existing text by line index and existing annotations by source; it does not duplicate or rewrite the reading text. [`src/view-model.js`](src/view-model.js) validates and maps those records and the audio manifest into presentation data; [`src/player.js`](src/player.js) controls real media playback, while [`app.js`](app.js) renders the views and connects user actions. Unanalyzed poems do not claim structured rhyme or couplets.
 
 Builds include the original documents, audio files, and locally hosted font licenses. Text from the corpus is rendered as text, not executable HTML. See [`data/诗词/校勘记录.md`](data/诗词/校勘记录.md) for textual caveats, and [`skills/mao-poetry-recitation/SKILL.md`](skills/mao-poetry-recitation/SKILL.md) for the offline generation workflow and permissions.
 

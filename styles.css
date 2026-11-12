@@ -488,11 +488,13 @@ h1 .ch i{display:inline-block;font-style:normal;text-shadow:.045em .045em 0 var(
 .poem-wrap{overflow:auto;overscroll-behavior:contain}
 .poem-wrap.vertical-reading{direction:rtl}
 .poem{font-size:clamp(18px,2.1vw,27px);line-height:1.75}
+.poem.structured{font-size:var(--fs,26px);line-height:var(--lh,1.66);--sg:.42em}
 .ln,.pre{white-space:normal;overflow-wrap:anywhere;inline-size:auto}
+.poem.structured .ln{inline-size:fit-content}
 .pre{white-space:pre-wrap}
 .poem.vertical{direction:ltr;height:100%;min-height:320px;max-width:none;overflow:visible}
 .poem.vertical .ln{white-space:normal;max-height:100%}
-.term{font:inherit;letter-spacing:inherit;text-align:inherit;display:inline}
+.term{font:inherit;line-height:1;letter-spacing:inherit;text-align:inherit;display:inline}
 .no-notes .term{pointer-events:none}
 .no-notes .term:disabled{opacity:1}
 .plate{cursor:default}
@@ -516,7 +518,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shad
 #tt{overflow-wrap:anywhere;white-space:normal}
 @media (max-width:820px){
   .poem-wrap{max-height:55vh;min-height:160px}
-  .poem.vertical{height:48vh;min-height:0}
+  .poem-wrap.vertical-reading{height:max(62vh,400px);max-height:none}
+  .poem.vertical{height:100%;min-height:0}
   .player .now .l{font-size:14px}
   .wave{min-width:0}
 }
@@ -525,5 +528,5 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shad
   .now .k::before,#pMode,#pMode + span{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }

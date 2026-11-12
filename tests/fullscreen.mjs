@@ -15,7 +15,7 @@ const errors = [];
 try {
   const page = await browser.newPage({ reducedMotion: 'reduce' });
   page.on('pageerror', error => errors.push(error.message));
-  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [390, 844], [320, 740], [800, 450]]) {
+  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [390, 844], [320, 740], [320, 568], [800, 450]]) {
     await page.setViewportSize({ width, height });
     await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
     await page.reload({ waitUntil: 'networkidle' });
@@ -33,6 +33,16 @@ try {
     assert.ok(layout.height <= height + 1, `${height}: outer overflow ${JSON.stringify(layout)}`);
     assert.ok(layout.player.bottom <= height + 1, `${width}: player off screen`);
     assert.ok(layout.reader.h > 60, `${width}: no readable area ${JSON.stringify(layout)}`);
+    if (width === 390 || width === 320) {
+      await page.locator('#aVert').click();
+      await page.waitForFunction(() => {
+        const wrap = document.querySelector('#poemWrap');
+        return wrap.scrollWidth <= wrap.clientWidth + 1;
+      });
+      const columns = await page.locator('#poem .ln').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, lineHeight: parseFloat(getComputedStyle(node).lineHeight) })));
+      assert.ok(columns.every(column => column.width <= column.lineHeight + 1), `${width}: couplets should remain single columns`);
+      await page.locator('#aVert').click();
+    }
     if (width <= 820) {
       await page.locator('#tIndex').click();
       await page.waitForFunction(() => { const r = document.querySelector('#index').getBoundingClientRect(); return Math.abs(r.left - document.querySelector('.rail').getBoundingClientRect().right) < 1; });
