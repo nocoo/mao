@@ -4,6 +4,10 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Keep operational logs free of sensitive values
+
+Inspecting unrelated commit subjects and complete development WebSocket URLs can expose credential-like strings or ephemeral tokens in command output. Restrict Git queries to task-specific paths and redact URL query strings before printing diagnostics.
+
 ## Count staged Unicode paths safely
 
 I counted staged MP3s using a line-oriented suffix match, but Git quoted Unicode paths, so the check failed before the commit. Disable path quoting or use NUL-delimited Git output when checking staged filenames.
