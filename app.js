@@ -1,5 +1,6 @@
 import './assets/poems.js';
 import manifest from './audio/manifest.json';
+import { version } from './package.json';
 import { createLibraryViewModel } from './src/view-model.js';
 import { createPlayer } from './src/player.js';
 import { artwork } from './src/art.js';
@@ -577,6 +578,7 @@ for (let i = 0; i < 90; i++) {
   $('#bars').append(bar);
 }
 $('#ixCnt').textContent = String(library.length);
+$('#appVersion').textContent = `v${version}`;
 $('#tTheme').textContent = matchMedia('(prefers-color-scheme: dark)').matches ? '昼' : '夜';
 setIndex(!matchMedia('(max-width:1180px)').matches);
 new ResizeObserver(fitPoem).observe($('#poemWrap'));

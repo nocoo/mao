@@ -1,6 +1,6 @@
 # 山河诗卷 · Mao Poetry Room
 
-A static poetry reading room based on the design prototype in `mao-poetry.html`: a red-and-paper reading stage, catalog, matrix, study materials, and recordings. Built with Vite, native JavaScript and CSS; no production framework or backend.
+A static poetry reading room based on the design prototype in `mao-poetry.html`: a red-and-paper reading stage, catalog, matrix, study materials, and recordings. Built with Vite, native JavaScript and CSS; a small Cloudflare Worker serves audio byte ranges, with no production framework or database.
 
 ## Run and verify
 
@@ -14,6 +14,7 @@ pnpm preview          # preview dist/ on 127.0.0.1:4173
 pnpm test             # data, view model, player, deployment tests
 pnpm test:coverage    # Node tests and coverage/lcov.info
 pnpm deploy:check     # Wrangler local dry run; no deployment
+pnpm test:worker      # build first; isolated local Worker and HTTP checks
 pnpm test:browser     # build first; preview on 4175 and check interactions
 pnpm test:fullscreen  # build first; preview on 4176 and check nine viewports
 ```
@@ -34,13 +35,13 @@ The 97 MP3s are locally generated synthetic recitations, not historical broadcas
 
 [`data/诗词/index.md`](data/诗词/index.md) and the indexed Markdown files are authoritative. [`scripts/build-data.mjs`](scripts/build-data.mjs) extracts the reading text, prefaces, source-specific annotations and original versions into [`assets/poems.js`](assets/poems.js). Edit Markdown, not the generated file. Each record in [`data/analysis/`](data/analysis/) references that text by line index and available annotations by source; it does not duplicate or rewrite the reading text. Rhyme marks reference specific characters and offsets within the source text, including multiple verse endings on one line. An empty list means the rhyme has not been determined, not that the work lacks rhyme; partial analyses include a note. [`src/view-model.js`](src/view-model.js) validates and maps those records and the audio manifest into presentation data; [`src/player.js`](src/player.js) controls real media playback, while [`app.js`](app.js) renders the views and connects user actions.
 
-Builds include the original documents, audio files, and locally hosted font licenses. Text from the corpus is rendered as text, not executable HTML. See [`data/诗词/校勘记录.md`](data/诗词/校勘记录.md) for textual caveats, and [`skills/mao-poetry-recitation/SKILL.md`](skills/mao-poetry-recitation/SKILL.md) for the offline generation workflow and permissions.
+Builds include the original documents, audio files, and locally hosted font licenses. Text from the corpus is rendered as text, not executable HTML. Anonymous `GET /api/live` serves build-generated JSON with `status: "ok"` and the raw version from `package.json`, with `Cache-Control: no-store`; it establishes asset delivery, not audio content quality or external dependency health. MP3 routes invoke the Worker to support single HTTP byte ranges; the Worker streams against the byte sizes recorded in the audio manifest, and integration tests verify those sizes and hashes against every file. These requests are subject to Worker request quotas. See [`data/诗词/校勘记录.md`](data/诗词/校勘记录.md) for textual caveats, and [`skills/mao-poetry-recitation/SKILL.md`](skills/mao-poetry-recitation/SKILL.md) for the offline generation workflow and permissions.
 
 ## CI and deployment
 
-[CI](.github/workflows/ci.yml) runs the pinned `nocoo/base-ci` workflow: workflow validation, Gitleaks, OSV, build, Wrangler dry run, Node tests with LCOV, and Chromium browser checks. There is no coverage threshold, TypeScript check, or application lint configuration. Safari and Firefox have not been independently accepted.
+[CI](.github/workflows/ci.yml) runs the pinned `nocoo/base-ci` workflow: workflow validation, Gitleaks, OSV, build, Wrangler dry run, Node tests with LCOV, local Worker HTTP checks, and Chromium browser checks. There is no coverage threshold, TypeScript check, or application lint configuration. Safari and Firefox have not been independently accepted.
 
-[Release](.github/workflows/release.yml) deploys a successful same-repository `main` push-CI to the Cloudflare Worker at `mao.hexly.ai`, verifies the source run and commit, rebuilds, and checks the published revision. When credentials are absent, automatic deployment is skipped; a manually triggered deployment fails. CI success or a skipped deployment does not establish that the site is live.
+[Release](.github/workflows/release.yml) deploys a successful same-repository `main` push-CI to the Cloudflare Worker at `mao.hexly.ai`, verifies the source run and commit, rebuilds, and checks the published revision, health endpoint and a byte range of the recording. When credentials are absent, automatic deployment is skipped; a manually triggered deployment fails. CI success or a skipped deployment does not establish that the site is live.
 
 To enable deployment, configure `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in GitHub Actions. The token must have Workers deployment and custom-domain permissions. Never put credentials in the repository. A successful prior main push-CI can be deployed manually using its run ID:
 

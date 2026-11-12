@@ -7,6 +7,7 @@ if (!existsSync('dist/index.html')) throw new Error('Run pnpm build first');
 const server = await preview({ preview: { host: '127.0.0.1', port: 4175, strictPort: true, open: false } });
 const origin = 'http://127.0.0.1:4175';
 const analyses = Object.fromEntries(readdirSync('data/analysis').filter(name => name.endsWith('.json')).map(name => [name.slice(0, -5), JSON.parse(readFileSync(`data/analysis/${name}`, 'utf8'))]));
+const packageVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [], failedRequests = [], externalRequests = [];
@@ -273,6 +274,7 @@ try {
   assert.match(await page.title(), /七律·长征/);
   assert.match(await page.locator('#poem').innerText(), /腾细浪/);
   assert.equal(await page.locator('.row').count(), 100);
+  assert.equal(await page.locator('#appVersion').textContent(), `v${packageVersion}`);
   assert.equal(await page.locator('.cell').count(), 100);
   assert.equal(await page.locator('input[type=file]').count(), 0);
   assert.equal(await page.locator('#plArt svg').count(), 1);

@@ -1,8 +1,24 @@
 # Retrospective
 
+## Verify lockfiles with the actual pinned package manager
+
+An offline check lacked cached metadata, and the Microsoft mirror did not contain the pinned Playwright release. Disabling pnpm's version manager also selected the machine's pnpm 12 rather than the project's pnpm 11.28.5. Probe an allowed mirror, resolve the project's actual pnpm executable, and verify the frozen lockfile without weakening policy. An initial retrospective edit also used an assumed heading instead of reading the file; check exact context before replacement.
+
 ## Reset the actual reading scroll container
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
+
+## Check shared-scope names in integration tests
+
+A new package-version assertion reused the name of a later block-scoped element variable, causing a temporal-dead-zone failure. Use distinct names for metadata and page elements, and run the complete browser suite after adding assertions.
+
+## Test asset range behavior in the Worker runtime
+
+Node mocks exposed Content-Length on asset responses, but the local Worker asset binding did not; the first range implementation therefore returned a full 200 instead of 206. A subsequent buffering fallback also amplified memory use, and the original stream stalled when skipping several chunks. Use verified manifest sizes and fixed-length streaming, and exercise real Wrangler HTTP responses, chunk boundaries, actual audio bytes and browser seeking before deployment.
+
+## Isolate Wrangler from unrelated environment files
+
+A diagnostic `wrangler dev` loaded the repository's unrelated `.env` by default, although it did not print the values. Pass an explicit empty `--env-file` for local runtime tests and inspect process readiness without reusing stale terminal output.
 
 ## Keep browser acceptance on the built artifact
 

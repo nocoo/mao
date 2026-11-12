@@ -27,4 +27,4 @@ Long silence of at least 3 seconds or an ASR replacement/deletion of at least 10
 | 83 | 七律·读报有感（1959年） | — | 1 |
 | 87 | 七绝·豫章西望（1971年9月以后） | — | 1 |
 
-See `manifest.json` for all titles, file names, hashes, durations, source adjustments, and ASR indicators. Detailed plans, original WAVs, reports, and logs remain in the batch provenance directory recorded there.
+See `manifest.json` for all titles, file names, byte sizes, hashes, durations, source adjustments, and ASR indicators. Detailed plans, original WAVs, reports, and logs remain in the batch provenance directory recorded there.

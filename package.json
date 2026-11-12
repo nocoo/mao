@@ -1,7 +1,7 @@
 {
   "name": "shanhe-poetry-room",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "毛主席诗词 · 山河诗卷，一座纸本风格的数字阅览室",
   "type": "module",
   "packageManager": "pnpm@11.28.5",
@@ -15,7 +15,8 @@
     "deploy:check": "wrangler deploy --dry-run",
     "verify:production": "node scripts/verify-production.mjs",
     "test:browser": "node tests/browser.mjs",
-    "test:fullscreen": "node tests/fullscreen.mjs"
+    "test:fullscreen": "node tests/fullscreen.mjs",
+    "test:worker": "node tests/worker-integration.mjs"
   },
   "devDependencies": {
     "playwright": "^1.65.0",
