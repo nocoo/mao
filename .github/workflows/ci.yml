@@ -40,13 +40,16 @@ jobs:
       workflow-lint: true
       workflow-lint-required-workflow: nocoo/base-ci/.github/workflows/deploy-worker.yml
       workflow-lint-yamllint: true
+      worker: true
+      worker-directory: .
+      worker-prepare-command: pnpm run build
+      worker-command: pnpm run test:worker -- --http-only
+      l2: true
+      l2-command: pnpm run build && pnpm run test:worker -- --http-only
       l3: true
       l3-browsers: chromium
       l3-prepare-command: pnpm run build
       l3-command: pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen
-      l3-artifact-name: mao-browser-evidence
-      l3-artifact-path: test-results/
-      l3-artifact-retention-days: 14
       env-json: '{"CI":"true","WRANGLER_SEND_METRICS":"false"}'
       slot-status: >-
         {"S1":{"status":"na","reason":"Plain JavaScript without TypeScript sources"},

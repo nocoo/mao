@@ -12,6 +12,7 @@ const dist = join(root, 'dist');
 const requestTimeoutMs = 15_000;
 const startupTimeoutMs = 30_000;
 const totalTimeoutMs = 120_000;
+const httpOnly = process.argv.slice(2).includes('--http-only');
 
 function fail(label, message) {
   throw new Error(`${label}: ${message}`);
@@ -410,8 +411,8 @@ async function main() {
     const files = await walk(dist);
     const staticCount = await verifyPageAndStatic(origin, files, abort.signal);
     const audio = await verifyAudio(origin, files, abort.signal);
-    await verifyBrowser(origin);
-    console.log(`Worker integration passed with Wrangler ${wranglerVersion}: /api/live, homepage, ${staticCount} static artifacts, ${audio.count} MP3 files (${audio.path} exercised), and browser playback/seek.`);
+    if (!httpOnly) await verifyBrowser(origin);
+    console.log(`Worker integration passed with Wrangler ${wranglerVersion}: /api/live, homepage, ${staticCount} static artifacts, ${audio.count} MP3 files (${audio.path} exercised)${httpOnly ? '' : ', and browser playback/seek'}.`);
   } finally {
     clearTimeout(timer);
     for (const [name, handler] of signalHandlers) process.removeListener(name, handler);

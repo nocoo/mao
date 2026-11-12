@@ -520,6 +520,10 @@ try {
   assert.ok(parseFloat(await mobile.locator('#poem').evaluate(node => getComputedStyle(node).fontSize)) >= 24);
   assert.match(await mobile.locator('#verticalHint').textContent(), /横向滑动/);
   const cdp = await mobile.context().newCDPSession(mobile);
+  await mobile.evaluate(() => {
+    window.testScrollEnded = false;
+    document.querySelector('#poemWrap').addEventListener('scrollend', () => { window.testScrollEnded = true; }, { once: true });
+  });
   const y = Math.round(area.y + Math.min(120, area.height / 2));
   const x = Math.round(area.x + 25);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
@@ -527,9 +531,9 @@ try {
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: position, y }] });
   }
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await mobile.waitForFunction(() => document.querySelector('#poemWrap').scrollLeft < 0);
+  await mobile.waitForFunction(() => document.querySelector('#poemWrap').scrollLeft < 0 && window.testScrollEnded);
   await mobile.locator('#tVert').tap();
-  assert.equal(await mobile.locator('#hero').evaluate(node => node.classList.contains('vertical-layout')), false);
+  await mobile.waitForFunction(() => !document.querySelector('#hero').classList.contains('vertical-layout'));
   assert.equal(await mobile.locator('#verticalHint').isHidden(), true);
   await mobile.setViewportSize({ width: 320, height: 568 });
   await mobile.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });

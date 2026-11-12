@@ -1,5 +1,13 @@
 # Retrospective
 
+## Scope secret scans to the deliverable
+
+A no-git scan included ignored local files and dependencies rather than just the release snapshot, producing unrelated findings. Scan the staged changes or the committed tree explicitly; do not broaden a release check to unrelated local files.
+
+## Verify CI slot wiring and touch completion
+
+I declared Worker and HTTP slots as implemented even though the pinned reusable workflow requires each slot's own job to be enabled; local tests alone did not reveal the mismatch. The CI browser test also tapped a control immediately after a swipe without waiting for the touch scroll to end, and requested an artifact no test produced. Wire each declared slot to its actual job, verify the pinned workflow's inputs, and wait for `scrollend` before testing the next gesture.
+
 ## Verify lockfiles with the actual pinned package manager
 
 An offline check lacked cached metadata, and the Microsoft mirror did not contain the pinned Playwright release. Disabling pnpm's version manager also selected the machine's pnpm 12 rather than the project's pnpm 11.28.5. Probe an allowed mirror, resolve the project's actual pnpm executable, and verify the frozen lockfile without weakening policy. An initial retrospective edit also used an assumed heading instead of reading the file; check exact context before replacement.
