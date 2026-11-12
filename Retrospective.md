@@ -4,6 +4,10 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Keep browser acceptance on the built artifact
+
+A source-mode test adaptation accidentally changed the committed browser checks to reuse an arbitrary development server, weakening production-build coverage. Keep the standard tests on isolated Vite preview ports and adapt request interception to the built asset names.
+
 ## Check rail controls when changing title glyph sizing
 
 Giving each vertical title character its own cell improved legibility but increased the rail's height and clipped controls in short desktop windows. Include rail controls in short-viewport checks and reduce rail spacing responsively without squeezing the glyphs.

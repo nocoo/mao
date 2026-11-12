@@ -119,7 +119,7 @@
       <section class="study" id="study" aria-label="鉴赏"></section>
     </div>
     <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
-    <div class="curtain" id="curtain" aria-hidden="true"><div class="cur-in"><svg><use href="#i-star"/></svg><span id="curNo">019</span></div></div>
+    <div class="curtain loading" id="curtain" aria-hidden="true"><div class="cur-in"><svg><use href="#i-star"/></svg><span id="curNo">—</span></div></div>
   </main>
 
   <footer class="player" id="player" aria-label="朗读播放器">
@@ -157,6 +157,15 @@
 </div>
 
 <div class="toast" id="toast" role="status"></div>
-<noscript>启用 JavaScript 后阅读诗词，或打开 <a href="data/诗词/index.md">诗词索引</a>。</noscript>
+<p class="load-error" id="loadError" role="alert" hidden>资料加载出现问题，请刷新页面重试。</p>
+<noscript><style>.curtain{display:none}</style><p class="load-error">启用 JavaScript 后阅读诗词，或打开 <a href="data/诗词/index.md">诗词索引</a>。</p></noscript>
+<script>
+  setTimeout(() => {
+    const curtain = document.getElementById('curtain');
+    if (!curtain.classList.contains('loading')) return;
+    curtain.classList.remove('loading');
+    document.getElementById('loadError').hidden = false;
+  }, 10000);
+</script>
 </body>
 </html>

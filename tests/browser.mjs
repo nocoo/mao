@@ -18,6 +18,17 @@ function monitor(page) {
   page.on('request', request => { if (/^https?:/.test(request.url()) && !request.url().startsWith(origin)) externalRequests.push(request.url()); });
 }
 async function waitPoem(page, id) { await page.waitForFunction(value => document.querySelector('#hero').dataset.poemId === value, id); }
+function animationMilliseconds(value) {
+  const first = value.split(',')[0].trim();
+  return parseFloat(first) * (first.endsWith('ms') ? 1 : 1000);
+}
+function assertNumbering(node, expected) {
+  const message = `${expected}: numbering`;
+  assert.equal(node.curtain, expected, message);
+  assert.equal(node.hud, expected, message);
+  assert.equal(node.plate, expected, message);
+  assert.equal(node.background, expected, message);
+}
 
 function checkVerticalGeometry() {
   const issues = [];
@@ -67,6 +78,194 @@ function checkVerticalGeometry() {
 }
 
 try {
+  const entry = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  monitor(entry);
+  let releaseEntry;
+  const entryGate = new Promise(resolve => { releaseEntry = resolve; });
+  await entry.route('**/assets/index-*.js', async route => { await entryGate; await route.continue(); });
+  const entryNavigation = entry.goto(`${origin}/#poem=16`, { waitUntil: 'domcontentloaded' });
+  await entry.waitForSelector('#curtain.loading', { state: 'attached' });
+  assert.equal(await entry.locator('#curtain').evaluate(node => getComputedStyle(node).pointerEvents), 'none');
+  releaseEntry();
+  await entryNavigation;
+  await entry.waitForFunction(() => document.querySelector('#curtain')?.classList.contains('boot'));
+  await waitPoem(entry, '16');
+  await entry.waitForFunction(() => document.querySelector('#hero')?.classList.contains('enter'));
+  const entryState = await entry.evaluate(() => {
+    const hero = document.querySelector('#hero');
+    const title = [...document.querySelectorAll('#tt .ch i')];
+    const lines = [...document.querySelectorAll('#poem .ln')].map(line => [...line.querySelectorAll('.c')]);
+    const inspect = nodes => nodes.map(node => {
+      const style = getComputedStyle(node);
+      return {
+        name: style.animationName,
+        duration: style.animationDuration,
+        delay: style.animationDelay,
+        running: node.getAnimations().some(animation => animation.playState === 'running'),
+      };
+    });
+    return {
+      numbering: {
+        curtain: document.querySelector('#curNo').textContent,
+        hud: document.querySelector('#hudNo').textContent,
+        plate: document.querySelector('#plNo').textContent,
+        background: document.querySelector('#bignum').textContent,
+      },
+      entering: hero.classList.contains('enter'),
+      title: inspect(title),
+      body: lines.map(inspect),
+      curtain: document.querySelector('#curtain').getAnimations().some(animation => animation.playState === 'running'),
+    };
+  });
+  assertNumbering(entryState.numbering, '016');
+  assert.equal(entryState.entering, true);
+  assert.equal(entryState.curtain, true, 'Initial curtain should visibly boot away');
+  assert.ok(entryState.title.length > 1);
+  assert.ok(entryState.title.every(glyph => glyph.name !== 'none' && animationMilliseconds(glyph.duration) > 0 && glyph.running));
+  for (let index = 1; index < entryState.title.length; index++) {
+    assert.ok(animationMilliseconds(entryState.title[index].delay) > animationMilliseconds(entryState.title[index - 1].delay));
+  }
+  assert.ok(entryState.body.flat().length > 20);
+  assert.ok(entryState.body.flat().every(glyph => glyph.name !== 'none' && animationMilliseconds(glyph.duration) > 0 && glyph.running));
+  for (const line of entryState.body) for (let index = 1; index < line.length; index++) {
+    assert.ok(animationMilliseconds(line[index].delay) >= animationMilliseconds(line[index - 1].delay), 'Poem stagger regressed within a line');
+  }
+  await entry.waitForTimeout(1200);
+
+  await entry.locator('#aPlay').click();
+  await entry.waitForFunction(() => document.querySelector('#audio').currentTime > 0, null, { timeout: 10000 });
+  const firstTransition = await entry.evaluate(async () => {
+    const hero = document.querySelector('#hero');
+    const before = hero.dataset.poemId;
+    const start = performance.now();
+    document.querySelector('#nextL').click();
+    const immediate = {
+      run: document.querySelector('#curtain').classList.contains('run'),
+      paused: document.querySelector('#audio').paused,
+      number: document.querySelector('#curNo').textContent,
+    };
+    await new Promise(resolve => {
+      if (hero.dataset.poemId !== before) return resolve();
+      const observer = new MutationObserver(() => {
+        if (hero.dataset.poemId === before) return;
+        observer.disconnect();
+        resolve();
+      });
+      observer.observe(hero, { attributes: true, attributeFilter: ['data-poem-id'] });
+    });
+    return { elapsed: performance.now() - start, before, after: hero.dataset.poemId, immediate };
+  });
+  assert.deepEqual({ before: firstTransition.before, after: firstTransition.after }, { before: '16', after: '17' });
+  assert.equal(firstTransition.immediate.run, true);
+  assert.equal(firstTransition.immediate.paused, true);
+  assert.equal(firstTransition.immediate.number, '017');
+  assert.ok(firstTransition.elapsed >= 350 && firstTransition.elapsed <= 2000, `Transition switched after ${firstTransition.elapsed.toFixed(1)}ms`);
+  assertNumbering(await entry.evaluate(() => ({
+    curtain: document.querySelector('#curNo').textContent,
+    hud: document.querySelector('#hudNo').textContent,
+    plate: document.querySelector('#plNo').textContent,
+    background: document.querySelector('#bignum').textContent,
+  })), '017');
+  await entry.waitForFunction(() => document.querySelector('#hero').classList.contains('enter'));
+  assert.ok(await entry.locator('#tt .ch i').first().evaluate(node => node.getAnimations().some(animation => animation.playState === 'running')));
+  await entry.waitForTimeout(1200);
+
+  await entry.evaluate(() => {
+    const next = document.querySelector('#nextL');
+    next.click(); next.click(); next.click();
+  });
+  await waitPoem(entry, '20');
+  assert.equal(await entry.locator('#audio').evaluate(node => node.paused), true);
+  assert.match(await entry.locator('#audio').getAttribute('src'), /20-/);
+  await entry.locator('#aPlay').click();
+  await entry.waitForFunction(() => document.querySelector('#audio').currentTime > 0, null, { timeout: 10000 });
+  await entry.goBack();
+  await waitPoem(entry, '19');
+  await entry.waitForTimeout(700);
+  assert.equal(await entry.locator('#hero').getAttribute('data-poem-id'), '19', 'A stale transition won after browser back');
+  assert.equal(await entry.locator('#audio').evaluate(node => node.paused), true);
+  assert.match(await entry.locator('#audio').getAttribute('src'), /19-/);
+  assertNumbering(await entry.evaluate(() => ({
+    curtain: document.querySelector('#curNo').textContent,
+    hud: document.querySelector('#hudNo').textContent,
+    plate: document.querySelector('#plNo').textContent,
+    background: document.querySelector('#bignum').textContent,
+  })), '019');
+  await entry.close();
+
+  const compactEntry = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: 'no-preference' });
+  monitor(compactEntry);
+  await compactEntry.goto(`${origin}/#poem=14-1`, { waitUntil: 'domcontentloaded' });
+  await compactEntry.waitForFunction(() => document.querySelector('#curtain').classList.contains('boot'));
+  const compactCurtain = await compactEntry.evaluate(() => {
+    const animation = document.querySelector('#curtain').getAnimations()[0];
+    animation.pause();
+    animation.currentTime = 0;
+    const content = document.querySelector('.cur-in').getBoundingClientRect();
+    const stage = document.querySelector('.stage').getBoundingClientRect();
+    return { text: document.querySelector('#curNo').textContent, left: content.left, right: content.right, stageLeft: stage.left, stageRight: stage.right };
+  });
+  assert.equal(compactCurtain.text, '14-1');
+  assert.ok(compactCurtain.left >= compactCurtain.stageLeft && compactCurtain.right <= compactCurtain.stageRight);
+  await compactEntry.close();
+  pass('Curtain boot, exact numbering, character stagger, 480ms transitions and navigation ordering');
+
+  const reduced = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  monitor(reduced);
+  await reduced.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await waitPoem(reduced, '16');
+  const reducedInitial = await reduced.evaluate(() => ({
+    visible: document.querySelector('#hero').getClientRects().length > 0,
+    titleOpacity: getComputedStyle(document.querySelector('#tt .ch i')).opacity,
+    poemOpacity: getComputedStyle(document.querySelector('#poem .c')).opacity,
+    animations: document.querySelector('#hero').getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+    curtainAnimations: document.querySelector('#curtain').getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+  }));
+  assert.deepEqual(reducedInitial, { visible: true, titleOpacity: '1', poemOpacity: '1', animations: 0, curtainAnimations: 0 });
+  const reducedSwitch = await reduced.evaluate(async () => {
+    const hero = document.querySelector('#hero');
+    const start = performance.now();
+    document.querySelector('#nextL').click();
+    while (hero.dataset.poemId !== '17') await new Promise(requestAnimationFrame);
+    return {
+      elapsed: performance.now() - start,
+      run: document.querySelector('#curtain').classList.contains('run'),
+      animations: hero.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+    };
+  });
+  assert.ok(reducedSwitch.elapsed < 250, `Reduced-motion navigation took ${reducedSwitch.elapsed.toFixed(1)}ms`);
+  assert.deepEqual({ run: reducedSwitch.run, animations: reducedSwitch.animations }, { run: false, animations: 0 });
+  await reduced.close();
+
+  const motionChange = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  monitor(motionChange);
+  await motionChange.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await motionChange.evaluate(() => document.querySelector('#nextL').click());
+  assert.equal(await motionChange.locator('#curtain').evaluate(node => node.classList.contains('run')), true);
+  await motionChange.emulateMedia({ reducedMotion: 'reduce' });
+  await waitPoem(motionChange, '17');
+  assert.equal(await motionChange.locator('#curtain').evaluate(node => node.classList.contains('run')), false);
+  assert.equal(await motionChange.locator('#hero').evaluate(node => node.classList.contains('enter')), false);
+  await motionChange.close();
+  pass('Reduced-motion entry and poem changes render immediately without animation');
+
+  const loadFailure = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  let stalledDependency;
+  await loadFailure.route('**/assets/index-*.js', route => { stalledDependency = route; });
+  await loadFailure.goto(`${origin}/#poem=16`, { waitUntil: 'commit' });
+  await loadFailure.waitForSelector('#curtain.loading', { state: 'attached' });
+  await loadFailure.waitForSelector('#loadError:not([hidden])', { state: 'visible', timeout: 12000 });
+  const loadError = await loadFailure.locator('#loadError').textContent();
+  assert.match(loadError, /(加载|载入).*(失败|异常|超时)|请.*(刷新|重试)/);
+  await stalledDependency?.abort();
+  await loadFailure.close();
+  const noScript = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  await noScript.goto(origin, { waitUntil: 'domcontentloaded' });
+  assert.equal(await noScript.locator('#curtain').isVisible(), false);
+  assert.equal(await noScript.locator('noscript .load-error').isVisible(), true);
+  await noScript.close();
+  pass('Initial dependency timeout and disabled JavaScript expose recovery guidance');
+
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   monitor(page);
   await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });

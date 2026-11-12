@@ -144,6 +144,9 @@ try {
         reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
         transitionDuration: getComputedStyle(document.querySelector('.plate')).transitionDuration,
         runningAnimations: document.querySelector('#hero').getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+        curtainAnimations: document.querySelector('#curtain').getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+        titleOpacity: getComputedStyle(document.querySelector('#tt .ch i')).opacity,
+        poemOpacity: getComputedStyle(document.querySelector('#poem .c')).opacity,
       };
     });
     assert.equal(verticalLayout.hero, true, `${width}: missing #hero.vertical-layout`);
@@ -162,6 +165,9 @@ try {
     assert.equal(verticalLayout.reducedMotion, true, `${width}: reduced-motion preference was not applied`);
     assert.ok(verticalLayout.transitionDuration.split(',').every(duration => parseFloat(duration) <= .001), `${width}: reduced motion still animates layout transitions`);
     assert.equal(verticalLayout.runningAnimations, 0, `${width}: reduced motion still has running hero animations`);
+    assert.equal(verticalLayout.curtainAnimations, 0, `${width}: reduced motion still animates the curtain`);
+    assert.equal(verticalLayout.titleOpacity, '1', `${width}: reduced motion leaves the title hidden`);
+    assert.equal(verticalLayout.poemOpacity, '1', `${width}: reduced motion leaves poem glyphs hidden`);
 
     const audioBefore = await page.locator('#audio').evaluate(audio => audio.currentTime);
     await page.locator('#poemWrap').focus();

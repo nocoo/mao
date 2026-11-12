@@ -14,7 +14,10 @@ const app = $('#app');
 const scroll = $('#scroll');
 const poemNode = $('#poem');
 const matrix = $('#matrix');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let current;
+let pending;
+let swapTimer;
 let filter = '全部';
 let notesVisible = true;
 let vertical = false;
@@ -118,7 +121,7 @@ function linesForDisplay(body) {
 const punctuation = /[，。；、：？！“”《》—·]/;
 const clauseBreak = /[，。；：？！]/;
 
-function renderLine(text, annotations, used, rhymeOffsets) {
+function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
   const line = el('p', 'ln');
   let clause = el('span', 'cl');
   line.append(clause);
@@ -126,6 +129,7 @@ function renderLine(text, annotations, used, rhymeOffsets) {
     for (let i = 0; i < textPart.length;) {
       const character = String.fromCodePoint(textPart.codePointAt(i));
       const glyph = el('span', `c${punctuation.test(character) ? ' pu' : ''}${rhymeOffsets.has(start + i) ? ' rh' : ''}`, character);
+      glyph.style.setProperty('--d', Math.min(lineNumber * 85 + (start + i) * 17, 1500));
       (term || clause).append(glyph);
       i += character.length;
       if (!term && clauseBreak.test(character) && start + i < text.length && !punctuation.test(text[start + i])) {
@@ -163,6 +167,7 @@ function renderBody(p) {
   if (p.preface) poemNode.append(el('p', 'pre', p.preface));
   const annotations = p.inlineAnnotations;
   const used = new Set();
+  let lineNumber = 0;
   const rhymeMarks = new Map();
   for (const mark of p.structure.rhymeMarks) {
     if (!rhymeMarks.has(mark.lineIndex)) rhymeMarks.set(mark.lineIndex, []);
@@ -177,7 +182,7 @@ function renderBody(p) {
     let rhymeOffsets = new Set();
     function flush() {
       if (!text) return;
-      stanza.append(renderLine(text, annotations, used, rhymeOffsets));
+      stanza.append(renderLine(text, annotations, used, rhymeOffsets, lineNumber++));
       text = '';
       rhymeOffsets = new Set();
     }
@@ -393,15 +398,44 @@ function render(p) {
   poemNode.scrollTop = 0;
 }
 
+function enterPoem(poem) {
+  render(poem);
+  const hero = $('#hero');
+  hero.classList.remove('enter');
+  if (!reducedMotion.matches) {
+    void hero.offsetWidth;
+    hero.classList.add('enter');
+  }
+}
+
 function select(id, history = true) {
-  const p = byId.get(id);
-  if (!p || p.id === current?.id) return;
-  render(p);
-  if (history) window.history.pushState(null, '', `#poem=${encodeURIComponent(p.id)}`);
+  const poem = byId.get(id);
+  if (!poem || poem.id === (pending || current)?.id) return;
+  if (history) window.history.pushState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
+  closeNote();
+  $('#audio').pause();
+  clearTimeout(swapTimer);
+  pending = poem;
+  const curtain = $('#curtain');
+  curtain.classList.remove('loading', 'boot', 'run');
+  $('#hero').classList.remove('enter');
+  $('#curNo').textContent = poem.id.padStart(3, '0');
+  if (reducedMotion.matches) {
+    pending = undefined;
+    enterPoem(poem);
+    return;
+  }
+  void curtain.offsetWidth;
+  curtain.classList.add('run');
+  swapTimer = setTimeout(() => {
+    if (pending !== poem) return;
+    pending = undefined;
+    enterPoem(poem);
+  }, 480);
 }
 
 function step(delta) {
-  const index = library.findIndex(p => p.id === current.id);
+  const index = library.findIndex(poem => poem.id === (pending || current).id);
   select(library[(index + delta + library.length) % library.length].id);
 }
 
@@ -445,7 +479,7 @@ $('#aVert').addEventListener('click', () => {
   wrap.scrollLeft = 0;
   $('#aVert').setAttribute('aria-pressed', String(vertical));
   fitPoem();
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (!reducedMotion.matches) {
     const to = plate.getBoundingClientRect();
     const x = from.left - to.left;
     const y = from.top - to.top;
@@ -475,7 +509,7 @@ $('#aRhyme').addEventListener('click', () => {
   const visible = poemNode.classList.toggle('show-rhyme');
   $('#aRhyme').setAttribute('aria-pressed', String(visible));
 });
-$('#aStudy').addEventListener('click', () => $('#study').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
+$('#aStudy').addEventListener('click', () => $('#study').scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth' }));
 poemNode.addEventListener('click', event => { const term = event.target.closest('[data-note]'); if (term && notesVisible) openNote(Number(term.dataset.note), term); });
 $('#study').addEventListener('click', event => { const button = event.target.closest('[data-note]'); if (button) openNote(Number(button.dataset.note), button, 'source'); });
 $('#popX').addEventListener('click', closeNote);
@@ -548,5 +582,27 @@ setIndex(!matchMedia('(max-width:1180px)').matches);
 new ResizeObserver(fitPoem).observe($('#poemWrap'));
 document.fonts.ready.then(fitPoem);
 const initial = new URLSearchParams(location.hash.slice(1)).get('poem');
-render(byId.get(initial) || byId.get('19') || library[0]);
+const first = byId.get(initial) || byId.get('19') || library[0];
+$('#curNo').textContent = first.id.padStart(3, '0');
+enterPoem(first);
+const curtain = $('#curtain');
+curtain.classList.remove('loading');
+$('#loadError').hidden = true;
+if (!reducedMotion.matches) {
+  void curtain.offsetWidth;
+  curtain.classList.add('boot');
+}
 if (!byId.has(initial)) history.replaceState(null, '', `#poem=${encodeURIComponent(current.id)}`);
+reducedMotion.addEventListener('change', event => {
+  if (!event.matches) return;
+  clearTimeout(swapTimer);
+  curtain.classList.remove('loading', 'boot', 'run');
+  $('#hero').classList.remove('enter');
+  layoutAnimations.forEach(animation => animation.cancel());
+  layoutAnimations = [];
+  if (pending) {
+    const poem = pending;
+    pending = undefined;
+    enterPoem(poem);
+  }
+});

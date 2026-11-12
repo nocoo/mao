@@ -242,10 +242,13 @@ h1 .ch i{display:inline-block;font-style:normal;text-shadow:.045em .045em 0 var(
 .curtain{position:absolute;inset:-4% -30%;z-index:12;pointer-events:none;transform:translateX(-135%) skewX(-14deg);background:var(--c-red);display:grid;place-items:center}
 .curtain::before{content:"";position:absolute;inset-block:0;inset-inline-start:-90px;inline-size:60px;background:var(--c-ink)}
 .curtain::after{content:"";position:absolute;inset-block:0;inset-inline-end:-46px;inline-size:16px;background:var(--c-ink)}
-.cur-in{transform:skewX(14deg);display:flex;align-items:center;gap:26px;color:var(--c-paper);font-family:var(--f-cond);font-weight:700;font-size:min(30vh,240px);line-height:1}
+.cur-in{transform:skewX(14deg);display:flex;align-items:center;gap:26px;color:var(--c-paper);font-family:var(--f-cond);font-weight:700;font-size:clamp(52px,min(30vh,23vw),240px);line-height:1}
 .cur-in svg{inline-size:.62em;block-size:.62em;fill:var(--c-paper);animation:spin 3s linear infinite}
+.curtain.loading{transform:translateX(0) skewX(-14deg)}
 .curtain.run{animation:curtain 1.05s var(--e-pow) both}
 .curtain.boot{animation:curtainOut 1s var(--e-pow) .05s both}
+.load-error{position:fixed;inset:20px auto auto 50%;transform:translateX(-50%);z-index:90;background:var(--c-ink);color:var(--c-paper);padding:12px 16px;box-shadow:4px 4px 0 var(--c-red);font-size:14px}
+.load-error a{color:var(--c-paper)}
 
 .defs{position:absolute;inline-size:0;block-size:0;overflow:hidden}
 
@@ -569,5 +572,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shad
   .now .k::before,#pMode,#pMode + span{display:none}
 }
 @media (prefers-reduced-motion:reduce){
+  .curtain.loading{visibility:hidden}
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
