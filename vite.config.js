@@ -28,6 +28,8 @@ function liveMiddleware(server, built = false) {
 
 export default defineConfig({
   base: './',
+  server: { allowedHosts: ['mao.dev.hexly.ai'] },
+  preview: { allowedHosts: ['mao.dev.hexly.ai'] },
   plugins: [{
     name: 'include-original-documents',
     configureServer: server => liveMiddleware(server),

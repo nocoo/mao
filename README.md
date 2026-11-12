@@ -8,9 +8,9 @@ Node.js 22.13+ and pnpm are required. CI uses Node.js 26.12.1 and pnpm 11.28.5.
 
 ```bash
 pnpm install
-pnpm dev              # http://127.0.0.1:4173
+pnpm dev              # http://127.0.0.1:7065 or https://mao.dev.hexly.ai
 pnpm build            # regenerate poem data and build dist/
-pnpm preview          # preview dist/ on 127.0.0.1:4173
+pnpm preview          # preview dist/ on 127.0.0.1:7065
 pnpm test             # data, view model, player, deployment tests
 pnpm test:coverage    # Node tests and coverage/lcov.info
 pnpm deploy:check     # Wrangler local dry run; no deployment
