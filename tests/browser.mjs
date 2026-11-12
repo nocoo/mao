@@ -8,17 +8,45 @@ const server = await preview({ preview: { host: '127.0.0.1', port: 4175, strictP
 const origin = 'http://127.0.0.1:4175';
 const analyses = Object.fromEntries(readdirSync('data/analysis').filter(name => name.endsWith('.json')).map(name => [name.slice(0, -5), JSON.parse(readFileSync(`data/analysis/${name}`, 'utf8'))]));
 const packageVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
+const illustrations = JSON.parse(readFileSync('data/illustrations.json', 'utf8'));
+const illustrationUrl = illustrations['19'];
+const illustrationFixture = readFileSync('design/samples/19-snow-original.png');
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [], failedRequests = [], externalRequests = [];
-let checks = 0;
+let checks = 0, interceptedIllustrations = 0;
 function pass(name) { console.log(`✓ ${name}`); checks++; }
-function monitor(page) {
+async function monitor(page) {
+  await page.route(url => Object.values(illustrations).includes(url.href), async route => {
+    interceptedIllustrations++;
+    await route.fulfill({ status: 200, contentType: 'image/png', body: illustrationFixture });
+  });
   page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`); });
-  page.on('request', request => { if (/^https?:/.test(request.url()) && !request.url().startsWith(origin)) externalRequests.push(request.url()); });
+  page.on('request', request => {
+    if (!Object.values(illustrations).includes(request.url()) && /^https?:/.test(request.url()) && !request.url().startsWith(origin)) externalRequests.push(request.url());
+  });
 }
 async function waitPoem(page, id) { await page.waitForFunction(value => document.querySelector('#hero').dataset.poemId === value, id); }
+async function assertGeneratedIllustration(page) {
+  const image = page.locator('#plArt img');
+  await image.waitFor({ state: 'attached' });
+  await image.evaluate(node => node.decode());
+  assert.equal(await image.getAttribute('src'), illustrationUrl);
+  assert.equal(await image.getAttribute('alt'), '《沁园春·雪》配图');
+  assert.equal(await page.locator('#plArt svg').count(), 0);
+  const loaded = await image.evaluate(node => ({ complete: node.complete, width: node.naturalWidth, height: node.naturalHeight }));
+  assert.equal(loaded.complete, true);
+  assert.ok(loaded.width > 0 && loaded.height > 0);
+  assert.equal(await page.locator('#plTag').count(), 0);
+  assert.equal(await page.locator('#plCap').textContent(), '《沁园春·雪》');
+}
+async function assertPlaceholderIllustration(page, title) {
+  assert.equal(await page.locator('#plArt img').count(), 0);
+  assert.equal(await page.locator('#plArt svg').count(), 1);
+  assert.equal(await page.locator('#plTag').count(), 0);
+  assert.equal(await page.locator('#plCap').textContent(), `《${title}》`);
+}
 function animationMilliseconds(value) {
   const first = value.split(',')[0].trim();
   return parseFloat(first) * (first.endsWith('ms') ? 1 : 1000);
@@ -80,7 +108,7 @@ function checkVerticalGeometry() {
 
 try {
   const entry = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
-  monitor(entry);
+  await monitor(entry);
   let releaseEntry;
   const entryGate = new Promise(resolve => { releaseEntry = resolve; });
   await entry.route('**/assets/index-*.js', async route => { await entryGate; await route.continue(); });
@@ -194,10 +222,51 @@ try {
   })), '019');
   await entry.close();
 
+  const illustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await monitor(illustration);
+  await illustration.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await waitPoem(illustration, '16');
+  await assertPlaceholderIllustration(illustration, '七律·长征');
+  for (const id of ['19', '16', '19']) {
+    await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
+    await waitPoem(illustration, id);
+    if (id === '19') await assertGeneratedIllustration(illustration);
+    else await assertPlaceholderIllustration(illustration, '七律·长征');
+  }
+  await illustration.close();
+
+  const directIllustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await monitor(directIllustration);
+  await directIllustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
+  await waitPoem(directIllustration, '19');
+  await assertGeneratedIllustration(directIllustration);
+  await directIllustration.reload({ waitUntil: 'networkidle' });
+  await waitPoem(directIllustration, '19');
+  await assertGeneratedIllustration(directIllustration);
+  await directIllustration.close();
+
+  const failedIllustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await monitor(failedIllustration);
+  await failedIllustration.route(illustrationUrl, route => route.abort());
+  await failedIllustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
+  assert.equal(await failedIllustration.locator('#plArt .pl-error').textContent(), '配图暂时无法加载');
+  assert.equal(await failedIllustration.locator('#plArt svg').count(), 0);
+  await failedIllustration.evaluate(() => { location.hash = 'poem=16'; });
+  await waitPoem(failedIllustration, '16');
+  await assertPlaceholderIllustration(failedIllustration, '七律·长征');
+  await failedIllustration.unroute(illustrationUrl);
+  await failedIllustration.evaluate(() => { location.hash = 'poem=19'; });
+  await waitPoem(failedIllustration, '19');
+  await assertGeneratedIllustration(failedIllustration);
+  await failedIllustration.close();
+  pass('Generated illustration switches, reloads and reports download failures');
+
   const compactEntry = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: 'no-preference' });
-  monitor(compactEntry);
+  await monitor(compactEntry);
   await compactEntry.goto(`${origin}/#poem=14-1`, { waitUntil: 'domcontentloaded' });
   await compactEntry.waitForFunction(() => document.querySelector('#curtain').classList.contains('boot'));
+  await waitPoem(compactEntry, '14-1');
+  await assertPlaceholderIllustration(compactEntry, '十六字令三首（其一）');
   const compactCurtain = await compactEntry.evaluate(() => {
     const animation = document.querySelector('#curtain').getAnimations()[0];
     animation.pause();
@@ -212,7 +281,7 @@ try {
   pass('Curtain boot, exact numbering, character stagger, 480ms transitions and navigation ordering');
 
   const reduced = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
-  monitor(reduced);
+  await monitor(reduced);
   await reduced.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await waitPoem(reduced, '16');
   const reducedInitial = await reduced.evaluate(() => ({
@@ -239,7 +308,7 @@ try {
   await reduced.close();
 
   const motionChange = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
-  monitor(motionChange);
+  await monitor(motionChange);
   await motionChange.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await motionChange.evaluate(() => document.querySelector('#nextL').click());
   assert.equal(await motionChange.locator('#curtain').evaluate(node => node.classList.contains('run')), true);
@@ -268,7 +337,7 @@ try {
   pass('Initial dependency timeout and disabled JavaScript expose recovery guidance');
 
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
-  monitor(page);
+  await monitor(page);
   await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await waitPoem(page, '16');
   assert.match(await page.title(), /七律·长征/);
@@ -418,7 +487,7 @@ try {
   pass('Rhyme positions within combined lines and source-bound annotations');
 
   const motion = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
-  monitor(motion);
+  await monitor(motion);
   await motion.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   const movement = await motion.evaluate(() => {
     const plate = document.querySelector('.plate-col');
@@ -440,13 +509,18 @@ try {
   await motion.close();
   pass('Illustration animates from right to left when vertical reading opens');
 
-  const allIssues = await page.evaluate(analysesById => {
+  const allIssues = await page.evaluate(({ analysesById, illustrationsById }) => {
     const normalize = text => text.replace(/\s/g, '').replace(/,/g, '，').replace(/\./g, '。');
     const issues = [];
     for (const poem of window.POEM_LIBRARY.poems) {
       history.replaceState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
       dispatchEvent(new HashChangeEvent('hashchange'));
       if (document.querySelector('#hero').dataset.poemId !== poem.id) issues.push(`${poem.id}: selection`);
+      const generated = Object.hasOwn(illustrationsById, poem.id);
+      const art = document.querySelector('#plArt');
+      if (Boolean(art.querySelector('img')) !== generated || Boolean(art.querySelector('svg')) === generated) issues.push(`${poem.id}: illustration type`);
+      if (document.querySelector('#plTag')) issues.push(`${poem.id}: illustration tag still present`);
+      if (document.querySelector('#plCap').textContent !== `《${poem.title}》`) issues.push(`${poem.id}: illustration caption`);
       const analysis = analysesById[poem.id];
       const sections = [...document.querySelectorAll('#poem .st')];
       if (normalize(sections.map(node => node.textContent).join('')) !== normalize(poem.body.join(''))) issues.push(`${poem.id}: body changed`);
@@ -493,7 +567,7 @@ try {
       if (title.right > sheet.right + 1 || reader.height < 60) issues.push(`${poem.id}: title or reader layout`);
     }
     return issues;
-  }, analyses);
+  }, { analysesById: analyses, illustrationsById: illustrations });
   assert.deepEqual(allIssues, []);
   pass('All 100 texts, structural sections, inline notes and rhyme markers render correctly');
   await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
@@ -502,7 +576,7 @@ try {
   pass('All 100 vertical layouts keep large, unclipped and horizontally reachable text');
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-  monitor(mobile);
+  await monitor(mobile);
   await mobile.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await mobile.locator('#tIndex').tap();
   await mobile.locator('[data-filter="补编"]').tap();
@@ -543,6 +617,7 @@ try {
   assert.deepEqual(errors, [], 'Browser runtime errors');
   assert.deepEqual(failedRequests, [], 'Failed assets');
   assert.deepEqual(externalRequests, [], 'Unexpected external requests');
+  assert.ok(interceptedIllustrations > 0, 'Expected the generated illustration request to be intercepted');
   console.log(`\n${checks} browser checks passed.`);
 } finally {
   await browser.close();

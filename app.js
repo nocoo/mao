@@ -1,5 +1,6 @@
 import './assets/poems.js';
 import manifest from './audio/manifest.json';
+import illustrations from './data/illustrations.json';
 import { version } from './package.json';
 import { createLibraryViewModel } from './src/view-model.js';
 import { createPlayer } from './src/player.js';
@@ -252,7 +253,7 @@ function renderStudy(p) {
   study.append(header);
   const facts = block('01', '档案', 'b-facts');
   const dl = el('dl', 'facts');
-  const factsRows = [['编次', p.id], ['编目', p.collection], ['体裁', p.form], ['时间', p.date], ['录音', p.audio ? '合成朗诵 · 待听审' : '待补']];
+  const factsRows = [['编次', p.id], ['编目', p.collection], ['体裁', p.form], ['时间', p.date], ['录音', p.audio ? '合成朗诵' : '待补']];
   if (p.structure.rhymeNote) factsRows.push(['用韵', p.structure.rhymeNote]);
   for (const [label, value] of factsRows) {
     const row = el('div'); row.append(el('dt', '', label), el('dd', '', value)); dl.append(row);
@@ -291,7 +292,7 @@ function renderStudy(p) {
   source.href = encodeURI(p.path); source.target = '_blank'; source.rel = 'noopener noreferrer';
   versions.append(source); study.append(versions);
   const footer = el('footer', 'colophon rv in');
-  footer.append(el('span', '', '合成朗诵 · 参考声音来源未核实 · 全部录音待听审'), el('i'), el('span', '', `№ ${p.id}`));
+  footer.append(el('span', '', `《${p.title}》`), el('i'), el('span', '', `№ ${p.id}`));
   study.append(footer);
 }
 
@@ -357,10 +358,24 @@ function render(p) {
   heading.style.setProperty('--tk', title.length <= 1 ? 1 : title.length <= 2 ? .94 : title.length <= 4 ? .62 : .4);
   renderBody(p);
   updateVerticalHint();
-  const artIndex = Math.floor(Math.random() * 3);
-  $('#plArt').innerHTML = artwork(artIndex);
+  const illustration = illustrations[p.id];
+  const plate = $('#plate');
+  const art = $('#plArt');
+  plate.classList.toggle('has-generated', Boolean(illustration));
+  plate.setAttribute('aria-label', `《${p.title}》配图`);
+  if (illustration) {
+    const image = el('img', 'pl-img');
+    image.alt = `《${p.title}》配图`;
+    image.addEventListener('error', () => {
+      if (art.contains(image)) art.replaceChildren(el('span', 'pl-error', '配图暂时无法加载'));
+    });
+    image.src = illustration;
+    art.replaceChildren(image);
+  } else {
+    art.innerHTML = artwork(Math.floor(Math.random() * 3));
+  }
   $('#plSlogan').textContent = '';
-  $('#plTag').textContent = '示意版画 · 非史料';
+  $('#plCap').textContent = `《${p.title}》`;
   const ticker = $('#tk'); ticker.replaceChildren();
   const excerpts = linesForDisplay(p.body).slice(0, 4);
   for (let i = 0; i < 6; i++) for (const excerpt of excerpts) ticker.append(el('span', '', excerpt), el('i'));

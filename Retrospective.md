@@ -1,5 +1,13 @@
 # Retrospective
 
+## Coordinate fixed-port browser checks
+
+The reviewer and controller started the fullscreen test at the same time, so one run failed because port 4176 was occupied. A new large-screen check inherited vertical mode, and its animation assertion rejected an identity matrix as tilted. Assign ownership of fixed-port checks, reload between cases that need fresh reading mode, and inspect transform matrices rather than requiring a specific CSS serialization.
+
+## Inspect browser-generated data in its actual runtime
+
+A test investigation tried to import `assets/poems.js` as a Node module, but it is a browser script that populates `window.POEM_LIBRARY`. Read the generated data or execute it with the browser-compatible fixture used by the existing tests instead.
+
 ## Verify image encoder availability
 
 I assumed the installed FFmpeg included the `libwebp` encoder, but the conversion failed because it was not available. Check the installed encoders or image-library format support before choosing the conversion command.

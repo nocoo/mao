@@ -145,7 +145,7 @@ test('只在用户 toggle 时播放真实音频并使用 baseURI 下编码后的
   ready(nodes, 80);
   assert.equal(nodes.seek.disabled, false);
   assert.equal(nodes.pIdx.textContent, '00:00 / 01:20');
-  assert.match(nodes.pMode.textContent, /重点听审/);
+  assert.equal(nodes.pMode.textContent, '合成朗诵');
 
   await player.toggle();
   assert.equal(nodes.audio.playCalls, 1);

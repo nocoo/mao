@@ -67,6 +67,7 @@ function checkSignatureGeometry() {
 
 try {
   const page = await browser.newPage({ reducedMotion: 'reduce' });
+  await page.route('https://m.no.mt/illustrations/**', route => route.fulfill({ path: 'design/samples/19-snow-original.png', contentType: 'image/png' }));
   page.on('pageerror', error => errors.push(error.message));
   for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [821, 600], [900, 460], [390, 844], [320, 740], [320, 568], [800, 450]]) {
     await page.setViewportSize({ width, height });
@@ -240,9 +241,36 @@ try {
     }
     console.log(`✓ ${width}×${height}: captions, glyph cells and 28px title spacing in both writing modes`);
   }
+  const plateWidths = [];
+  for (const [width, height] of [[1440, 900], [1920, 1080], [2560, 1440]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'networkidle' });
+    const layout = await page.evaluate(() => {
+      const plate = document.querySelector('.plate');
+      const rect = plate.getBoundingClientRect();
+      const sheet = document.querySelector('.sheet').getBoundingClientRect();
+      return { width: rect.width, left: rect.left, right: rect.right, sheetRight: sheet.right, transform: getComputedStyle(plate).transform };
+    });
+    assert.equal(layout.transform, 'none', `${width}: plate is not upright`);
+    assert.ok(layout.left >= layout.sheetRight - 1 && layout.right <= width, `${width}: plate overlaps text or viewport`);
+    plateWidths.push(layout.width);
+  }
+  assert.ok(plateWidths[1] > plateWidths[0] + 40 && plateWidths[2] >= plateWidths[1], `Large-screen illustration did not grow: ${plateWidths}`);
+  console.log('✓ Large-screen illustrations grow without overlapping text and remain upright');
+
   const motionPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
   motionPage.on('pageerror', error => errors.push(error.message));
   await motionPage.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await motionPage.waitForTimeout(1700);
+  const upright = () => motionPage.locator('.plate').evaluate(node => {
+    const transform = getComputedStyle(node).transform;
+    return transform === 'none' || new DOMMatrix(transform).isIdentity;
+  });
+  assert.equal(await upright(), true, 'Plate did not settle upright after entrance');
+  await motionPage.locator('.plate').hover();
+  await motionPage.waitForTimeout(800);
+  assert.equal(await upright(), true, 'Plate tilted on hover');
   await motionPage.locator('#aVert').click();
   const imageMotion = await motionPage.locator('.plate-col').evaluate(node => ({
     vertical: document.querySelector('#hero').classList.contains('vertical-layout'),

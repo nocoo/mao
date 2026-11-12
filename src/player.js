@@ -64,12 +64,6 @@ export function createPlayer({ onPrevious, onNext } = {}) {
   seek.max = '1000';
   line.setAttribute('aria-live', 'polite');
 
-  function recordingMode() {
-    if (poem?.audio?.priorityReview) return '合成朗诵 · 重点听审';
-    if (poem?.audio?.status === 'review') return '合成朗诵 · 待听审';
-    return '合成朗诵';
-  }
-
   function render() {
     const duration = finiteDuration(audio);
     const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
@@ -105,7 +99,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
       const label = playing ? '暂停录音' : ended ? '重新播放录音' : '播放录音';
       playButton.setAttribute('aria-label', label);
       actionButton.setAttribute('aria-label', label);
-      mode.textContent = loading ? '载入合成朗诵' : recordingMode();
+      mode.textContent = loading ? '载入合成朗诵' : '合成朗诵';
       position.textContent = `${formatTime(current)} / ${duration ? formatTime(duration) : '--:--'}`;
       line.textContent = loading ? `正在载入《${poem.title}》` : poem.title;
     }
