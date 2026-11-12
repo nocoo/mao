@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import { preview } from 'vite';
+import { isCdnUrl, mockCdn } from './cdn-fixtures.mjs';
 
 if (!existsSync('dist/index.html')) throw new Error('Run pnpm build first');
 const server = await preview({ preview: { host: '127.0.0.1', port: 4175, strictPort: true, open: false } });
@@ -10,21 +11,17 @@ const analyses = Object.fromEntries(readdirSync('data/analysis').filter(name => 
 const packageVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
 const illustrations = JSON.parse(readFileSync('data/illustrations.json', 'utf8'));
 const illustrationUrl = illustrations['19'];
-const illustrationFixture = readFileSync('design/samples/19-snow-original.png');
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [], failedRequests = [], externalRequests = [];
 let checks = 0, interceptedIllustrations = 0;
 function pass(name) { console.log(`✓ ${name}`); checks++; }
 async function monitor(page) {
-  await page.route(url => Object.values(illustrations).includes(url.href), async route => {
-    interceptedIllustrations++;
-    await route.fulfill({ status: 200, contentType: 'image/png', body: illustrationFixture });
-  });
+  await mockCdn(page, url => { if (Object.values(illustrations).includes(url)) interceptedIllustrations++; });
   page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`); });
   page.on('request', request => {
-    if (!Object.values(illustrations).includes(request.url()) && /^https?:/.test(request.url()) && !request.url().startsWith(origin)) externalRequests.push(request.url());
+    if (/^https?:/.test(request.url()) && !isCdnUrl(request.url()) && !request.url().startsWith(origin)) externalRequests.push(request.url());
   });
 }
 async function waitPoem(page, id) { await page.waitForFunction(value => document.querySelector('#hero').dataset.poemId === value, id); }
@@ -320,6 +317,7 @@ try {
   pass('Reduced-motion entry and poem changes render immediately without animation');
 
   const loadFailure = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  await mockCdn(loadFailure);
   let stalledDependency;
   await loadFailure.route('**/assets/index-*.js', route => { stalledDependency = route; });
   await loadFailure.goto(`${origin}/#poem=16`, { waitUntil: 'commit' });
@@ -330,6 +328,7 @@ try {
   await stalledDependency?.abort();
   await loadFailure.close();
   const noScript = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  await mockCdn(noScript);
   await noScript.goto(origin, { waitUntil: 'domcontentloaded' });
   assert.equal(await noScript.locator('#curtain').isVisible(), false);
   assert.equal(await noScript.locator('noscript .load-error').isVisible(), true);
@@ -459,7 +458,8 @@ try {
 
   const retry = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   let requests = 0;
-  await retry.route('**/audio/*.mp3', route => ++requests === 1 ? route.fulfill({ status: 503 }) : route.continue());
+  await mockCdn(retry);
+  await retry.route('**/audio/*.mp3', route => ++requests === 1 ? route.fulfill({ status: 503 }) : route.fallback());
   await retry.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await retry.waitForFunction(() => document.querySelector('#pMode').textContent === '录音异常');
   await retry.locator('#aPlay').click();

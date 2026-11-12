@@ -156,10 +156,10 @@ test('韵脚依据词体、原注及合行文本逐字定位', () => {
   assert.match(byId.get('34').structure.rhymeNote, /借韵/);
 });
 
-test('音频只保留 manifest 中成功生成的四个展示字段', () => {
+test('音频用作品编号和内容哈希关联 CDN，并保留展示字段', () => {
   const recording = manifest.poems.find(poem => poem.id === '01');
   assert.deepEqual(byId.get('01').audio, {
-    file: recording.file,
+    url: `https://m.no.mt/audio/01-${recording.sha256.slice(0, 16)}.mp3`,
     seconds: recording.seconds,
     status: recording.status,
     priorityReview: recording.priority_review,

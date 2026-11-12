@@ -1,5 +1,17 @@
 # Retrospective
 
+## Keep static assets off the Worker path
+
+The CDN migration initially enabled `run_worker_first` for every request even though the Worker only forwards assets, unnecessarily consuming Worker requests. Keep the default assets-first routing and test the configuration when removing a Worker-specific media path.
+
+## Keep parallel migration commits self-contained
+
+A delegated Worker change was committed before the shared CDN module and test fixture were included, so the intermediate commit was not independently usable. Coordinate the commit owner and stage all dependent files together after integration checks.
+
+## Match repeated test edits by context
+
+A targeted edit for two identical player fixtures failed because the match was not unique. Include the surrounding assertion or setup in each replacement when the same line appears more than once.
+
 ## Coordinate fixed-port browser checks
 
 The reviewer and controller started the fullscreen test at the same time, so one run failed because port 4176 was occupied. A new large-screen check inherited vertical mode, and its animation assertion rejected an identity matrix as tilted. Assign ownership of fixed-port checks, reload between cases that need fresh reading mode, and inspect transform matrices rather than requiring a specific CSS serialization.

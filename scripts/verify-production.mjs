@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
+import { audioUrl } from '../src/media.js';
 
 const version = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 const recording = JSON.parse(readFileSync(new URL('../audio/manifest.json', import.meta.url), 'utf8')).poems.find(poem => poem.id === '16');
@@ -33,8 +34,8 @@ export async function verifyDeployment(origin, revision, request = fetch) {
   if (!/(?:^|,)\s*no-store\s*(?:,|$)/i.test(liveResponse.headers.get('cache-control') || '')) throw new Error('Liveness endpoint must not be cached');
   const health = await liveResponse.json();
   if (health.status !== 'ok' || health.version !== version) throw new Error('Liveness status or version does not match the release');
-  const audioUrl = new URL(`/audio/${encodeURIComponent(recording.file)}`, base);
-  const audioResponse = await request(audioUrl, { ...options, redirect: 'manual', headers: { ...options.headers, range: 'bytes=0-31' } });
+  const recordingUrl = new URL(audioUrl(recording.id, recording.sha256));
+  const audioResponse = await request(recordingUrl, { ...options, redirect: 'manual', headers: { ...options.headers, range: 'bytes=0-31' } });
   if (audioResponse.status !== 206 || audioResponse.redirected) throw new Error(`Audio range returned HTTP ${audioResponse.status}`);
   if (!/^audio\/mpeg(?:\s*;|$)/i.test(audioResponse.headers.get('content-type') || '')) throw new Error('Audio range has an invalid MIME type');
   if (audioResponse.headers.get('content-range') !== `bytes 0-31/${audio.length}`) throw new Error('Audio range headers do not match the recording');

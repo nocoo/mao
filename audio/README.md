@@ -2,7 +2,9 @@
 
 Generated 97 of 100 recordings; 3 failed. All generated tracks need human listening review.
 No background track was mixed; the absence of generated or reference background sound has not been independently verified by listening.
-The reference voice and historical attribution are unverified. These are synthetic recordings, not historical broadcasts.
+The reference voice's historical attribution is unverified. These are synthetic recordings, not historical broadcasts. The project owner confirmed authorization for the current batch's reference voice and public distribution.
+
+On 2026-11-12, all 97 recordings were uploaded to the R2 CDN. Each public object was checked against its manifest size and SHA-256, MIME type and cache policy, and a 32-byte HTTP range. URLs are derived from the record ID and hash by `src/media.js`; the source recordings remain in this directory.
 
 ## Failed generation
 

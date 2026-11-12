@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { preview } from 'vite';
 import { verifyDeployment } from '../scripts/verify-production.mjs';
+import { cdnFixtureFetch, mockCdn } from './cdn-fixtures.mjs';
 
 if (!existsSync('dist/index.html')) throw new Error('Run pnpm build first');
 const server = await preview({ preview: { host: '127.0.0.1', port: 4176, strictPort: true, open: false } });
@@ -67,7 +68,7 @@ function checkSignatureGeometry() {
 
 try {
   const page = await browser.newPage({ reducedMotion: 'reduce' });
-  await page.route('https://m.no.mt/illustrations/**', route => route.fulfill({ path: 'design/samples/19-snow-original.png', contentType: 'image/png' }));
+  await mockCdn(page);
   page.on('pageerror', error => errors.push(error.message));
   for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [821, 600], [900, 460], [390, 844], [320, 740], [320, 568], [800, 450]]) {
     await page.setViewportSize({ width, height });
@@ -260,6 +261,7 @@ try {
   console.log('✓ Large-screen illustrations grow without overlapping text and remain upright');
 
   const motionPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  await mockCdn(motionPage);
   motionPage.on('pageerror', error => errors.push(error.message));
   await motionPage.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await motionPage.waitForTimeout(1700);
@@ -284,7 +286,7 @@ try {
   try { revision = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { }
   const metadata = JSON.parse(await readFile('dist/build-info.json', 'utf8'));
   assert.equal(metadata.revision, revision);
-  if (revision !== 'unknown') await verifyDeployment(origin, revision);
+  if (revision !== 'unknown') await verifyDeployment(origin, revision, cdnFixtureFetch);
   assert.equal(existsSync('dist/.env'), false);
   console.log('✓ Deployment verifier and private configuration isolation');
 } finally {

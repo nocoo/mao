@@ -147,8 +147,8 @@ export function createPlayer({ onPrevious, onNext } = {}) {
   function setPoem(nextPoem) {
     selection += 1;
     poem = nextPoem || null;
-    const file = poem?.audio?.file;
-    hasRecording = typeof file === 'string' && file.length > 0;
+    const url = poem?.audio?.url;
+    hasRecording = typeof url === 'string' && url.length > 0;
     hasStarted = false;
     ended = false;
     loading = hasRecording;
@@ -159,7 +159,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
     audio.defaultPlaybackRate = RATES[rateIndex];
     audio.playbackRate = RATES[rateIndex];
     if (hasRecording) {
-      audio.src = new URL(`audio/${encodeURIComponent(file)}`, document.baseURI).href;
+      audio.src = url;
     } else {
       audio.removeAttribute('src');
     }

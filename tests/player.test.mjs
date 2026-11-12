@@ -131,14 +131,14 @@ test('缺少录音时暂停、清空源并禁用播放和进度', () => {
   assert.equal(nodes.app.classList.contains('playing'), false);
 });
 
-test('只在用户 toggle 时播放真实音频并使用 baseURI 下编码后的文件名', async () => {
+test('只在用户 toggle 时播放 CDN 音频', async () => {
   const nodes = fixture();
   const player = createPlayer();
-  const file = '01-贺新郎·别友.mp3';
+  const url = 'https://m.no.mt/audio/01-6510cd29311937b0.mp3';
 
-  player.setPoem(poem({ file, seconds: 999, status: 'review', priorityReview: true }));
+  player.setPoem(poem({ url, seconds: 999, status: 'review', priorityReview: true }));
 
-  assert.equal(nodes.audio.src, new URL(`audio/${encodeURIComponent(file)}`, document.baseURI).href);
+  assert.equal(nodes.audio.src, url);
   assert.equal(nodes.audio.playCalls, 0);
   assert.match(nodes.pMode.textContent, /载入合成朗诵/);
 
@@ -156,7 +156,7 @@ test('只在用户 toggle 时播放真实音频并使用 baseURI 下编码后的
 test('手动 seek 和 seekBy 使用真实 duration，并限制到媒体边界', () => {
   const nodes = fixture();
   const player = createPlayer();
-  player.setPoem(poem({ file: 'test.mp3', seconds: 999, status: 'ready' }));
+  player.setPoem(poem({ url: 'https://m.no.mt/audio/test.mp3', seconds: 999, status: 'ready' }));
   ready(nodes, 80);
 
   nodes.seek.value = '500';
@@ -180,7 +180,7 @@ test('倍速、前后按钮和真实媒体事件同步播放器状态', async ()
   let previous = 0;
   let next = 0;
   const player = createPlayer({ onPrevious: () => { previous += 1; }, onNext: () => { next += 1; } });
-  player.setPoem(poem({ file: 'test.mp3', seconds: 10, status: 'ready' }));
+  player.setPoem(poem({ url: 'https://m.no.mt/audio/test.mp3', seconds: 10, status: 'ready' }));
   ready(nodes, 10);
 
   nodes.rate.click();
@@ -215,7 +215,7 @@ test('倍速、前后按钮和真实媒体事件同步播放器状态', async ()
 test('加载失败和播放拒绝显示明确错误，切诗清除旧状态', async () => {
   const nodes = fixture();
   const player = createPlayer();
-  player.setPoem(poem({ file: 'test.mp3', seconds: 10, status: 'ready' }));
+  player.setPoem(poem({ url: 'https://m.no.mt/audio/test.mp3', seconds: 10, status: 'ready' }));
 
   nodes.audio.error = { code: 3 };
   nodes.audio.dispatch('error');
@@ -226,7 +226,7 @@ test('加载失败和播放拒绝显示明确错误，切诗清除旧状态', as
   assert.equal(nodes.audio.loadCalls, loads + 1);
 
   nodes.audio.error = null;
-  player.setPoem(poem({ file: 'next.mp3', seconds: 10, status: 'ready' }));
+  player.setPoem(poem({ url: 'https://m.no.mt/audio/next.mp3', seconds: 10, status: 'ready' }));
   ready(nodes, 10);
   nodes.audio.playResult = Object.assign(new Error('denied'), { name: 'NotAllowedError' });
   await player.toggle();

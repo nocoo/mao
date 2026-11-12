@@ -1,3 +1,5 @@
+import { audioUrl } from './media.js';
+
 const BRACKET_ANNOTATION = /^[①-⑳]?\s*〔([^〕]+)〕\s*(.*)$/;
 const NUMBERED_ANNOTATION = /^[（(](\d+)[)）]\s*(.*)$/;
 const PLAIN_ANNOTATION = /^([^。！？；…\n]{1,40}?)[：:∶；;]\s*(.*)$/;
@@ -54,7 +56,7 @@ function audioFor(id, recordings) {
     return null;
   }
   return {
-    file: recording.file,
+    url: audioUrl(id, recording.sha256),
     seconds: recording.seconds,
     status: recording.status,
     priorityReview: recording.priority_review,

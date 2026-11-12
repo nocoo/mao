@@ -59,8 +59,8 @@ jobs:
         "G2":{"status":"impl"},
         "B1":{"status":"impl"},
         "L1":{"status":"impl","reason":"Node tests and LCOV report; no coverage threshold claimed"},
-        "L1.5":{"status":"impl","reason":"Wrangler local runtime and asset binding checked by test:worker"},
-        "L2":{"status":"impl","reason":"Health and audio range HTTP checks run in test:worker"},
+        "L1.5":{"status":"impl","reason":"Wrangler local runtime and asset forwarding checked by test:worker"},
+        "L2":{"status":"impl","reason":"Health and static asset HTTP checks run in test:worker --http-only"},
         "L3":{"status":"impl"},
         "P1":{"status":"na","reason":"Private package, not published to npm"},
         "Z1":{"status":"impl"}}
