@@ -164,7 +164,7 @@ function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
 
 function renderBody(p) {
   poemNode.replaceChildren();
-  poemNode.classList.add('structured');
+  poemNode.style.setProperty('--sg', p.structure.stanzas.some(part => part.label === '首联') ? '.42em' : '.7em');
   if (p.preface) poemNode.append(el('p', 'pre', p.preface));
   const annotations = p.inlineAnnotations;
   const used = new Set();
@@ -215,37 +215,10 @@ function renderBody(p) {
   $('#aNotes').disabled = !annotations.length;
 }
 
-function fitPoem() {
-  if (!current) return;
+function updateVerticalHint() {
+  if (!vertical) return;
   const wrap = $('#poemWrap');
-  const width = wrap.clientWidth;
-  const height = wrap.clientHeight;
-  if (!width || !height) return;
-  const lines = [...poemNode.querySelectorAll('.ln')];
-  const stanzas = current.structure.stanzas.length;
-  const gap = current.structure.stanzas.some(part => part.label === '首联') ? .42 : .7;
-  poemNode.style.setProperty('--sg', `${gap}em`);
-  const maxLength = Math.max(...lines.map(line => line.textContent.length * 1.1 + line.querySelectorAll('.term').length * .4));
-  const mobile = matchMedia('(max-width:820px)').matches;
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-  let size;
-  if (vertical) {
-    poemNode.style.removeProperty('--lh');
-    const byHeight = (height - 48) / (maxLength + .2);
-    size = clamp(byHeight, mobile ? 24 : 26, mobile ? 30 : 36);
-  } else {
-    const byWidth = (width - (mobile ? 34 : 46) - 4) / (maxLength + .2);
-    const rows = lines.length * 1.66 + (stanzas - 1) * gap;
-    size = mobile ? clamp(byWidth, 18, 26) : clamp(Math.min(byWidth, height / rows), 18, 52);
-    const spare = mobile ? 0 : height - rows * size;
-    const lineHeight = spare > 0 ? clamp(1.66 + spare / (size * (lines.length + stanzas)) * .6, 1.66, 2.3) : 1.66;
-    poemNode.style.setProperty('--lh', lineHeight.toFixed(3));
-  }
-  poemNode.style.setProperty('--fs', `${size.toFixed(2)}px`);
-  if (vertical) {
-    const overflow = wrap.scrollWidth > wrap.clientWidth + 1;
-    $('#verticalHint').textContent = overflow ? '右起竖读 · 横向滑动' : '右起竖读';
-  }
+  $('#verticalHint').textContent = wrap.scrollWidth > wrap.clientWidth + 1 ? '右起竖读 · 横向滑动' : '右起竖读';
 }
 
 function block(number, title, className) {
@@ -383,7 +356,7 @@ function render(p) {
   });
   heading.style.setProperty('--tk', title.length <= 1 ? 1 : title.length <= 2 ? .94 : title.length <= 4 ? .62 : .4);
   renderBody(p);
-  fitPoem();
+  updateVerticalHint();
   const artIndex = Math.floor(Math.random() * 3);
   $('#plArt').innerHTML = artwork(artIndex);
   $('#plSlogan').textContent = '';
@@ -479,7 +452,7 @@ $('#aVert').addEventListener('click', () => {
   scroll.scrollTop = 0;
   wrap.scrollLeft = 0;
   $('#aVert').setAttribute('aria-pressed', String(vertical));
-  fitPoem();
+  updateVerticalHint();
   if (!reducedMotion.matches) {
     const to = plate.getBoundingClientRect();
     const x = from.left - to.left;
@@ -503,7 +476,7 @@ $('#aNotes').addEventListener('click', () => {
   poemNode.classList.toggle('no-notes', !notesVisible);
   poemNode.querySelectorAll('.term').forEach(term => { term.disabled = !notesVisible; });
   $('#aNotes').setAttribute('aria-pressed', String(notesVisible));
-  fitPoem();
+  updateVerticalHint();
   closeNote();
 });
 $('#aRhyme').addEventListener('click', () => {
@@ -581,8 +554,8 @@ $('#ixCnt').textContent = String(library.length);
 $('#appVersion').textContent = `v${version}`;
 $('#tTheme').textContent = matchMedia('(prefers-color-scheme: dark)').matches ? '昼' : '夜';
 setIndex(!matchMedia('(max-width:1180px)').matches);
-new ResizeObserver(fitPoem).observe($('#poemWrap'));
-document.fonts.ready.then(fitPoem);
+new ResizeObserver(updateVerticalHint).observe($('#poemWrap'));
+document.fonts.ready.then(updateVerticalHint);
 const initial = new URLSearchParams(location.hash.slice(1)).get('poem');
 const first = byId.get(initial) || byId.get('19') || library[0];
 $('#curNo').textContent = first.id.padStart(3, '0');

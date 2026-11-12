@@ -284,7 +284,7 @@ try {
   assert.equal(await page.locator('#dt').textContent(), '一九三五年十月');
   assert.match(await page.locator('#hudForm').textContent(), /七言律诗五十六字/);
   const fontSize = await page.locator('#poem').evaluate(node => parseFloat(getComputedStyle(node).fontSize));
-  assert.ok(Math.abs(fontSize - 27.12) < .1, `Prototype body size: ${fontSize}`);
+  assert.equal(fontSize, 26, `Fixed desktop body size: ${fontSize}`);
   assert.deepEqual(await page.locator('#poem .c.rh').allTextContents(), ['难', '闲', '丸', '寒', '颜']);
   await page.locator('#aRhyme').click();
   assert.equal(await page.locator('#aRhyme').getAttribute('aria-pressed'), 'true');
