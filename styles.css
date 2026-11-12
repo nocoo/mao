@@ -39,7 +39,7 @@ svg{display:block}
 .rail::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(0,0,0,.05) 3px 4px);pointer-events:none}
 .rail-star{width:40px;height:40px;fill:var(--c-paper);transition:transform 1.2s var(--e-out);flex:none}
 .playing .rail-star{animation:spin 9s linear infinite}
-.rail-title{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;font-size:25px;letter-spacing:.34em;margin-top:22px;white-space:nowrap}
+.rail-title{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--f-display);font-weight:900;font-size:25px;line-height:1;margin-top:22px}
 .rail-line{inline-size:1px;block-size:38px;background:currentColor;opacity:.55;margin-block:14px 12px;flex:none}
 .rail-sub{writing-mode:vertical-rl;font-family:var(--f-mono);font-size:9px;letter-spacing:.36em;opacity:.8;white-space:nowrap;min-block-size:0;overflow:hidden}
 .rail-tools{margin-block-start:auto;display:grid;gap:7px;padding-block-start:12px;position:relative}
@@ -133,8 +133,9 @@ svg{display:block}
 .hud .rule::after{content:"";position:absolute;inset-block-start:-2px;inset-inline-end:0;inline-size:5px;block-size:5px;background:var(--red)}
 .hud .dim{overflow:hidden;text-overflow:ellipsis}
 
-.title{display:flex;align-items:flex-end;gap:18px;margin-block:14px 16px;flex:none;position:relative}
-.cp{writing-mode:vertical-rl;background:var(--red);color:var(--c-paper);font-family:var(--f-display);font-weight:900;font-size:clamp(15px,2.4vh,21px);letter-spacing:.34em;padding:12px 6px 8px;white-space:nowrap;transform-origin:50% 100%;align-self:stretch;display:flex;align-items:center;justify-content:center;position:relative}
+.title{display:flex;align-items:flex-end;gap:18px;margin-block:14px 28px;flex:none;position:relative}
+.cp{background:var(--red);color:var(--c-paper);font-family:var(--f-display);font-weight:900;font-size:clamp(15px,2.4vh,21px);line-height:1;padding:12px 6px 8px;transform-origin:50% 100%;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+.rail-title span,.cp span{display:grid;place-items:center;inline-size:1.4em;block-size:1.35em;line-height:1;flex:none}
 .cp::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:4px;background:var(--fg)}
 h1{font-family:var(--f-display);font-weight:900;font-size:calc(clamp(74px,14.5vh,136px)*var(--tk,1));line-height:1;letter-spacing:.06em;white-space:nowrap;position:relative}
 h1 .ch{display:inline-block;overflow:hidden;padding:.06em .08em .08em 0;margin-block:-.06em -.08em;vertical-align:bottom}
@@ -474,6 +475,15 @@ h1 .ch i{display:inline-block;font-style:normal;text-shadow:.045em .045em 0 var(
 }
 @media (max-height:700px) and (min-width:821px){
   .hero{min-block-size:620px}
+}
+@media (max-height:520px) and (min-width:821px){
+  .rail{padding-block:8px}
+  .rail-title{font-size:clamp(17px,5vh,25px);margin-top:12px}
+  .rail-line{block-size:24px;margin-block:8px}
+}
+@media (max-height:400px) and (min-width:821px){
+  .rail-line,.rail-sub,.rail-yr{display:none}
+  .tool{inline-size:34px;block-size:34px}
 }
 @media (prefers-reduced-motion:reduce){
   .tk,.pl-sheen,.rail-star,.beams,.bstar,.echo,.b-glints polygon,.spk{animation:none!important}

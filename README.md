@@ -15,7 +15,7 @@ pnpm test             # data, view model, player, deployment tests
 pnpm test:coverage    # Node tests and coverage/lcov.info
 pnpm deploy:check     # Wrangler local dry run; no deployment
 pnpm test:browser     # build first; preview on 4175 and check interactions
-pnpm test:fullscreen  # build first; preview on 4176 and check eight viewports
+pnpm test:fullscreen  # build first; preview on 4176 and check nine viewports
 ```
 
 Browser tests use local Google Chrome on macOS, or `CHROME_PATH` / Playwright Chromium on other systems. Test servers stop automatically. The development and preview commands use a fixed port and cannot run together.

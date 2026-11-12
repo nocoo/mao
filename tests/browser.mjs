@@ -254,7 +254,39 @@ try {
       if (terms.length !== analysis.inlineTerms.length || terms.some((term, index) => Number(term.dataset.note) !== index)) issues.push(`${poem.id}: inline annotations`);
       const expectedRhymes = analysis.structure.rhymeMarks.map(mark => mark.character).join('');
       if ([...document.querySelectorAll('#poem .c.rh')].map(node => node.textContent).join('') !== expectedRhymes) issues.push(`${poem.id}: rhyme markers`);
-      const title = document.querySelector('#tt').getBoundingClientRect();
+      const caption = poem.title.includes('·') ? poem.form : '诗词选读';
+      const expectedTitle = poem.title.includes('·') ? poem.subject : poem.title;
+      const heading = document.querySelector('#tt');
+      if (heading.textContent !== expectedTitle || heading.getAttribute('aria-label') !== poem.title) issues.push(`${poem.id}: title text changed`);
+      const inspectColumn = (selector, text, clipSelector) => {
+        const root = document.querySelector(selector);
+        const clip = document.querySelector(clipSelector).getBoundingClientRect();
+        const cells = [...root.children];
+        const characters = [...text];
+        if (root.textContent !== text || cells.length !== characters.length || cells.some((cell, index) => cell.tagName !== 'SPAN' || cell.textContent !== characters[index])) {
+          issues.push(`${poem.id}: ${selector} text or cells changed`);
+        }
+        for (let index = 0; index < cells.length; index++) {
+          const cell = cells[index];
+          const rect = cell.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0 || cell.scrollWidth > cell.clientWidth + 1 || cell.scrollHeight > cell.clientHeight + 1
+            || rect.left < clip.left - .5 || rect.right > clip.right + .5 || rect.top < clip.top - .5 || rect.bottom > clip.bottom + .5
+            || getComputedStyle(cell).writingMode !== 'horizontal-tb') issues.push(`${poem.id}: ${selector} cell ${index} clipped`);
+          if (index) {
+            const previous = cells[index - 1].getBoundingClientRect();
+            const overlap = Math.max(0, Math.min(previous.right, rect.right) - Math.max(previous.left, rect.left))
+              * Math.max(0, Math.min(previous.bottom, rect.bottom) - Math.max(previous.top, rect.top));
+            if (overlap > .5 || rect.top < previous.bottom - .5
+              || Math.abs((previous.left + previous.right - rect.left - rect.right) / 2) > .5) issues.push(`${poem.id}: ${selector} cells overlap or misalign`);
+          }
+        }
+      };
+      inspectColumn('.rail-title', '毛泽东诗词', '.rail');
+      inspectColumn('#cp', caption, '.sheet');
+      const titleBlock = document.querySelector('#title').getBoundingClientRect();
+      const firstContent = (document.querySelector('#poem .pre') || document.querySelector('#poem .st')).getBoundingClientRect();
+      if (firstContent.top - titleBlock.bottom < 27.5) issues.push(`${poem.id}: title spacing`);
+      const title = heading.getBoundingClientRect();
       const sheet = document.querySelector('.sheet').getBoundingClientRect();
       const reader = document.querySelector('#poemWrap').getBoundingClientRect();
       if (title.right > sheet.right + 1 || reader.height < 60) issues.push(`${poem.id}: title or reader layout`);

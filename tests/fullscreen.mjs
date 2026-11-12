@@ -12,10 +12,63 @@ const origin = 'http://127.0.0.1:4176';
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [];
+
+function checkSignatureGeometry() {
+  const issues = [];
+  const inspectColumn = (poem, selector, text, clipSelector) => {
+    const root = document.querySelector(selector);
+    const clip = document.querySelector(clipSelector).getBoundingClientRect();
+    const cells = [...root.children];
+    const characters = [...text];
+    if (root.textContent !== text || cells.length !== characters.length
+      || cells.some((cell, index) => cell.tagName !== 'SPAN' || cell.textContent !== characters[index])) {
+      issues.push(`${poem.id}: ${selector} text or cells changed`);
+    }
+    for (let index = 0; index < cells.length; index++) {
+      const cell = cells[index];
+      const rect = cell.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0 || cell.scrollWidth > cell.clientWidth + 1 || cell.scrollHeight > cell.clientHeight + 1
+        || rect.left < clip.left - .5 || rect.right > clip.right + .5 || rect.top < clip.top - .5 || rect.bottom > clip.bottom + .5
+        || getComputedStyle(cell).writingMode !== 'horizontal-tb') issues.push(`${poem.id}: ${selector} cell ${index} clipped`);
+      if (index) {
+        const previous = cells[index - 1].getBoundingClientRect();
+        const overlap = Math.max(0, Math.min(previous.right, rect.right) - Math.max(previous.left, rect.left))
+          * Math.max(0, Math.min(previous.bottom, rect.bottom) - Math.max(previous.top, rect.top));
+        if (overlap > .5 || rect.top < previous.bottom - .5
+          || Math.abs((previous.left + previous.right - rect.left - rect.right) / 2) > .5) issues.push(`${poem.id}: ${selector} cells overlap or misalign`);
+      }
+    }
+  };
+
+  for (const poem of window.POEM_LIBRARY.poems) {
+    history.replaceState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
+    dispatchEvent(new HashChangeEvent('hashchange'));
+    const caption = poem.title.includes('·') ? poem.form : '诗词选读';
+    const expectedTitle = poem.title.includes('·') ? poem.subject : poem.title;
+    const heading = document.querySelector('#tt');
+    if (heading.textContent !== expectedTitle || heading.getAttribute('aria-label') !== poem.title) issues.push(`${poem.id}: title text changed`);
+    inspectColumn(poem, '.rail-title', '毛泽东诗词', '.rail');
+    inspectColumn(poem, '#cp', caption, '.sheet');
+    const title = document.querySelector('#title').getBoundingClientRect();
+    const headingRect = heading.getBoundingClientRect();
+    const captionRect = document.querySelector('#cp').getBoundingClientRect();
+    const sheet = document.querySelector('.sheet').getBoundingClientRect();
+    const content = (document.querySelector('#poem .pre') || document.querySelector('#poem .st')).getBoundingClientRect();
+    if (content.top - title.bottom < 27.5) issues.push(`${poem.id}: title spacing`);
+    if (headingRect.left < sheet.left - .5 || headingRect.right > sheet.right + .5 || headingRect.top < sheet.top - .5 || headingRect.bottom > sheet.bottom + .5) {
+      issues.push(`${poem.id}: heading clipped`);
+    }
+    const overlap = Math.max(0, Math.min(headingRect.right, captionRect.right) - Math.max(headingRect.left, captionRect.left))
+      * Math.max(0, Math.min(headingRect.bottom, captionRect.bottom) - Math.max(headingRect.top, captionRect.top));
+    if (overlap > .5) issues.push(`${poem.id}: heading and caption overlap`);
+  }
+  return issues;
+}
+
 try {
   const page = await browser.newPage({ reducedMotion: 'reduce' });
   page.on('pageerror', error => errors.push(error.message));
-  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [821, 600], [390, 844], [320, 740], [320, 568], [800, 450]]) {
+  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [821, 600], [900, 460], [390, 844], [320, 740], [320, 568], [800, 450]]) {
     await page.setViewportSize({ width, height });
     await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
     await page.reload({ waitUntil: 'networkidle' });
@@ -33,6 +86,14 @@ try {
     assert.ok(layout.height <= height + 1, `${height}: outer overflow ${JSON.stringify(layout)}`);
     assert.ok(layout.player.bottom <= height + 1, `${width}: player off screen`);
     assert.ok(layout.reader.h > 60, `${width}: no readable area ${JSON.stringify(layout)}`);
+    const railButtonsVisible = await page.evaluate(() => {
+      const rail = document.querySelector('.rail').getBoundingClientRect();
+      return [...document.querySelectorAll('.rail-tools .tool')].filter(button => !button.hidden && getComputedStyle(button).display !== 'none').every(button => {
+        const rect = button.getBoundingClientRect();
+        return rect.top >= rail.top && rect.bottom <= rail.bottom;
+      });
+    });
+    assert.ok(railButtonsVisible, `${width}×${height}: rail controls clipped`);
     if (width <= 820) {
       await page.locator('#tIndex').click();
       await page.waitForFunction(() => { const r = document.querySelector('#index').getBoundingClientRect(); return Math.abs(r.left - document.querySelector('.rail').getBoundingClientRect().right) < 1; });
@@ -161,6 +222,17 @@ try {
     });
     assert.deepEqual(horizontalLayout, { pressed: 'false', writingMode: 'horizontal-tb', sheetBeforePlate: true, hintVisible: false }, `${width}: switching back did not restore horizontal layout`);
     console.log(`✓ ${width}×${height}: fullscreen, player, vertical layout and long-poem scrolling`);
+  }
+  for (const [width, height] of [[1440, 900], [390, 844], [320, 740], [320, 568], [800, 450]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    for (const vertical of [false, true]) {
+      const isVertical = await page.locator('#hero').evaluate(node => node.classList.contains('vertical-layout'));
+      if (isVertical !== vertical) await page.locator('#aVert').evaluate(node => node.click());
+      assert.deepEqual(await page.evaluate(checkSignatureGeometry), [], `${width}×${height} ${vertical ? 'vertical' : 'horizontal'} signature layout`);
+    }
+    console.log(`✓ ${width}×${height}: captions, glyph cells and 28px title spacing in both writing modes`);
   }
   const motionPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
   motionPage.on('pageerror', error => errors.push(error.message));

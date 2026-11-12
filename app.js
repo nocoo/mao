@@ -361,7 +361,8 @@ function render(p) {
   $('#plNo').textContent = folio;
   $('#dt').textContent = p.structure.displayDate || p.date;
   $('#author').textContent = p.collection === '补编' ? '补编资料' : '毛泽东';
-  $('#cp').textContent = p.title.includes('·') ? p.form : '诗词选读';
+  const caption = p.title.includes('·') ? p.form : '诗词选读';
+  $('#cp').replaceChildren(...[...caption].map(character => el('span', '', character)));
   const title = p.title.includes('·') ? p.subject : p.title;
   const heading = $('#tt');
   heading.replaceChildren();

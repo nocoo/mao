@@ -4,6 +4,14 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Check rail controls when changing title glyph sizing
+
+Giving each vertical title character its own cell improved legibility but increased the rail's height and clipped controls in short desktop windows. Include rail controls in short-viewport checks and reduce rail spacing responsively without squeezing the glyphs.
+
+## Wait for agent registration, not just the prompt text
+
+A new review pane displayed its prompt before Herdr registered the agent, so the first task submission failed. Check the agent's registered status before prompting instead of relying only on terminal output.
+
 ## Test prefaces and punctuation in vertical layouts
 
 Splitting vertical columns at every punctuation mark created empty columns inside annotated terms, and a fixed minimum height clipped prefaces in short desktop windows. Split only at sentence boundaries outside annotation buttons, size the poem to its actual container, and check punctuation columns and preface glyph bounds across the corpus.
