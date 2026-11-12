@@ -2,6 +2,8 @@
 
 See [README.md](README.md) for project setup and checks, and [Retrospective.md](Retrospective.md) for incident history.
 
+For poem illustration work, use the [mao-poetry-illustration skill](.agents/skills/mao-poetry-illustration/SKILL.md).
+
 ## Local development
 
 Open the project in Chrome at https://mao.dev.hexly.ai through Caddy, rather than a localhost URL.
