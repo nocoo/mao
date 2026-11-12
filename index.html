@@ -35,6 +35,7 @@
       <button class="tool" id="tIndex" aria-pressed="true" title="目录 (L)" aria-label="显示或收起目录">目</button>
       <button class="tool" id="tMatrix" title="总目矩阵 (M)" aria-label="打开总目矩阵">总</button>
       <button class="tool" id="tTheme" title="昼 / 夜 (T)" aria-label="切换昼夜配色">夜</button>
+      <button class="tool" id="tVert" title="切换回横排" aria-label="切换回横排" hidden>横</button>
     </div>
     <div class="rail-yr">2077</div>
   </aside>
@@ -83,7 +84,8 @@
             <div class="t-side"><span class="au" id="author">毛泽东</span><span class="dt" id="dt"></span></div>
           </div>
 
-          <div class="poem-wrap" id="poemWrap"><div class="poem" id="poem" lang="zh-Hans"></div></div>
+          <div class="poem-wrap" id="poemWrap" tabindex="0" role="region" aria-label="诗词正文，可滚动阅读"><div class="poem" id="poem" lang="zh-Hans"></div></div>
+          <div class="vertical-hint" id="verticalHint" hidden></div>
 
           <div class="acts">
             <button class="act pri" id="aPlay"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span id="aPlayT">朗读全篇</span></button>

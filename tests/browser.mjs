@@ -19,6 +19,53 @@ function monitor(page) {
 }
 async function waitPoem(page, id) { await page.waitForFunction(value => document.querySelector('#hero').dataset.poemId === value, id); }
 
+function checkVerticalGeometry() {
+  const issues = [];
+  for (const poem of window.POEM_LIBRARY.poems) {
+    history.replaceState(null, '', `#poem=${encodeURIComponent(poem.id)}`);
+    dispatchEvent(new HashChangeEvent('hashchange'));
+    const wrap = document.querySelector('#poemWrap');
+    const reader = wrap.getBoundingClientRect();
+    const sheet = document.querySelector('.sheet').getBoundingClientRect();
+    const image = document.querySelector('.plate-col').getBoundingClientRect();
+    const glyphs = [...document.querySelectorAll('#poem .st .c')];
+    if (image.right > sheet.left + 1) issues.push(`${poem.id}: image overlap`);
+    if (parseFloat(getComputedStyle(document.querySelector('#poem')).fontSize) < 24) issues.push(`${poem.id}: font size`);
+    for (const selector of ['#tt', '#dt', '#author']) {
+      const rect = document.querySelector(selector).getBoundingClientRect();
+      if (rect.left < sheet.left - 1 || rect.right > sheet.right + 1) issues.push(`${poem.id}: ${selector} clipped`);
+    }
+    if (glyphs.some(glyph => { const rect = glyph.getBoundingClientRect(); return rect.top < reader.top - 1 || rect.bottom > reader.bottom + 1; })) issues.push(`${poem.id}: verse clipped vertically`);
+    for (const clause of document.querySelectorAll('#poem .cl')) {
+      if (!clause.textContent.trim() || /^[，。；：？！、]+$/.test(clause.textContent.trim())) issues.push(`${poem.id}: orphan punctuation column`);
+      const characters = [...clause.querySelectorAll('.c')];
+      for (let index = 1; index < characters.length; index++) {
+        if (!/^[，。；：？！、]$/.test(characters[index].textContent)) continue;
+        const previous = characters[index - 1].getBoundingClientRect();
+        const current = characters[index].getBoundingClientRect();
+        if (Math.abs((previous.left + previous.right - current.left - current.right) / 2) > 5) issues.push(`${poem.id}: punctuation wrapped alone`);
+      }
+    }
+    const preface = document.querySelector('#poem .pre')?.firstChild;
+    if (preface) for (let index = 0; index < preface.length; index++) {
+      if (/\s/.test(preface.data[index])) continue;
+      const range = document.createRange();
+      range.setStart(preface, index);
+      range.setEnd(preface, index + 1);
+      const rect = range.getBoundingClientRect();
+      if (rect.top < reader.top - 1 || rect.bottom > reader.bottom + 1) { issues.push(`${poem.id}: preface clipped vertically`); break; }
+    }
+    if (!poem.preface && glyphs.length) {
+      const first = glyphs[0].getBoundingClientRect();
+      if (first.left < reader.left - 1 || first.right > reader.right + 1) issues.push(`${poem.id}: first verse not visible`);
+    }
+    wrap.scrollLeft = -1e7;
+    const last = glyphs.at(-1)?.getBoundingClientRect();
+    if (!last || last.left < reader.left - 1 || last.right > reader.right + 1) issues.push(`${poem.id}: ending not reachable`);
+  }
+  return issues;
+}
+
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   monitor(page);
@@ -169,6 +216,29 @@ try {
   assert.match(await page.locator('#study').textContent(), /下阕.*待核/);
   pass('Rhyme positions within combined lines and source-bound annotations');
 
+  const motion = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  monitor(motion);
+  await motion.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  const movement = await motion.evaluate(() => {
+    const plate = document.querySelector('.plate-col');
+    const initial = plate.getBoundingClientRect().left;
+    document.querySelector('#aVert').click();
+    const animation = plate.getAnimations().find(item => item.effect.getKeyframes().some(frame => frame.transform?.startsWith('translate')));
+    if (!animation) return null;
+    animation.pause();
+    animation.currentTime = 0;
+    const start = plate.getBoundingClientRect().left;
+    animation.currentTime = 260;
+    const middle = plate.getBoundingClientRect().left;
+    animation.finish();
+    const end = plate.getBoundingClientRect().left;
+    return { initial, start, middle, end, sheet: document.querySelector('.sheet').getBoundingClientRect().left };
+  });
+  assert.ok(movement && Math.abs(movement.initial - movement.start) < 1);
+  assert.ok(movement.middle < movement.start && movement.end < movement.middle && movement.end < movement.sheet);
+  await motion.close();
+  pass('Illustration animates from right to left when vertical reading opens');
+
   const allIssues = await page.evaluate(analysesById => {
     const normalize = text => text.replace(/\s/g, '').replace(/,/g, '，').replace(/\./g, '。');
     const issues = [];
@@ -193,6 +263,10 @@ try {
   }, analyses);
   assert.deepEqual(allIssues, []);
   pass('All 100 texts, structural sections, inline notes and rhyme markers render correctly');
+  await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await page.locator('#aVert').click();
+  assert.deepEqual(await page.evaluate(checkVerticalGeometry), []);
+  pass('All 100 vertical layouts keep large, unclipped and horizontally reachable text');
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   monitor(mobile);
@@ -204,7 +278,31 @@ try {
   assert.match(await mobile.locator('#poem').innerText(), /革命无不胜/);
   assert.equal(await mobile.locator('#index').evaluate(node => node.inert), true);
   assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
-  pass('Mobile touch catalog and reading');
+  await mobile.goto(`${origin}/#poem=75`, { waitUntil: 'networkidle' });
+  await mobile.locator('#aVert').tap();
+  const area = await mobile.locator('#poemWrap').boundingBox();
+  const image = await mobile.locator('.plate-col').boundingBox();
+  const sheet = await mobile.locator('.sheet').boundingBox();
+  assert.ok(image.x + image.width <= sheet.x + 1);
+  assert.ok(parseFloat(await mobile.locator('#poem').evaluate(node => getComputedStyle(node).fontSize)) >= 24);
+  assert.match(await mobile.locator('#verticalHint').textContent(), /横向滑动/);
+  const cdp = await mobile.context().newCDPSession(mobile);
+  const y = Math.round(area.y + Math.min(120, area.height / 2));
+  const x = Math.round(area.x + 25);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  for (let position = x + 20; position <= x + 120; position += 20) {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: position, y }] });
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await mobile.waitForFunction(() => document.querySelector('#poemWrap').scrollLeft < 0);
+  await mobile.locator('#tVert').tap();
+  assert.equal(await mobile.locator('#hero').evaluate(node => node.classList.contains('vertical-layout')), false);
+  assert.equal(await mobile.locator('#verticalHint').isHidden(), true);
+  await mobile.setViewportSize({ width: 320, height: 568 });
+  await mobile.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await mobile.locator('#aVert').tap();
+  assert.deepEqual(await mobile.evaluate(checkVerticalGeometry), []);
+  pass('Mobile touch catalog, vertical swipe and return to horizontal reading');
   assert.deepEqual(errors, [], 'Browser runtime errors');
   assert.deepEqual(failedRequests, [], 'Failed assets');
   assert.deepEqual(externalRequests, [], 'Unexpected external requests');

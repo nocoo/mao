@@ -15,7 +15,7 @@ const errors = [];
 try {
   const page = await browser.newPage({ reducedMotion: 'reduce' });
   page.on('pageerror', error => errors.push(error.message));
-  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [390, 844], [320, 740], [320, 568], [800, 450]]) {
+  for (const [width, height] of [[1440, 900], [1920, 1080], [1024, 768], [821, 600], [390, 844], [320, 740], [320, 568], [800, 450]]) {
     await page.setViewportSize({ width, height });
     await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
     await page.reload({ waitUntil: 'networkidle' });
@@ -33,16 +33,6 @@ try {
     assert.ok(layout.height <= height + 1, `${height}: outer overflow ${JSON.stringify(layout)}`);
     assert.ok(layout.player.bottom <= height + 1, `${width}: player off screen`);
     assert.ok(layout.reader.h > 60, `${width}: no readable area ${JSON.stringify(layout)}`);
-    if (width === 390 || width === 320) {
-      await page.locator('#aVert').click();
-      await page.waitForFunction(() => {
-        const wrap = document.querySelector('#poemWrap');
-        return wrap.scrollWidth <= wrap.clientWidth + 1;
-      });
-      const columns = await page.locator('#poem .ln').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, lineHeight: parseFloat(getComputedStyle(node).lineHeight) })));
-      assert.ok(columns.every(column => column.width <= column.lineHeight + 1), `${width}: couplets should remain single columns`);
-      await page.locator('#aVert').click();
-    }
     if (width <= 820) {
       await page.locator('#tIndex').click();
       await page.waitForFunction(() => { const r = document.querySelector('#index').getBoundingClientRect(); return Math.abs(r.left - document.querySelector('.rail').getBoundingClientRect().right) < 1; });
@@ -53,19 +43,136 @@ try {
     await page.evaluate(() => { history.replaceState(null, '', '#poem=75'); dispatchEvent(new HashChangeEvent('hashchange')); });
     const longPoem = await page.locator('#poemWrap').evaluate(node => { node.scrollTop = node.scrollHeight; return { height: node.scrollHeight, client: node.clientHeight, top: node.scrollTop }; });
     assert.ok(longPoem.height > longPoem.client && longPoem.top > 0, `${width}: long poem should scroll`);
+    await page.waitForFunction(() => document.querySelector('#audio').readyState >= 1);
+    await page.locator('#audio').evaluate(audio => { audio.currentTime = Math.min(8, audio.duration / 2); });
     await page.locator('#aVert').click();
+    await page.waitForFunction(() => document.querySelector('#hero').classList.contains('vertical-layout'));
     const firstLineVisible = () => page.evaluate(() => {
       const wrap = document.querySelector('#poemWrap').getBoundingClientRect();
       const first = document.querySelector('#poem .ln').getBoundingClientRect();
       return first.right <= wrap.right + 1 && first.right > wrap.left && first.left < wrap.right;
     });
     assert.ok(await firstLineVisible(), `${width}: vertical first line is off screen`);
+    const verticalLayout = await page.evaluate(() => {
+      const rectOf = node => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; };
+      const rect = selector => rectOf(document.querySelector(selector));
+      const wrap = document.querySelector('#poemWrap');
+      const hint = document.querySelector('#verticalHint');
+      const glyphs = [...document.querySelectorAll('#poem .c')];
+      const first = rectOf(glyphs[0]);
+      const last = rectOf(glyphs.at(-1));
+      const plate = rect('.plate');
+      const reader = rect('#poemWrap');
+      return {
+        hero: document.querySelector('#hero').classList.contains('vertical-layout'),
+        pressed: document.querySelector('#aVert').getAttribute('aria-pressed'),
+        writingMode: getComputedStyle(document.querySelector('#poem')).writingMode,
+        fontSize: parseFloat(getComputedStyle(document.querySelector('#poem')).fontSize),
+        overflowX: getComputedStyle(wrap).overflowX,
+        scrollWidth: wrap.scrollWidth,
+        clientWidth: wrap.clientWidth,
+        tabIndex: wrap.tabIndex,
+        hintText: hint?.textContent.trim() || '',
+        hintVisible: Boolean(hint && hint.getClientRects().length),
+        plate,
+        reader,
+        sheet: rect('.sheet'),
+        plateCol: rect('.plate-col'),
+        first,
+        last,
+        reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+        transitionDuration: getComputedStyle(document.querySelector('.plate')).transitionDuration,
+        runningAnimations: document.querySelector('#hero').getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length,
+      };
+    });
+    assert.equal(verticalLayout.hero, true, `${width}: missing #hero.vertical-layout`);
+    assert.equal(verticalLayout.pressed, 'true', `${width}: vertical toggle state`);
+    assert.equal(verticalLayout.writingMode, 'vertical-rl', `${width}: vertical writing mode`);
+    assert.ok(verticalLayout.fontSize >= (width <= 320 ? 22 : 24), `${width}: vertical text shrank to ${verticalLayout.fontSize}px`);
+    assert.ok(['auto', 'scroll'].includes(verticalLayout.overflowX), `${width}: reader is not horizontally scrollable`);
+    assert.ok(verticalLayout.scrollWidth > verticalLayout.clientWidth + 1, `${width}: long vertical poem does not overflow horizontally`);
+    assert.ok(verticalLayout.tabIndex >= 0, `${width}: #poemWrap is not focusable`);
+    assert.equal(verticalLayout.hintVisible, true, `${width}: vertical hint is hidden`);
+    assert.match(verticalLayout.hintText, /(向左|左右|横向).*(滑动|滚动)|(滑动|滚动).*(左|横向)/, `${width}: vertical hint does not explain right-to-left horizontal scrolling`);
+    assert.ok(verticalLayout.plateCol.right <= verticalLayout.sheet.left + 1, `${width}: image column is not left of text ${JSON.stringify(verticalLayout)}`);
+    assert.ok(verticalLayout.plate.right <= verticalLayout.reader.left + 1, `${width}: image overlaps poem reader ${JSON.stringify(verticalLayout)}`);
+    assert.ok(verticalLayout.first.right > verticalLayout.first.left && verticalLayout.first.left >= verticalLayout.reader.left, `${width}: first glyph is not visible on the right`);
+    assert.ok(verticalLayout.first.left > verticalLayout.last.left, `${width}: vertical poem is not read right to left`);
+    assert.equal(verticalLayout.reducedMotion, true, `${width}: reduced-motion preference was not applied`);
+    assert.ok(verticalLayout.transitionDuration.split(',').every(duration => parseFloat(duration) <= .001), `${width}: reduced motion still animates layout transitions`);
+    assert.equal(verticalLayout.runningAnimations, 0, `${width}: reduced motion still has running hero animations`);
+
+    const audioBefore = await page.locator('#audio').evaluate(audio => audio.currentTime);
+    await page.locator('#poemWrap').focus();
+    assert.equal(await page.locator('#poemWrap').evaluate(node => document.activeElement === node), true, `${width}: reader did not receive focus`);
+    await page.locator('#poemWrap').evaluate(node => new Promise(resolve => {
+      let previous = -1;
+      let stableFrames = 0;
+      const settle = () => {
+        stableFrames = node.scrollWidth === previous ? stableFrames + 1 : 0;
+        previous = node.scrollWidth;
+        if (stableFrames >= 4) resolve(); else requestAnimationFrame(settle);
+      };
+      requestAnimationFrame(settle);
+    }));
+    await page.locator('#poemWrap').evaluate(node => { node.scrollLeft = 0; });
+    const initialScrollLeft = await page.locator('#poemWrap').evaluate(node => node.scrollLeft);
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(600);
+    const leftScroll = await page.locator('#poemWrap').evaluate(node => node.scrollLeft);
+    assert.ok(leftScroll < initialScrollLeft, `${width}: ArrowLeft did not scroll toward the end of the reader`);
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(600);
+    const rightScroll = await page.locator('#poemWrap').evaluate(node => node.scrollLeft);
+    assert.ok(rightScroll > leftScroll, `${width}: ArrowRight did not scroll toward the start of the reader`);
+    const audioAfter = await page.locator('#audio').evaluate(audio => audio.currentTime);
+    assert.ok(Math.abs(audioAfter - audioBefore) < .05, `${width}: reader arrow keys changed audio progress from ${audioBefore} to ${audioAfter}`);
+
+    const reachedEnd = await page.locator('#poemWrap').evaluate(node => {
+      const last = [...document.querySelectorAll('#poem .ln')].at(-1);
+      for (const left of [node.scrollWidth, -node.scrollWidth]) {
+        node.scrollLeft = left;
+        const wrap = node.getBoundingClientRect();
+        const line = last.getBoundingClientRect();
+        const visible = line.right > wrap.left + 1 && line.left < wrap.right - 1;
+        if (visible) return { visible, scrollLeft: node.scrollLeft };
+      }
+      return { visible: false, scrollLeft: node.scrollLeft };
+    });
+    assert.equal(reachedEnd.visible, true, `${width}: long poem cannot scroll its last line into view`);
+    assert.ok(Math.abs(reachedEnd.scrollLeft) > 1, `${width}: end of long poem did not move horizontally`);
+
     await page.locator('#nextL').evaluate(node => node.click());
     assert.ok(await firstLineVisible(), `${width}: vertical first line after navigation is off screen`);
     assert.equal(await page.locator('#hero').getAttribute('data-poem-id'), '76');
     assert.equal(await page.locator('#poemWrap').evaluate(node => node.scrollTop), 0);
-    console.log(`✓ ${width}×${height}: fullscreen, player and long-poem scrolling`);
+    await page.locator('#aVert').click();
+    await page.waitForFunction(() => !document.querySelector('#hero').classList.contains('vertical-layout'));
+    const horizontalLayout = await page.evaluate(() => {
+      const sheet = document.querySelector('.sheet').getBoundingClientRect();
+      const plate = document.querySelector('.plate-col').getBoundingClientRect();
+      const hint = document.querySelector('#verticalHint');
+      return {
+        pressed: document.querySelector('#aVert').getAttribute('aria-pressed'),
+        writingMode: getComputedStyle(document.querySelector('#poem')).writingMode,
+        sheetBeforePlate: sheet.right <= plate.left + 1 || sheet.bottom <= plate.top + 1,
+        hintVisible: Boolean(hint && hint.getClientRects().length),
+      };
+    });
+    assert.deepEqual(horizontalLayout, { pressed: 'false', writingMode: 'horizontal-tb', sheetBeforePlate: true, hintVisible: false }, `${width}: switching back did not restore horizontal layout`);
+    console.log(`✓ ${width}×${height}: fullscreen, player, vertical layout and long-poem scrolling`);
   }
+  const motionPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+  motionPage.on('pageerror', error => errors.push(error.message));
+  await motionPage.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await motionPage.locator('#aVert').click();
+  const imageMotion = await motionPage.locator('.plate-col').evaluate(node => ({
+    vertical: document.querySelector('#hero').classList.contains('vertical-layout'),
+    running: node.getAnimations().some(animation => animation.playState === 'running' && animation.effect.getKeyframes().some(frame => /^translate\(.+px, .+px\)$/.test(frame.transform || ''))),
+  }));
+  assert.deepEqual(imageMotion, { vertical: true, running: true }, 'The plate did not animate into the left column');
+  await motionPage.close();
+  console.log('✓ Plate transition animates normally and is disabled for reduced motion');
   assert.deepEqual(errors, []);
   let revision = 'unknown';
   try { revision = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { }

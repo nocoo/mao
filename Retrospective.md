@@ -4,6 +4,10 @@
 
 The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
 
+## Test prefaces and punctuation in vertical layouts
+
+Splitting vertical columns at every punctuation mark created empty columns inside annotated terms, and a fixed minimum height clipped prefaces in short desktop windows. Split only at sentence boundaries outside annotation buttons, size the poem to its actual container, and check punctuation columns and preface glyph bounds across the corpus.
+
 ## Check literary annotations independently of their data
 
 Several proposed rhyme positions followed an inferred pattern despite conflicting source notes or the actual verse form; a data-derived test repeated the same mistake. Cross-check selected examples against original annotations and explicit expected characters, and represent multiple verse endings within one source line precisely instead of assuming every source line is one verse.

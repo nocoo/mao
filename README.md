@@ -15,7 +15,7 @@ pnpm test             # data, view model, player, deployment tests
 pnpm test:coverage    # Node tests and coverage/lcov.info
 pnpm deploy:check     # Wrangler local dry run; no deployment
 pnpm test:browser     # build first; preview on 4175 and check interactions
-pnpm test:fullscreen  # build first; preview on 4176 and check seven viewports
+pnpm test:fullscreen  # build first; preview on 4176 and check eight viewports
 ```
 
 Browser tests use local Google Chrome on macOS, or `CHROME_PATH` / Playwright Chromium on other systems. Test servers stop automatically. The development and preview commands use a fixed port and cannot run together.
@@ -24,7 +24,9 @@ Browser tests use local Google Chrome on macOS, or `CHROME_PATH` / Playwright Ch
 
 The catalog contains 100 indexed records: 42 正编, 25 副编, and 33 补编. Search by title, year, number, or verse; the matrix opens any record. Each page presents its reading text, available notes, context, appreciation, editorial remarks, and original versions. Structural labels follow the individual form: regulated verse, lyric stanzas, single-stanza lyrics, older verse, fragments, and memorial texts are not treated alike. Rhyme highlights are available only where identified; uncertain cases remain unmarked. These analyses are editorial readings of the available records, not a fully verified prosodic or historical edition. Sources remain separate, and missing material is identified rather than invented. Three prototype illustrations are randomly reused as placeholders; they are not historical images.
 
-The player uses the local MP3 for the selected poem. It supports play/pause, seeking, speed, and previous/next poem. No sentence timestamps are available, so the interface does not claim word- or line-synchronized highlighting. Three missing recordings are marked unavailable. Keyboard shortcuts: `Space` play/pause, `←` / `→` seek, `↑` / `↓` change poem, `/` search, `L` catalog, `M` matrix, `T` theme, `V` vertical text, `N` notes, `Esc` close.
+Vertical reading moves the illustration to the left and arranges verse columns right to left. Longer works scroll horizontally by touch, trackpad, or arrow keys when the reading area is focused; on mobile, the rail's “横” button returns to horizontal reading. Layout refinement references Unslop by [Damir Sokolovsky](https://x.com/heydamir), CC BY 4.0.
+
+The player uses the local MP3 for the selected poem. It supports play/pause, seeking, speed, and previous/next poem. No sentence timestamps are available, so the interface does not claim word- or line-synchronized highlighting. Three missing recordings are marked unavailable. Keyboard shortcuts: `Space` play/pause, `←` / `→` seek outside the reading area, `↑` / `↓` change poem, `/` search, `L` catalog, `M` matrix, `T` theme, `V` vertical text, `N` notes, `Esc` close.
 
 The 97 MP3s are locally generated synthetic recitations, not historical broadcasts. The narrator and historical provenance of the reference voice are unverified. No background track was mixed; the absence of background sound and the completeness, pronunciation, and delivery of **all recordings require human listening review**. Eight tracks are prioritized because of long silence or ASR differences; three failed generation. See [`audio/README.md`](audio/README.md) and [`audio/manifest.json`](audio/manifest.json). Prior to public release, confirm the authorization for the reference voice and intended distribution; a local commit is not a publication approval.
 

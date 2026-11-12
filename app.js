@@ -23,6 +23,7 @@ let activeNoteType = 'inline';
 let noteAnchor;
 let notePosition;
 let matrixFocus;
+let layoutAnimations = [];
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -115,6 +116,7 @@ function linesForDisplay(body) {
 }
 
 const punctuation = /[，。；、：？！“”《》—·]/;
+const clauseBreak = /[，。；：？！]/;
 
 function renderLine(text, annotations, used, rhymeOffsets) {
   const line = el('p', 'ln');
@@ -126,7 +128,7 @@ function renderLine(text, annotations, used, rhymeOffsets) {
       const glyph = el('span', `c${punctuation.test(character) ? ' pu' : ''}${rhymeOffsets.has(start + i) ? ' rh' : ''}`, character);
       (term || clause).append(glyph);
       i += character.length;
-      if (punctuation.test(character) && start + i < text.length && !punctuation.test(text[start + i])) {
+      if (!term && clauseBreak.test(character) && start + i < text.length && !punctuation.test(text[start + i])) {
         clause = el('span', 'cl');
         line.append(clause);
       }
@@ -224,8 +226,7 @@ function fitPoem() {
   if (vertical) {
     poemNode.style.removeProperty('--lh');
     const byHeight = (height - 48) / (maxLength + .2);
-    const columns = lines.length * 1.86 + (stanzas - 1) * gap;
-    size = clamp(Math.min(byHeight, width / columns), 18, 44);
+    size = clamp(byHeight, mobile ? 24 : 26, mobile ? 30 : 36);
   } else {
     const byWidth = (width - (mobile ? 34 : 46) - 4) / (maxLength + .2);
     const rows = lines.length * 1.66 + (stanzas - 1) * gap;
@@ -235,6 +236,10 @@ function fitPoem() {
     poemNode.style.setProperty('--lh', lineHeight.toFixed(3));
   }
   poemNode.style.setProperty('--fs', `${size.toFixed(2)}px`);
+  if (vertical) {
+    const overflow = wrap.scrollWidth > wrap.clientWidth + 1;
+    $('#verticalHint').textContent = overflow ? '右起竖读 · 横向滑动' : '右起竖读';
+  }
 }
 
 function block(number, title, className) {
@@ -421,13 +426,41 @@ $('#tTheme').addEventListener('click', () => {
   $('#tTheme').textContent = theme === 'night' ? '昼' : '夜';
 });
 $('#aVert').addEventListener('click', () => {
+  closeNote();
+  const plate = document.querySelector('.plate-col');
+  const sheet = document.querySelector('.sheet');
+  const from = plate.getBoundingClientRect();
+  layoutAnimations.forEach(animation => animation.cancel());
+  layoutAnimations = [];
   vertical = !vertical;
+  $('#hero').classList.toggle('vertical-layout', vertical);
   poemNode.classList.toggle('vertical', vertical);
-  $('#poemWrap').classList.toggle('vertical-reading', vertical);
-  $('#poemWrap').scrollLeft = 0;
+  const wrap = $('#poemWrap');
+  wrap.classList.toggle('vertical-reading', vertical);
+  wrap.setAttribute('aria-label', vertical ? '诗词正文，从右向左阅读，可横向滚动' : '诗词正文，可滚动阅读');
+  $('#verticalHint').hidden = !vertical;
+  $('#tVert').hidden = !vertical;
+  scroll.scrollTop = 0;
+  wrap.scrollLeft = 0;
   $('#aVert').setAttribute('aria-pressed', String(vertical));
   fitPoem();
-  closeNote();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const to = plate.getBoundingClientRect();
+    const x = from.left - to.left;
+    const y = from.top - to.top;
+    layoutAnimations = [
+      plate.animate([
+        { transform: `translate(${x}px, ${y}px)`, opacity: 1 },
+        { transform: `translate(${x * .8}px, ${y * .8}px)`, opacity: .15, offset: .2 },
+        { transform: 'translate(0, 0)', opacity: 1 },
+      ], { duration: 520, easing: 'cubic-bezier(.16, 1, .3, 1)' }),
+      sheet.animate([{ opacity: 0 }, { opacity: 0, offset: .4 }, { opacity: 1 }], { duration: 520 }),
+    ];
+  }
+});
+$('#tVert').addEventListener('click', () => {
+  $('#aVert').click();
+  $('#tIndex').focus({ preventScroll: true });
 });
 $('#aNotes').addEventListener('click', () => {
   notesVisible = !notesVisible;
@@ -468,6 +501,7 @@ window.addEventListener('hashchange', () => { const id = new URLSearchParams(loc
 window.addEventListener('keydown', event => {
   if (event.key === 'Escape') { if (!matrix.inert) setMatrix(false); else closeNote(); return; }
   if (event.metaKey || event.ctrlKey || event.altKey || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || !matrix.inert) return;
+  if (document.activeElement.closest('#poemWrap') && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) return;
   const key = event.key.toLowerCase();
   if (key === ' ' && !document.activeElement.closest('button, a, summary')) { event.preventDefault(); player.toggle(); }
   else if (key === '/') { event.preventDefault(); setIndex(true); $('#q').focus(); }
