@@ -1,422 +1,372 @@
 import './assets/poems.js';
+import manifest from './audio/manifest.json';
+import { createLibraryViewModel } from './src/view-model.js';
+import { createPlayer } from './src/player.js';
+import { artwork } from './src/art.js';
 
-const $ = (id) => document.getElementById(id);
-const library = window.POEM_LIBRARY;
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-const dialogs = [...document.querySelectorAll('dialog')];
-const previousFocus = new WeakMap();
-const closingDialogs = new WeakSet();
-let toastTimer;
+const $ = selector => document.querySelector(selector);
+const library = createLibraryViewModel(window.POEM_LIBRARY, manifest);
+const byId = new Map(library.map(poem => [poem.id, poem]));
+const groups = ['正编', '副编', '补编'];
+const app = $('#app');
+const scroll = $('#scroll');
+const poemNode = $('#poem');
+const matrix = $('#matrix');
+let current;
+let filter = '全部';
+let notesVisible = true;
+let vertical = false;
+let activeNote = -1;
+let noteAnchor;
+let matrixFocus;
 
-function icon(name) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.classList.add('icon');
-  svg.setAttribute('aria-hidden', 'true');
-  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-  use.setAttribute('href', `#i-${name}`);
-  svg.append(use);
-  return svg;
-}
-
-function element(tag, className, text) {
+function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
   if (text !== undefined) node.textContent = text;
   return node;
 }
 
-function notify(message) {
-  clearTimeout(toastTimer);
-  $('toast').textContent = message;
-  $('toast').hidden = false;
-  toastTimer = setTimeout(() => { $('toast').hidden = true; }, 2800);
+function setIndex(open) {
+  app.dataset.index = open ? '1' : '0';
+  $('#tIndex').setAttribute('aria-pressed', String(open));
+  $('#index').inert = !open;
 }
 
-function openDialog(dialog, focusElement) {
-  if (dialog.open || closingDialogs.has(dialog)) return;
-  previousFocus.set(dialog, document.activeElement);
-  dialog.showModal();
-  if (!reducedMotion.matches) {
-    dialog.animate([
-      { opacity: 0, transform: 'translateX(32px)' },
-      { opacity: 1, transform: 'translateX(0)' },
-    ], { duration: 420, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+function setMatrix(open) {
+  if (open) {
+    closeNote();
+    matrixFocus = document.activeElement;
   }
-  (focusElement || dialog.querySelector('[data-close]')).focus({ preventScroll: true });
+  matrix.classList.toggle('in', open);
+  matrix.inert = !open;
+  matrix.setAttribute('aria-hidden', String(!open));
+  if (open) $('#mxX').focus();
+  else matrixFocus?.focus();
 }
 
-async function closeDialog(dialog, restoreFocus = true) {
-  if (!dialog.open || closingDialogs.has(dialog)) return;
-  closingDialogs.add(dialog);
-  if (!reducedMotion.matches) {
-    await dialog.animate([
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(24px)' },
-    ], { duration: 180, easing: 'ease-out' }).finished.catch(() => {});
+function searchText(text) {
+  return text.toLowerCase().replace(/[\s·，。；、：?!？！:;,.]/g, '');
+}
+
+function renderIndex() {
+  const q = searchText($('#q').value.trim());
+  const matches = library.filter(p => (filter === '全部' || p.collection === filter) && (!q || searchText(`${p.id} ${p.title} ${p.date} ${p.body.join('')}`).includes(q)));
+  const chips = $('#chips');
+  chips.replaceChildren();
+  for (const name of ['全部', ...groups]) {
+    const button = el('button', 'chip', name);
+    button.dataset.filter = name;
+    button.setAttribute('aria-pressed', String(filter === name));
+    button.append(el('b', '', String(name === '全部' ? library.length : library.filter(p => p.collection === name).length)));
+    chips.append(button);
   }
-  dialog.close();
-  closingDialogs.delete(dialog);
-  if (restoreFocus && previousFocus.get(dialog)?.isConnected) {
-    previousFocus.get(dialog).focus({ preventScroll: true });
-  }
-}
-
-for (const dialog of dialogs) {
-  dialog.querySelector('[data-close]').addEventListener('click', () => closeDialog(dialog));
-  dialog.addEventListener('cancel', (event) => {
-    event.preventDefault();
-    closeDialog(dialog);
-  });
-  dialog.addEventListener('click', (event) => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(dialog);
-  });
-}
-$('open-about').addEventListener('click', () => openDialog($('about-dialog')));
-
-if (!Array.isArray(library?.poems) || !library.poems.length) {
-  $('reader-error').hidden = false;
-  $('reader-error').textContent = '诗词资料未能载入。请运行 pnpm build:data 后刷新页面。';
-  $('poem-page').setAttribute('aria-busy', 'false');
-  document.querySelectorAll('.reading-actions button, #open-catalog, #quick-catalog, #open-notes, #copy-poem').forEach(button => { button.disabled = true; });
-} else {
-  const poems = library.poems;
-  const byId = new Map(poems.map((poem, index) => [poem.id, index]));
-  const randomIndices = poems.map((_, index) => index);
-  const groups = ['正编', '副编', '补编'];
-  let currentIndex = -1;
-  let shuffleBag = [];
-  let selectionSerial = 0;
-  let activeTransition;
-  let collection = '全部';
-  let selectedTab = '注释';
-
-  document.querySelectorAll('[data-count="total"]').forEach(node => { node.textContent = poems.length; });
-  document.querySelectorAll('[data-collection]').forEach(button => {
-    button.querySelector('span').textContent = button.dataset.collection === '全部' ? poems.length : poems.filter(poem => poem.collection === button.dataset.collection).length;
-  });
-
-  function randomIndex() {
-    if (!shuffleBag.length) {
-      shuffleBag = [...randomIndices];
-      for (let i = shuffleBag.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffleBag[i], shuffleBag[j]] = [shuffleBag[j], shuffleBag[i]];
-      }
+  const list = $('#list');
+  list.replaceChildren();
+  for (const group of groups) {
+    const records = matches.filter(p => p.collection === group);
+    if (!records.length) continue;
+    const heading = el('div', 'grp-h');
+    heading.append(el('span', '', group), el('i'), el('b', '', String(records.length)));
+    list.append(heading);
+    for (const p of records) {
+      const button = el('button', `row${p.audio ? ' open' : ' off'}`);
+      button.dataset.id = p.id;
+      if (p.id === current?.id) button.setAttribute('aria-current', 'true');
+      const name = el('span', 'nm');
+      if (p.title.includes('·')) name.append(el('em', '', p.form), el('strong', '', p.subject));
+      else name.append(el('strong', '', p.title));
+      button.append(el('span', 'no', p.id), name, el('span', 'yr', p.year ? String(p.year) : '未详'));
+      list.append(button);
     }
-    if (shuffleBag.at(-1) === currentIndex && shuffleBag.length > 1) {
-      [shuffleBag[0], shuffleBag[shuffleBag.length - 1]] = [shuffleBag.at(-1), shuffleBag[0]];
-    }
-    const index = shuffleBag.pop();
-    return index === currentIndex && randomIndices.length > 1 ? randomIndex() : index;
   }
+  if (!matches.length) list.append(el('div', 'ix-empty', '没有匹配的篇目'));
+}
 
-  function hashIndex() {
-    const id = new URLSearchParams(location.hash.slice(1)).get('poem');
-    return id !== null && byId.has(id) ? byId.get(id) : null;
+function renderMatrix() {
+  const cells = $('#cells');
+  cells.replaceChildren();
+  library.forEach((p, index) => {
+    const button = el('button', `cell${p.audio ? ' open' : ''}${p.id === current?.id ? ' cur' : ''}`);
+    button.dataset.id = p.id;
+    button.style.setProperty('--i', Math.min(index, 50));
+    button.setAttribute('aria-label', `${p.id} ${p.title}，${p.audio ? '有录音' : '录音待补'}`);
+    button.append(el('span', 'n', p.id), el('span', 't', p.title));
+    cells.append(button);
+  });
+  $('#mxS').textContent = `${library.length} 篇资料 · ${library.filter(p => p.audio).length} 段录音`;
+}
+
+function linesForDisplay(body) {
+  const lines = [];
+  let line = '';
+  for (const part of body) {
+    const next = part.replace(/,/g, '，').replace(/\./g, '。').trim();
+    if (line && [...line + next].length > 24) { lines.push(line); line = ''; }
+    line += next;
+    if (/[。！？!?；;）]$/.test(line) || [...line].length >= 20) { lines.push(line); line = ''; }
   }
+  if (line) lines.push(line);
+  return lines;
+}
 
-  // Join short typographic lines into phrases; do not rewrite any Chinese characters.
-  function displayLines(body) {
-    const phrases = [];
-    let pending = '';
-    for (const original of body) {
-      const line = original.replace(/,/g, '，').replace(/\./g, '。').trim();
-      if (pending && [...pending + line].length > 27) {
-        phrases.push(pending);
-        pending = '';
-      }
-      pending += line;
-      if (/[。！？!?；;）]$/.test(pending) || [...pending].length >= 24) {
-        phrases.push(pending);
-        pending = '';
-      }
-    }
-    if (pending) phrases.push(pending);
-    return phrases;
-  }
-
-  function renderPoem(index, mode) {
-    const poem = poems[index];
-    currentIndex = index;
-    const hasSubject = poem.title.includes('·');
-    const heading = hasSubject ? poem.subject : poem.title;
-    $('poem-title').textContent = heading;
-    $('poem-title').classList.toggle('long-title', [...heading].length > 12);
-    $('poem-form').textContent = hasSubject ? poem.form : '诗词选读';
-    $('poem-author').textContent = poem.collection === '补编' ? '补编资料' : '毛泽东';
-    $('poem-date').textContent = poem.date === '未标明' ? '原文未标年代' : poem.date.replace(/，.*$/, '');
-    $('poem-id').textContent = poem.id;
-    $('poem-collection').textContent = poem.collection;
-    $('reading-mode').textContent = mode === 'random' ? '今日偶读' : mode === 'catalog' ? '目录选读' : '顺卷阅览';
-    $('poem-page').setAttribute('aria-busy', 'false');
-    $('poem-page').dataset.poemId = poem.id;
-    $('poem-body').classList.toggle('is-long', poem.body.join('').length > 280);
-    const lines = displayLines(poem.body);
-    const fragment = document.createDocumentFragment();
-    lines.forEach((text, i) => {
-      const p = element('p', 'verse-line', text);
-      if (i > 0 && lines.length > 6 && i === Math.ceil(lines.length / 2)) p.classList.add('verse-gap');
-      fragment.append(p);
+function renderLine(text, annotations, used) {
+  const line = el('p', 'ln');
+  let pos = 0;
+  while (pos < text.length) {
+    let match;
+    annotations.forEach((note, index) => {
+      if (!note.key || used.has(index)) return;
+      const at = text.indexOf(note.key, pos);
+      if (at >= 0 && (!match || at < match.at || (at === match.at && note.key.length > match.key.length))) match = { at, key: note.key, index };
     });
-    $('poem-body').replaceChildren(fragment);
-    $('poem-page').scrollTop = 0;
-    // Prefaces and all explanatory material live in the optional reading sheet.
-    $('poem-preface').hidden = true;
-    $('source-link').href = encodeURI(poem.path);
-    document.title = `${poem.title} · 毛主席诗词 · 山河诗卷`;
-    $('reading-announcement').textContent = `${poem.collection}，编号 ${poem.id}，${poem.title}，${poem.date}`;
-    $('copy-poem').setAttribute('aria-label', `复制《${poem.title}》`);
-    if ($('notes-dialog').open) renderNotes();
-    if ($('catalog-dialog').open) renderCatalog();
+    if (!match) { line.append(document.createTextNode(text.slice(pos))); break; }
+    line.append(document.createTextNode(text.slice(pos, match.at)));
+    const term = el('button', 'term', match.key);
+    term.dataset.note = String(match.index);
+    term.disabled = !notesVisible;
+    term.dataset.k = String(match.index + 1);
+    term.setAttribute('aria-label', `注释 ${match.index + 1}：${match.key}`);
+    line.append(term);
+    used.add(match.index);
+    pos = match.at + match.key.length;
   }
-
-  function selectPoem(index, { mode = 'sequential', history = true, initial = false } = {}) {
-    if (!Number.isInteger(index) || !poems[index]) return;
-    if (!initial && index === currentIndex) return;
-    const serial = ++selectionSerial;
-    activeTransition?.skipTransition();
-    currentIndex = index;
-    const update = () => { if (serial === selectionSerial) renderPoem(index, mode); };
-    if (!initial && !reducedMotion.matches && document.startViewTransition && !dialogs.some(dialog => dialog.open)) {
-      activeTransition = document.startViewTransition(update);
-      activeTransition.finished.catch(() => {}).finally(() => { if (serial === selectionSerial) activeTransition = null; });
-    } else {
-      update();
-      if (!initial && !reducedMotion.matches) $('poem-page').animate([
-        { opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' },
-      ], { duration: 380, easing: 'cubic-bezier(.22, 1, .36, 1)' });
-    }
-    if (history) {
-      const href = `#poem=${encodeURIComponent(poems[index].id)}`;
-      if (initial) window.history.replaceState(null, '', href);
-      else window.history.pushState(null, '', href);
-    }
-  }
-
-  function pickRandom() {
-    selectPoem(randomIndex(), { mode: 'random' });
-    if (!reducedMotion.matches) {
-      $('random-poem').querySelector('.icon').animate([
-        { transform: 'rotate(0deg)' }, { transform: 'rotate(180deg)' },
-      ], { duration: 440, easing: 'cubic-bezier(.22, 1, .36, 1)' });
-      document.querySelector('.star-glint').animate([
-        { transform: 'translateX(-140%)', opacity: 0 },
-        { opacity: .8, offset: .4 },
-        { transform: 'translateX(140%)', opacity: 0 },
-      ], { duration: 900, easing: 'cubic-bezier(.22, 1, .36, 1)' });
-    }
-  }
-
-  $('previous-poem').addEventListener('click', () => selectPoem((currentIndex - 1 + poems.length) % poems.length));
-  $('next-poem').addEventListener('click', () => selectPoem((currentIndex + 1) % poems.length));
-  $('random-poem').addEventListener('click', pickRandom);
-  const restoreHash = () => {
-    const index = hashIndex();
-    if (index !== null && index !== currentIndex) selectPoem(index, { history: false });
-  };
-  window.addEventListener('popstate', restoreHash);
-  window.addEventListener('hashchange', restoreHash);
-
-  const searchKey = (text) => text.toLowerCase().replace(/[\s·，。；、：?!？！:;,.]/g, '');
-  const searchable = poems.map(poem => searchKey(`${poem.id} ${poem.title} ${poem.date} ${poem.body.join('')}`));
-
-  function renderCatalog() {
-    const query = searchKey($('poem-search').value.trim());
-    const matches = poems.filter((poem, index) => (collection === '全部' || collection === poem.collection) && (!query || searchable[index].includes(query)));
-    const fragment = document.createDocumentFragment();
-    for (const group of groups) {
-      const groupPoems = matches.filter(poem => poem.collection === group);
-      if (!groupPoems.length) continue;
-      fragment.append(element('h3', 'catalog-group-title', `${group} / ${groupPoems.length} 篇`));
-      for (const poem of groupPoems) {
-        const button = element('button', 'catalog-entry');
-        button.type = 'button';
-        button.dataset.poemId = poem.id;
-        button.setAttribute('aria-label', `${poem.id} ${poem.title}${poem.year ? `，${poem.year}年` : ''}`);
-        if (poem.id === poems[currentIndex].id) button.setAttribute('aria-current', 'true');
-        button.append(element('span', 'catalog-entry-number', poem.id), element('span', 'catalog-entry-name', poem.title), element('span', 'catalog-entry-year', poem.year ?? '未详'), icon('arrow-right'));
-        fragment.append(button);
-      }
-    }
-    $('catalog-results').replaceChildren(fragment);
-    $('catalog-results').hidden = !matches.length;
-    $('catalog-empty').hidden = Boolean(matches.length);
-    $('result-count').textContent = query ? `寻到 ${matches.length} 篇` : `共 ${matches.length} 篇`;
-  }
-
-  function openCatalog() {
-    renderCatalog();
-    openDialog($('catalog-dialog'), $('poem-search'));
-  }
-  $('open-catalog').addEventListener('click', openCatalog);
-  $('quick-catalog').addEventListener('click', openCatalog);
-  $('poem-search').addEventListener('input', renderCatalog);
-  document.querySelectorAll('[data-collection]').forEach(button => {
-    button.addEventListener('click', () => {
-      collection = button.dataset.collection;
-      document.querySelectorAll('[data-collection]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-      renderCatalog();
-    });
-  });
-  $('clear-search').addEventListener('click', () => {
-    $('poem-search').value = '';
-    collection = '全部';
-    document.querySelectorAll('[data-collection]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.collection === collection)));
-    renderCatalog();
-    $('poem-search').focus();
-  });
-  $('catalog-results').addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-poem-id]');
-    if (!button) return;
-    const index = byId.get(button.dataset.poemId);
-    await closeDialog($('catalog-dialog'), false);
-    selectPoem(index, { mode: 'catalog' });
-    $('poem-title').setAttribute('tabindex', '-1');
-    $('poem-title').focus({ preventScroll: true });
-  });
-
-  // Only the small Markdown subset used by the source notes is rendered, without innerHTML.
-  function appendInline(parent, text) {
-    const tokens = /\[([^\]]+)\]\((?:<([^>]+)>|([^\s)]+))\)|\*\*([^*]+)\*\*/g;
-    let position = 0;
-    for (const match of text.matchAll(tokens)) {
-      parent.append(document.createTextNode(text.slice(position, match.index)));
-      if (match[4]) {
-        parent.append(element('strong', '', match[4]));
-      } else {
-        const href = match[2] || match[3];
-        let safe = false;
-        let url;
-        try {
-          url = new URL(href, new URL(poems[currentIndex].path, document.baseURI));
-          safe = ['https:', 'http:'].includes(url.protocol) || (url.protocol === 'file:' && url.href.startsWith(new URL('.', document.baseURI).href));
-        } catch { /* Invalid source links stay legible as plain text. */ }
-        if (safe) {
-          const link = element('a', '', match[1]);
-          link.href = url.href;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          parent.append(link);
-        } else parent.append(document.createTextNode(match[1]));
-      }
-      position = match.index + match[0].length;
-    }
-    parent.append(document.createTextNode(text.slice(position)));
-  }
-
-  function renderProse(text) {
-    const prose = element('div', 'note-prose');
-    const normalized = text.replace(/\r/g, '').replace(/\n(?=(?:〔|（\d+）|\(\d+\)|- ))/g, '\n\n');
-    const paragraphs = normalized.split(/\n\s*\n/).filter(part => part.trim());
-    for (const raw of paragraphs) {
-      const content = raw.trim();
-      const heading = content.match(/^#{1,6}\s+(.+)$/);
-      const block = element(heading ? 'h3' : content.startsWith('>') ? 'blockquote' : 'p');
-      const clean = heading ? heading[1] : content.replace(/^> ?/gm, '').replace(/^[-*] /gm, '');
-      const term = clean.match(/^(〔[^〕]+〕|（\d+）[^：:]{1,28}[：:])/);
-      if (term) {
-        block.append(element('span', 'note-term', term[0]));
-        appendInline(block, clean.slice(term[0].length));
-      } else appendInline(block, clean);
-      prose.append(block);
-    }
-    return prose;
-  }
-
-  function noteBlock(source, text) {
-    const section = element('section', 'note-block');
-    section.append(element('p', 'note-source', source), renderProse(text));
-    return section;
-  }
-
-  function renderNotes() {
-    const poem = poems[currentIndex];
-    $('notes-title').textContent = poem.title;
-    $('notes-poem-form').textContent = `${poem.collection} · 编次 ${poem.id} · ${poem.date}`;
-    $('source-link').href = encodeURI(poem.path);
-    const fragment = document.createDocumentFragment();
-    if (selectedTab === '资料') {
-      const editorial = poem.notes.filter(note => note.kind === '编者说明');
-      for (const note of editorial) fragment.append(noteBlock(note.source, note.text));
-      for (const version of [...poem.versions].sort((a, b) => Number(b.source === '品读版') - Number(a.source === '品读版'))) {
-        const details = element('details', 'source-disclosure');
-        details.append(element('summary', '', `${version.source} · 完整条目`));
-        details.addEventListener('toggle', () => {
-          if (details.open && details.children.length === 1) details.append(renderProse(version.text));
-        });
-        fragment.append(details);
-      }
-    } else {
-      const entries = poem.notes.filter(note => note.kind === selectedTab).sort((a, b) => Number(b.source === '品读版') - Number(a.source === '品读版'));
-      if (selectedTab === '题解' && poem.preface) fragment.append(noteBlock('诗前说明', poem.preface));
-      for (const entry of entries) fragment.append(noteBlock(`${entry.source} · ${entry.kind}`, entry.text));
-      if (!entries.length && !(selectedTab === '题解' && poem.preface)) {
-        const empty = element('div', 'note-empty');
-        empty.append(element('p', '', `这一页，未附${selectedTab}`), element('p', '', '可以继续读诗，或到「版本与备注」查看完整资料。'));
-        fragment.append(empty);
-      }
-    }
-    $('notes-panel').replaceChildren(fragment);
-    const tab = document.querySelector(`[data-tab="${selectedTab}"]`);
-    $('notes-panel').setAttribute('aria-labelledby', tab.id);
-  }
-
-  function changeTab(button, focus = false) {
-    selectedTab = button.dataset.tab;
-    document.querySelectorAll('[data-tab]').forEach(tab => {
-      tab.setAttribute('aria-selected', String(tab === button));
-      tab.tabIndex = tab === button ? 0 : -1;
-    });
-    renderNotes();
-    if (focus) button.focus();
-  }
-
-  $('open-notes').addEventListener('click', () => {
-    changeTab($('tab-annotations'));
-    openDialog($('notes-dialog'));
-    $('notes-dialog').scrollTop = 0;
-  });
-  const tabs = [...document.querySelectorAll('[data-tab]')];
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => changeTab(tab));
-    tab.addEventListener('keydown', (event) => {
-      let next;
-      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-      if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
-      if (event.key === 'Home') next = 0;
-      if (event.key === 'End') next = tabs.length - 1;
-      if (next !== undefined) { event.preventDefault(); changeTab(tabs[next], true); }
-    });
-  });
-
-  $('copy-poem').addEventListener('click', async () => {
-    const poem = poems[currentIndex];
-    const text = `${poem.title}\n${poem.collection === '补编' ? '补编资料' : '毛泽东'} · ${poem.date}\n\n${displayLines(poem.body).join('\n')}`;
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(text);
-      notify('诗句已复制');
-    } catch {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents($('poem-body'));
-      selection.removeAllRanges();
-      selection.addRange(range);
-      notify('已选中诗句，请按 ⌘C 或 Ctrl+C 复制');
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || dialogs.some(dialog => dialog.open)) return;
-    if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
-    if (event.key === '/') { event.preventDefault(); openCatalog(); }
-    else if (event.key.toLowerCase() === 'r') { event.preventDefault(); pickRandom(); }
-    else if (event.key === 'ArrowLeft') { event.preventDefault(); selectPoem((currentIndex - 1 + poems.length) % poems.length); }
-    else if (event.key === 'ArrowRight') { event.preventDefault(); selectPoem((currentIndex + 1) % poems.length); }
-  });
-
-  const first = hashIndex();
-  selectPoem(first ?? randomIndex(), { mode: first === null ? 'random' : 'catalog', initial: true });
+  return line;
 }
+
+function renderBody(p) {
+  poemNode.replaceChildren();
+  if (p.preface) poemNode.append(el('p', 'pre', p.preface));
+  const stanza = el('div', 'st');
+  stanza.dataset.l = '正文';
+  const used = new Set();
+  for (const line of linesForDisplay(p.body)) stanza.append(renderLine(line, p.annotations, used));
+  poemNode.append(stanza);
+  poemNode.classList.toggle('no-notes', !notesVisible);
+  $('#aNotesN').textContent = p.annotations.length;
+  $('#aNotes').disabled = !p.annotations.length;
+}
+
+function block(number, title, className) {
+  const article = el('article', `blk ${className} rv in`);
+  const heading = el('h3');
+  heading.append(el('i', '', number), document.createTextNode(title));
+  article.append(heading);
+  return article;
+}
+
+function addTextBlocks(container, records, empty) {
+  if (!records.length) { container.append(el('p', 'empty', empty)); return; }
+  for (const record of records) {
+    const section = el('div', 'study-source');
+    section.append(el('div', 'source-label', record.source));
+    for (const text of record.text.split(/\n\s*\n/).filter(Boolean)) section.append(el('p', '', text));
+    container.append(section);
+  }
+}
+
+function renderStudy(p) {
+  const study = $('#study');
+  study.replaceChildren();
+  const header = el('header', 'st-h rv in');
+  header.append(el('span', 'k', '鉴赏'), el('span', 'e', 'APPRECIATION'), el('i'), el('span', 't', p.title));
+  study.append(header);
+  const facts = block('01', '档案', 'b-facts');
+  const dl = el('dl', 'facts');
+  for (const [label, value] of [['编次', p.id], ['编目', p.collection], ['体裁', p.form], ['时间', p.date], ['录音', p.audio ? '合成朗诵 · 待听审' : '待补']]) {
+    const row = el('div'); row.append(el('dt', '', label), el('dd', '', value)); dl.append(row);
+  }
+  facts.append(dl); study.append(facts);
+  const context = block('02', '题解', 'b-bg');
+  if (p.preface) addTextBlocks(context, [{ source: '诗前说明', text: p.preface }], '');
+  addTextBlocks(context, p.context, p.preface ? '' : '这篇资料未附题解。');
+  study.append(context);
+  const analysis = block('03', '赏析', 'b-ap');
+  const grid = el('div', 'ap-grid');
+  const prose = el('div');
+  addTextBlocks(prose, p.appreciation, '这篇资料未附赏析。');
+  const quote = el('blockquote', 'quote');
+  quote.append(el('q', '', linesForDisplay(p.body)[0]), el('cite', '', `${p.title} ／ ${p.date}`));
+  grid.append(prose, quote); analysis.append(grid); study.append(analysis);
+  const annotations = block('04', '注释', 'b-nt');
+  const list = el('ol', 'notes');
+  p.annotations.forEach((note, index) => {
+    const li = el('li');
+    const button = el('button'); button.dataset.note = String(index);
+    const text = el('span');
+    text.append(el('span', 'k', note.key || '注释'), el('span', 'd', `${note.source} · ${note.text}`));
+    button.append(el('span', 'n', String(index + 1).padStart(2, '0')), text); li.append(button); list.append(li);
+  });
+  if (p.annotations.length) annotations.append(list); else annotations.append(el('p', 'empty', '这篇资料未附注释。'));
+  study.append(annotations);
+  const versions = block('05', '版本与备注', 'b-gl');
+  addTextBlocks(versions, p.remarks, '');
+  for (const version of p.versions) {
+    const details = el('details', 'source-disclosure');
+    details.append(el('summary', '', `${version.source} · 完整条目`), el('pre', '', version.text));
+    versions.append(details);
+  }
+  const source = el('a', 'source-link', '打开原始文档 ↗');
+  source.href = encodeURI(p.path); source.target = '_blank'; source.rel = 'noopener noreferrer';
+  versions.append(source); study.append(versions);
+  const footer = el('footer', 'colophon rv in');
+  footer.append(el('span', '', '合成朗诵 · 参考声音来源未核实 · 全部录音待听审'), el('i'), el('span', '', `№ ${p.id}`));
+  study.append(footer);
+}
+
+function closeNote() {
+  if ($('#pop').contains(document.activeElement) && noteAnchor?.isConnected) noteAnchor.focus({ preventScroll: true });
+  activeNote = -1;
+  $('#pop').classList.remove('in');
+  $('#pop').inert = true;
+  $('#pop').setAttribute('aria-hidden', 'true');
+  document.querySelectorAll('.term.sel').forEach(node => node.classList.remove('sel'));
+}
+
+function openNote(index, anchor) {
+  const note = current.annotations[index];
+  if (!note || !anchor) return;
+  closeNote(); activeNote = index; noteAnchor = anchor;
+  anchor.classList.add('sel');
+  $('#popN').textContent = String(index + 1).padStart(2, '0');
+  $('#popK').textContent = note.key || '注释';
+  $('#popT').textContent = `${note.source} · ${note.text}`;
+  $('#popI').textContent = `${index + 1} / ${current.annotations.length}`;
+  const pop = $('#pop');
+  const rect = anchor.getBoundingClientRect();
+  const width = Math.min(360, innerWidth - 24);
+  const x = Math.max(12, Math.min(innerWidth - width - 12, rect.left + rect.width / 2 - width / 2));
+  pop.style.left = `${x}px`;
+  pop.style.top = `${Math.max(8, Math.min(innerHeight - pop.offsetHeight - 12, rect.bottom + 14))}px`;
+  pop.style.setProperty('--ax', `${Math.max(18, Math.min(width - 18, rect.left + rect.width / 2 - x))}px`);
+  pop.inert = false;
+  pop.setAttribute('aria-hidden', 'false');
+  pop.classList.add('in');
+  $('#popX').focus({ preventScroll: true });
+}
+
+function render(p) {
+  current = p; closeNote();
+  document.title = `${p.title} · 毛泽东诗词鉴赏`;
+  $('#hero').dataset.poemId = p.id;
+  $('#hudNo').textContent = p.id;
+  $('#hudForm').textContent = p.form;
+  $('#hudPlace').textContent = p.collection;
+  $('#bignum').textContent = p.id;
+  $('#plNo').textContent = p.id;
+  $('#dt').textContent = p.date;
+  $('#author').textContent = p.collection === '补编' ? '补编资料' : '毛泽东';
+  $('#cp').textContent = p.title.includes('·') ? p.form : '诗词选读';
+  const title = p.title.includes('·') ? p.subject : p.title;
+  const heading = $('#tt');
+  heading.textContent = title;
+  heading.style.setProperty('--tk', title.length <= 1 ? 1 : title.length <= 3 ? .85 : title.length <= 7 ? .55 : .36);
+  renderBody(p);
+  const artIndex = Math.floor(Math.random() * 3);
+  $('#plArt').innerHTML = artwork(artIndex);
+  $('#plSlogan').textContent = '';
+  $('#plTag').textContent = '示意版画 · 非史料';
+  const ticker = $('#tk'); ticker.replaceChildren();
+  const excerpts = linesForDisplay(p.body).slice(0, 4);
+  for (let i = 0; i < 6; i++) for (const excerpt of excerpts) ticker.append(el('span', '', excerpt), el('i'));
+  renderStudy(p); renderIndex(); renderMatrix();
+  player.setPoem(p);
+  scroll.scrollTop = 0;
+  $('#poemWrap').scrollTop = 0;
+  $('#poemWrap').scrollLeft = 0;
+  poemNode.scrollTop = 0;
+}
+
+function select(id, history = true) {
+  const p = byId.get(id);
+  if (!p || p.id === current?.id) return;
+  render(p);
+  if (history) window.history.pushState(null, '', `#poem=${encodeURIComponent(p.id)}`);
+}
+
+function step(delta) {
+  const index = library.findIndex(p => p.id === current.id);
+  select(library[(index + delta + library.length) % library.length].id);
+}
+
+const player = createPlayer({ onPrevious: () => step(-1), onNext: () => step(1) });
+$('#chips').addEventListener('click', event => { const button = event.target.closest('[data-filter]'); if (button) { filter = button.dataset.filter; renderIndex(); } });
+$('#q').addEventListener('input', renderIndex);
+$('#list').addEventListener('click', event => { const button = event.target.closest('[data-id]'); if (button) { select(button.dataset.id); if (matchMedia('(max-width:1180px)').matches) setIndex(false); } });
+$('#cells').addEventListener('click', event => { const button = event.target.closest('[data-id]'); if (button) { setMatrix(false); select(button.dataset.id); } });
+$('#tIndex').addEventListener('click', () => setIndex(app.dataset.index !== '1'));
+$('#tMatrix').addEventListener('click', () => setMatrix(true));
+$('#mxBtn').addEventListener('click', () => setMatrix(true));
+$('#mxX').addEventListener('click', () => setMatrix(false));
+matrix.addEventListener('keydown', event => {
+  if (event.key !== 'Tab') return;
+  const buttons = [...matrix.querySelectorAll('button:not(:disabled)')];
+  if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1).focus(); }
+  else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0].focus(); }
+});
+$('#tTheme').addEventListener('click', () => {
+  const currentTheme = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'paper');
+  const theme = currentTheme === 'night' ? 'paper' : 'night';
+  document.documentElement.dataset.theme = theme;
+  $('#tTheme').textContent = theme === 'night' ? '昼' : '夜';
+});
+$('#aVert').addEventListener('click', () => {
+  vertical = !vertical;
+  poemNode.classList.toggle('vertical', vertical);
+  $('#poemWrap').classList.toggle('vertical-reading', vertical);
+  $('#poemWrap').scrollLeft = 0;
+  $('#aVert').setAttribute('aria-pressed', String(vertical));
+  closeNote();
+});
+$('#aNotes').addEventListener('click', () => {
+  notesVisible = !notesVisible;
+  poemNode.classList.toggle('no-notes', !notesVisible);
+  poemNode.querySelectorAll('.term').forEach(term => { term.disabled = !notesVisible; });
+  $('#aNotes').setAttribute('aria-pressed', String(notesVisible));
+  closeNote();
+});
+$('#aStudy').addEventListener('click', () => $('#study').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
+poemNode.addEventListener('click', event => { const term = event.target.closest('[data-note]'); if (term && notesVisible) openNote(Number(term.dataset.note), term); });
+$('#study').addEventListener('click', event => { const button = event.target.closest('[data-note]'); if (button) openNote(Number(button.dataset.note), button); });
+$('#popX').addEventListener('click', closeNote);
+$('#popPrev').addEventListener('click', () => { const n = (activeNote - 1 + current.annotations.length) % current.annotations.length; openNote(n, document.querySelector(`#study [data-note="${n}"]`)); });
+$('#popNext').addEventListener('click', () => { const n = (activeNote + 1) % current.annotations.length; openNote(n, document.querySelector(`#study [data-note="${n}"]`)); });
+document.addEventListener('click', event => { if (activeNote >= 0 && !event.target.closest('#pop, [data-note]')) closeNote(); });
+scroll.addEventListener('scroll', closeNote, { passive: true });
+window.addEventListener('popstate', () => { const id = new URLSearchParams(location.hash.slice(1)).get('poem'); if (byId.has(id)) select(id, false); });
+window.addEventListener('hashchange', () => { const id = new URLSearchParams(location.hash.slice(1)).get('poem'); if (byId.has(id)) select(id, false); });
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape') { if (!matrix.inert) setMatrix(false); else closeNote(); return; }
+  if (event.metaKey || event.ctrlKey || event.altKey || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || !matrix.inert) return;
+  const key = event.key.toLowerCase();
+  if (key === ' ' && !document.activeElement.closest('button, a, summary')) { event.preventDefault(); player.toggle(); }
+  else if (key === '/') { event.preventDefault(); setIndex(true); $('#q').focus(); }
+  else if (key === 'arrowdown' || key === 'j') { event.preventDefault(); step(1); }
+  else if (key === 'arrowup' || key === 'k') { event.preventDefault(); step(-1); }
+  else if (key === 'arrowleft') { event.preventDefault(); player.seekBy(-5); }
+  else if (key === 'arrowright') { event.preventDefault(); player.seekBy(5); }
+  else if (key === 'l') $('#tIndex').click();
+  else if (key === 'm') setMatrix(true);
+  else if (key === 't') $('#tTheme').click();
+  else if (key === 'v') $('#aVert').click();
+  else if (key === 'n' && !$('#aNotes').disabled) $('#aNotes').click();
+});
+
+const points = Array.from({ length: 10 }, (_, i) => {
+  const a = -Math.PI / 2 + i * Math.PI / 5;
+  const radius = i % 2 ? 38.2 : 100;
+  return `${(Math.cos(a) * radius).toFixed(2)},${(Math.sin(a) * radius).toFixed(2)}`;
+}).join(' ');
+$('#beacon').innerHTML = `<div class="beams"></div><svg class="bstar" viewBox="-100 -100 200 200"><polygon class="b-under" points="${points}"/><polygon class="b-facets" fill="#D6251A" points="${points}"/><polygon class="b-edge" points="${points}"/></svg>`;
+for (let i = 0; i < 90; i++) {
+  const bar = el('i');
+  bar.style.setProperty('--h', String(.25 + ((i * 37) % 75) / 100));
+  bar.style.setProperty('--t', `${.34 + ((i * 17) % 50) / 100}s`);
+  $('#bars').append(bar);
+}
+$('#ixCnt').textContent = String(library.length);
+$('#tTheme').textContent = matchMedia('(prefers-color-scheme: dark)').matches ? '昼' : '夜';
+setIndex(!matchMedia('(max-width:1180px)').matches);
+const initial = new URLSearchParams(location.hash.slice(1)).get('poem');
+render(byId.get(initial) || byId.get('19') || library[0]);
+if (!byId.has(initial)) history.replaceState(null, '', `#poem=${encodeURIComponent(current.id)}`);

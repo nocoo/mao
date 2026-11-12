@@ -1,5 +1,21 @@
 # Retrospective
 
+## Reset the actual reading scroll container
+
+The redesigned reader scrolls in `#poemWrap`, but the first implementation reset the inner poem instead. The fullscreen test exposed stale scroll position after navigation. Check the actual scroll owner when replacing layouts and test long-to-short poem navigation at each viewport. The same viewport checks also caught the player's time text overflowing at 320px, and review found the fixed-width catalog extending beyond the screen. Inspect flex children and open overlays at narrow sizes rather than checking the main frame alone.
+
+## Count staged Unicode paths safely
+
+I counted staged MP3s using a line-oriented suffix match, but Git quoted Unicode paths, so the check failed before the commit. Disable path quoting or use NUL-delimited Git output when checking staged filenames.
+
+## Test real media and vertical reading behavior
+
+Review found that long vertical poems initially showed their tail, a failed recording did not retry, and changing poems reset the browser's playback rate while retaining the old rate index. Test first-line visibility in both writing modes and exercise media loading, retries and rate changes with a real browser, not only mocked media elements. Hash-only navigation in the viewport test retained the previous writing mode; reload between viewport cases when isolation is required.
+
+## Verify pane split proportions
+
+I interpreted the Herdr split ratio as the new pane's share rather than the original pane's share, briefly leaving the controller too wide. Inspect the resulting layout immediately and resize the controller to one third before starting parallel work.
+
 ## Resolve global instruction paths before reading rules
 
 The global agent instructions were loaded through a symlink. I tried to read `rules/git-commit.md` relative to the symlink rather than its real location, so the first read failed. Resolve the real path of `AGENTS.md` before reading its sibling rules or skills.

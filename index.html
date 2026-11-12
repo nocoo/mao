@@ -1,153 +1,160 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" dir="ltr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#a52b23">
-  <meta name="description" content="山河诗卷：毛主席诗词数字阅览室。随机翻开一页，在朱墨与纸色之间读诗，按需展开注释、题解与原始资料。">
-  <title>毛主席诗词 · 山河诗卷</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/fonts/fonts.css">
-  <link rel="stylesheet" href="styles.css">
-  <script type="module" src="/app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="山河诗卷：毛主席诗词阅读与鉴赏。">
+<title>毛泽东诗词鉴赏 · 山河诗卷</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="/styles.css">
+<script type="module" src="/app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#reading">跳至诗词正文</a>
-  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 1.8 3.1 6.3 7 1-5.1 5 1.2 7-6.2-3.3-6.2 3.3 1.2-7-5.1-5 7-1z"/></symbol>
-    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
-    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
-    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/></symbol>
-    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01"/></symbol>
-    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="m18 3 3 3-3 3M3 6h3c5 0 7 12 12 12h3m-3-3 3 3-3 3M3 18h3c2 0 3-2 4-4m4-4c1-2 2-4 4-4h3"/></symbol>
-    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
-    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
-    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
-    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="1"/><path d="M16 8V3H3v13h5"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
-    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14M10 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6"/></symbol>
-  </svg>
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-star" viewBox="0 0 100 93"><polygon points="50,0 61.2,34.5 97.6,34.5 68.2,55.9 79.4,90.5 50,69.1 20.6,90.5 31.8,55.9 2.4,34.5 38.8,34.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 4.5v15l12-7.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 5h4.2v14H6zM13.8 5H18v14h-4.2z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 6h2.2v12H6zM19 6v12l-9-6z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M15.8 6H18v12h-2.2zM5 6l9 6-9 6z"/></symbol>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 .07  0 0 0 0 .06  0 0 0 0 .06  .9 0 0 0 -.36"/>
+  </filter>
+</svg>
 
-  <div class="page-frame">
-    <header class="site-header">
-      <div class="topline">
-        <a class="brand" href="index.html" aria-label="山河诗卷，随机翻开首页">
-          <span class="brand-star" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><span class="star-glint"></span></span>
-          <div class="brand-type"><h1>毛主席诗词</h1><span class="brand-caption">山河诗卷</span></div>
-        </a>
-        <nav class="top-nav" aria-label="主要导航">
-          <a class="nav-link is-active" href="#reading" aria-current="page">随读</a>
-          <button class="nav-link" id="open-catalog" aria-haspopup="dialog" aria-controls="catalog-dialog">篇目<span class="nav-count" data-count="total">100</span></button>
-          <button class="nav-link" id="open-about" aria-haspopup="dialog" aria-controls="about-dialog">关于此卷</button>
-        </nav>
-      </div>
-    </header>
+<div class="app" id="app" data-index="1">
 
-    <main id="reading" tabindex="-1">
-      <div class="reading-layout">
-        <aside class="poster-wall" aria-label="红星山河主题画面">
-          <figure class="landscape-print">
-            <img id="hero-art" src="assets/generated/red-star.webp" width="1024" height="1536" alt="金色光芒中的五角红星与迎风舒展的红旗，下方是层叠青山、松林和蜿蜒江河；GPT Image 生成的年代宣传画风格原创插画" fetchpriority="high">
-          </figure>
+  <aside class="rail" aria-label="站点">
+    <svg class="rail-star" aria-hidden="true"><use href="#i-star"/></svg>
+    <div class="rail-title">毛泽东诗词</div>
+    <div class="rail-line"></div>
+    <div class="rail-sub">POEMS OF MAO ZEDONG · 鉴赏</div>
+    <div class="rail-tools">
+      <button class="tool" id="tIndex" aria-pressed="true" title="目录 (L)" aria-label="显示或收起目录">目</button>
+      <button class="tool" id="tMatrix" title="总目矩阵 (M)" aria-label="打开总目矩阵">总</button>
+      <button class="tool" id="tTheme" title="昼 / 夜 (T)" aria-label="切换昼夜配色">夜</button>
+    </div>
+    <div class="rail-yr">2077</div>
+  </aside>
+
+  <nav class="index" id="index" aria-label="诗词目录">
+    <div class="ix-head">
+      <h2>目录</h2>
+      <div class="ix-cnt"><span id="ixCnt">100</span><small>篇资料</small></div>
+      <div class="ix-en"><span>INDEX</span><i></i><span>依原索引编次</span></div>
+    </div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
+      <input id="q" type="search" placeholder="检索 词牌 · 题 · 年份" autocomplete="off" spellcheck="false" aria-label="检索诗词">
+      <kbd>/</kbd>
+    </label>
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+    <div class="ix-foot">
+      <button class="mx-btn" id="mxBtn">
+        <span class="dots"></span>
+        <span><b>总目矩阵</b><small id="mxSub">全卷诗词 · 一览</small></span>
+        <span class="arr">↗</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="stage" id="stage">
+    <div class="scroll" id="scroll">
+      <section class="hero" id="hero">
+        <div class="beacon" id="beacon" aria-hidden="true"></div>
+        <div class="bignum" id="bignum" aria-hidden="true"></div>
+        <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+
+        <div class="sheet">
+          <header class="hud">
+            <span class="no"><b id="hudNo">—</b><span>/ 100 篇</span></span>
+            <span class="rule"></span>
+            <span class="dim" id="hudForm"></span>
+            <span class="rule"></span>
+            <span class="dim x" id="hudPlace"></span>
+          </header>
+
+          <div class="title" id="title">
+            <span class="cp" id="cp"></span>
+            <h1 id="tt"></h1>
+            <div class="t-side"><span class="au" id="author">毛泽东</span><span class="dt" id="dt"></span></div>
+          </div>
+
+          <div class="poem-wrap" id="poemWrap"><div class="poem" id="poem" lang="zh-Hans"></div></div>
+
+          <div class="acts">
+            <button class="act pri" id="aPlay"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span id="aPlayT">朗读全篇</span></button>
+            <button class="act" id="aNotes" aria-pressed="true">注释 <b id="aNotesN">0</b></button>
+            <button class="act" id="aRhyme" disabled title="资料未提供逐篇韵脚">韵脚</button>
+            <button class="act" id="aVert" aria-pressed="false">竖排</button>
+            <button class="act go" id="aStudy">鉴赏 ↓</button>
+          </div>
+        </div>
+
+        <aside class="plate-col" aria-label="配图">
+          <div class="pl-top"><span>图版 PLATE</span><b id="plNo">000</b><i></i><span>3 : 4</span></div>
+          <div class="pl-box">
+            <figure class="plate" id="plate" aria-label="示意版画">
+              <div class="pl-clip">
+                <div class="pl-art" id="plArt"></div>
+                <div class="pl-half"></div>
+                <div class="pl-sheen"></div>
+                <div class="pl-slogan" id="plSlogan"></div>
+                <div class="pl-tag" id="plTag">配图位</div>
+              </div>
+              <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+            </figure>
+          </div>
+          <div class="pl-foot"><span class="sw" aria-hidden="true"><span></span><span></span><span></span></span><span id="plCap">示意版画 · 随机选用</span><i></i></div>
         </aside>
 
-        <section class="reader" aria-label="诗词阅读">
-          <div class="reader-topline">
-            <p class="reader-eyebrow"><span class="red-square" aria-hidden="true"></span><span id="reading-mode">今日偶读</span><span class="separator" aria-hidden="true">/</span><span id="poem-collection">正编</span></p>
-            <button class="text-action" id="quick-catalog" aria-haspopup="dialog" aria-controls="catalog-dialog"><svg class="icon"><use href="#i-list"/></svg>全卷目录</button>
-          </div>
+        <div class="ticker" aria-hidden="true"><div class="tk" id="tk"></div></div>
+      </section>
 
-          <article class="poem-page" id="poem-page" aria-labelledby="poem-title" aria-busy="true" tabindex="0">
-            <div class="poem-inner">
-            <header class="poem-heading">
-              <div>
-                <p class="poem-form" id="poem-form">山河诗卷</p>
-                <h2 id="poem-title">展卷读诗</h2>
-                <p class="poem-meta"><span id="poem-author">毛泽东</span><span class="meta-rule" aria-hidden="true"></span><span id="poem-date">正在翻开一页</span></p>
-              </div>
-              <div class="folio" aria-label="篇目编号"><span>编次</span><b id="poem-id">—</b></div>
-            </header>
-            <div class="poem-preface" id="poem-preface" hidden></div>
-            <div class="verse" id="poem-body"><p class="loading-line">山河万里，诗意在此</p></div>
-            <div class="poem-end" aria-hidden="true"><span></span><svg viewBox="0 0 24 24"><use href="#i-star"/></svg><span></span></div>
-            </div>
-          </article>
+      <section class="study" id="study" aria-label="鉴赏"></section>
+    </div>
+    <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+    <div class="curtain" id="curtain" aria-hidden="true"><div class="cur-in"><svg><use href="#i-star"/></svg><span id="curNo">019</span></div></div>
+  </main>
 
-          <div class="reader-controls">
-          <div class="reading-actions" aria-label="切换诗词">
-            <button class="page-button" id="previous-poem" aria-label="前一首诗词"><svg class="icon"><use href="#i-arrow-left"/></svg><span>前一首</span></button>
-            <button class="shuffle-button" id="random-poem"><svg class="icon"><use href="#i-shuffle"/></svg><span>再遇一首</span><kbd aria-hidden="true">R</kbd></button>
-            <button class="page-button" id="next-poem" aria-label="后一首诗词"><span>后一首</span><svg class="icon"><use href="#i-arrow-right"/></svg></button>
-          </div>
+  <footer class="player" id="player" aria-label="朗读播放器">
+    <button class="pp" id="pp" aria-label="播放 / 暂停 (空格)">
+      <svg class="ring" viewBox="0 0 70 70" aria-hidden="true"><circle cx="35" cy="35" r="33"/><circle class="pg" id="ring" cx="35" cy="35" r="33"/></svg>
+      <svg class="ico i-play" aria-hidden="true"><use href="#i-play"/></svg>
+      <svg class="ico i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+    </button>
+    <div class="pl-nav">
+      <button id="prevL" aria-label="前一篇"><svg class="ico" aria-hidden="true"><use href="#i-prev"/></svg></button>
+      <button id="nextL" aria-label="后一篇"><svg class="ico" aria-hidden="true"><use href="#i-next"/></svg></button>
+    </div>
+    <div class="now"><div class="k"><span id="pMode">人声朗读</span><span>·</span><span id="pIdx">00 / 00</span></div><div class="l" id="pLine"></div></div>
+    <div class="wave"><div class="bars" id="bars" aria-hidden="true"></div><input id="seek" type="range" min="0" max="1000" value="0" aria-label="录音播放进度"></div>
+    <div class="ctl"><button id="rate" title="播放速度">1.0×</button></div>
+    <audio id="audio" preload="metadata"></audio>
+  </footer>
+</div>
 
-          <div class="read-deeper-row">
-            <button class="read-deeper" id="open-notes" aria-haspopup="dialog" aria-controls="notes-dialog">
-              <span class="deeper-label"><svg class="icon"><use href="#i-book"/></svg>展卷细读</span>
-              <span class="deeper-hint">注释 · 题解 · 原始资料</span>
-              <svg class="icon plus"><use href="#i-plus"/></svg>
-            </button>
-            <button class="copy-button" id="copy-poem" aria-label="复制本首诗词" title="复制本首诗词"><svg class="icon"><use href="#i-copy"/></svg></button>
-          </div>
-          <div class="reading-footer"><span>共 <b data-count="total">100</b> 篇</span><span class="footer-shortcuts"><kbd>←</kbd><kbd>→</kbd>翻页 <span>·</span><kbd>R</kbd>随机 <span>·</span><kbd>/</kbd>目录</span></div>
-          <p class="reader-error" id="reader-error" role="alert" hidden></p>
-          </div>
-        </section>
-      </div>
-      <noscript><p class="noscript-note">启用 JavaScript 即可随机读诗和浏览目录；也可直接打开<a href="data/诗词/index.md">诗词 Markdown 索引</a>。</p></noscript>
-    </main>
+<div class="pop" id="pop" role="dialog" aria-label="注释" aria-hidden="true" data-pos="below" inert>
+  <div class="pop-h"><span class="pop-n"><small>注</small><span id="popN">01</span></span><b class="pop-k" id="popK"></b><button class="pop-x" id="popX" aria-label="关闭注释">×</button></div>
+  <p class="pop-t" id="popT"></p>
+  <div class="pop-f"><button id="popPrev">‹ 上一条</button><span id="popI">1 / 1</span><button id="popNext">下一条 ›</button></div>
+</div>
 
+<div class="matrix" id="matrix" role="dialog" aria-modal="true" aria-label="总目矩阵" aria-hidden="true" inert>
+  <div class="mx-h">
+    <h2>总目矩阵</h2>
+    <span class="s" id="mxS">100 篇资料</span>
+    <i></i>
+    <div class="lg"><span class="a">有录音</span><span class="b">录音待补</span></div>
+    <button class="mx-x" id="mxX" aria-label="关闭">×</button>
   </div>
+  <div class="cells" id="cells"></div>
+</div>
 
-  <dialog class="sheet catalog-sheet" id="catalog-dialog" aria-labelledby="catalog-title">
-    <div class="sheet-topbar"><span class="sheet-kicker">山河诗卷 / 篇目</span><button class="icon-button" data-close aria-label="关闭目录"><svg class="icon"><use href="#i-close"/></svg></button></div>
-    <header class="sheet-header"><h2 id="catalog-title">诗词总目<span>正编 42 · 副编 25 · 补编 33</span></h2><svg class="sheet-star" aria-hidden="true"><use href="#i-star"/></svg></header>
-    <div class="catalog-search"><svg class="icon"><use href="#i-search"/></svg><label class="sr-only" for="poem-search">按题目、年份或诗句搜索</label><input id="poem-search" type="search" placeholder="找一首诗，或一句记得的诗句" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
-    <div class="collection-filters" role="group" aria-label="筛选编目">
-      <button data-collection="全部" aria-pressed="true">全部 <span>100</span></button>
-      <button data-collection="正编" aria-pressed="false">正编 <span>42</span></button>
-      <button data-collection="副编" aria-pressed="false">副编 <span>25</span></button>
-      <button data-collection="补编" aria-pressed="false">补编 <span>33</span></button>
-    </div>
-    <div class="catalog-status"><span id="result-count" role="status" aria-live="polite">共 100 篇</span><span>依原索引次序</span></div>
-    <div class="catalog-results" id="catalog-results"></div>
-    <div class="catalog-empty" id="catalog-empty" hidden><span>暂未寻到这一页</span><p>试试题目中的字、创作年份，或另一句诗</p><button class="text-action" id="clear-search">重看全卷<svg class="icon"><use href="#i-arrow-right"/></svg></button></div>
-    <footer class="sheet-footer">正编与副编 67 首 · 补编 33 条资料</footer>
-  </dialog>
-
-  <dialog class="sheet notes-sheet" id="notes-dialog" aria-labelledby="notes-title">
-    <div class="sheet-topbar"><span class="sheet-kicker">山河诗卷 / 展卷细读</span><button class="icon-button" data-close aria-label="关闭鉴赏资料"><svg class="icon"><use href="#i-close"/></svg></button></div>
-    <header class="sheet-header notes-heading"><div><p id="notes-poem-form"></p><h2 id="notes-title">诗词细读</h2></div><svg class="sheet-star" aria-hidden="true"><use href="#i-star"/></svg></header>
-    <div class="notes-tabs" role="tablist" aria-label="鉴赏资料分类">
-      <button role="tab" id="tab-annotations" aria-selected="true" aria-controls="notes-panel" data-tab="注释">注释</button>
-      <button role="tab" id="tab-context" aria-selected="false" aria-controls="notes-panel" data-tab="题解" tabindex="-1">题解</button>
-      <button role="tab" id="tab-analysis" aria-selected="false" aria-controls="notes-panel" data-tab="赏析" tabindex="-1">赏析</button>
-      <button role="tab" id="tab-versions" aria-selected="false" aria-controls="notes-panel" data-tab="资料" tabindex="-1">版本与备注</button>
-    </div>
-    <div class="notes-panel" id="notes-panel" role="tabpanel" aria-labelledby="tab-annotations" tabindex="0"></div>
-    <footer class="sheet-footer"><span>保留两份资料的原始编注</span><a id="source-link" href="data/诗词/index.md" target="_blank" rel="noopener">原始文档<svg class="icon"><use href="#i-external"/></svg></a></footer>
-  </dialog>
-
-  <dialog class="sheet about-sheet" id="about-dialog" aria-labelledby="about-title">
-    <div class="sheet-topbar"><span class="sheet-kicker">山河诗卷 / 编读说明</span><button class="icon-button" data-close aria-label="关闭编读说明"><svg class="icon"><use href="#i-close"/></svg></button></div>
-    <header class="sheet-header"><h2 id="about-title">关于此卷</h2><svg class="sheet-star" aria-hidden="true"><use href="#i-star"/></svg></header>
-    <div class="about-body">
-      <p>这里汇集了已有的诗词与品读资料。主目依 1996 年《毛泽东诗词集》编排，组诗逐首拆分，共 67 首；另有补编 33 条。保留各篇编号，亦保留不同版本留下的文字。</p>
-      <h3>先读诗，再看注</h3>
-      <p>打开首页，随机遇见卷中的一篇。左右翻篇，或在目录里寻找熟悉的题目。点「展卷细读」，再看注释、题解与资料原貌。</p>
-      <h3>关于文本</h3>
-      <p>阅读正文优先采用文档中的校订内容；注释与题解保留各自来源，不将不同解释混为一谈。补编的收录范围、日期与版本说明，可在「版本与备注」中查阅。</p>
-      <div class="about-links"><a href="data/诗词/index.md" target="_blank" rel="noopener">资料索引<svg class="icon"><use href="#i-external"/></svg></a><a href="data/诗词/校勘记录.md" target="_blank" rel="noopener">校勘记录<svg class="icon"><use href="#i-external"/></svg></a></div>
-      <h3>视觉参考</h3>
-      <p>参考 1966—1975 年宣传画的红黑大色块、斜向构图与暖色手绘质感。主视觉由 GPT Image Sunburst 生成，是新的红星山河插画，不是历史原作。</p>
-      <ul class="reference-links">
-        <li><a href="https://chineseposters.net/gallery/e15-183" target="_blank" rel="noopener noreferrer">红黑双色与斜向构图 · 约 1966 年</a></li>
-        <li><a href="https://chineseposters.net/posters/dc-001" target="_blank" rel="noopener noreferrer">《闪闪红星传万代》· 1975 年</a></li>
-        <li><a href="https://chineseposters.net/gallery/e12-124" target="_blank" rel="noopener noreferrer">《大队图书室》· 1975 年</a></li>
-      </ul>
-      <p class="about-colophon">字体采用开源 Ma Shan Zheng 与 Noto Serif SC。阅读时不调用生成服务，无需账户，也不上传阅读记录。原始资料及注释保持本地存放。</p>
-    </div>
-  </dialog>
-  <p class="sr-only" id="reading-announcement" aria-live="polite" aria-atomic="true"></p>
-  <div class="toast" id="toast" role="status" hidden></div>
+<div class="toast" id="toast" role="status"></div>
+<noscript>启用 JavaScript 后阅读诗词，或打开 <a href="data/诗词/index.md">诗词索引</a>。</noscript>
 </body>
 </html>
