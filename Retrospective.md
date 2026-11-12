@@ -1,5 +1,9 @@
 # Retrospective
 
+## Respect image-generation call limits
+
+Two concurrent image requests succeeded, but immediately starting the remaining requests exceeded the deployment's rate limit. Preserve successful originals, honor the service's retry delay, and space subsequent requests instead of launching the entire batch at once.
+
 ## Keep static assets off the Worker path
 
 The CDN migration initially enabled `run_worker_first` for every request even though the Worker only forwards assets, unnecessarily consuming Worker requests. Keep the default assets-first routing and test the configuration when removing a Worker-specific media path.
