@@ -1,5 +1,9 @@
 # Retrospective
 
+## Validate batch prompts before generation
+
+A batch prompt omitted the shared woodcut-style wording and another named the wrong kind of fly. Review every prompt against the poem, shared style, and display crop before making paid image requests.
+
 ## Compare historical data with its original parser
 
 A provenance check fed the old split-ID index into the new parser, which intentionally rejects split IDs. Load the parser from the historical revision when comparing historical and current source data.
