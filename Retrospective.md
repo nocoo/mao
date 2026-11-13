@@ -1,5 +1,13 @@
 # Retrospective
 
+## Verify proper names in illustration prompts
+
+A prompt misspelled the name of a historical terrace and another used ambiguous wording for a rifle. Check place names against the source and clarify ambiguous visual nouns before making image requests.
+
+## Limit tool discovery to relevant skill files
+
+After a machine-level skill relocation, a broad text search also surfaced unrelated secret metadata. Restrict discovery to relevant skill filenames and exclude secret inventories before searching content.
+
 ## Stop and recheck ambiguous R2 preflights
 
 A batch upload halted when an object-existence check returned an unrecognized error. Preserve the verification ledger, inspect a fresh read-only check, and resume only after the object's state is confirmed; never treat an unknown error as a missing object.
