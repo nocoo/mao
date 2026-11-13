@@ -1,0 +1,5 @@
+Edit the supplied woodcut illustration for “Sixteen-character Song, No. 1.” Preserve its existing composition, rider's backward glance, horse's pose, cliff path, mountains, carved textures, paper tone, and lighting. Only change the rider and horse within the editable region.
+
+The Red Army soldier's uniform, cap, skin, equipment, and the horse's entire body must not be red. Render them in the existing black, charcoal grey, and warm paper-white woodcut palette, with readable carved highlights. Add just one small vermilion five-pointed star on the soldier's cap as a restrained red accent. Do not color the uniform, face, hands, horse, saddle, or landscape red. Keep their shapes and positions faithful to the input image.
+
+Retain the original Chinese revolutionary-era woodcut print style, portrait composition, and fine hand-carved detail. No lettering, caption, watermark, border, identifiable historical portrait, modern objects, photorealism, or 3D rendering.

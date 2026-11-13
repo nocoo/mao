@@ -22,6 +22,7 @@ Use the exact record ID from `data/诗词/index.md`, including suffixes such as 
 
 - Original Chinese revolutionary-era woodcut print, not a photograph or a reproduction of a historical artwork. Match the reference's hand-carved shapes, gouge marks, rough ink impressions, paper texture, bold contrast, readable large forms, and detailed landscape.
 - Use vermilion red, ink black, warm paper white, and restrained greys. Let red provide visual force without overwhelming the subject; keep the balance appropriate to the poem.
+- Do not render Red Army soldiers, their uniforms, or horses as solid red. Use neutral ink and paper tones for figures and animals; reserve red for small details such as cap stars or other objects.
 - Compose around specific images and mood from the source text. Interpret metaphors visually rather than forcing literal objects; let intimate, elegiac, or contemplative poems keep their own tone. Do not copy the No. 19 landscape or motifs into unrelated poems.
 - Use an expansive, dynamic composition where the poem calls for it. Avoid text, calligraphy, captions, watermarks, borders, and photorealistic or 3D imagery. Do not invent historical events or present generated imagery as documentary evidence.
 
