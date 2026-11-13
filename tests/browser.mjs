@@ -221,16 +221,20 @@ try {
 
   const illustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await monitor(illustration);
-  await illustration.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
-  await waitPoem(illustration, '16');
-  await assertPlaceholderIllustration(illustration, '七律·长征');
-  for (const id of ['19', '16', '19']) {
+  await illustration.goto(`${origin}/#poem=40`, { waitUntil: 'networkidle' });
+  await waitPoem(illustration, '40');
+  await assertPlaceholderIllustration(illustration, '五古·挽易昌陶');
+  for (const id of ['19', '40', '19']) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
     if (id === '19') await assertGeneratedIllustration(illustration);
-    else await assertPlaceholderIllustration(illustration, '七律·长征');
+    else await assertPlaceholderIllustration(illustration, '五古·挽易昌陶');
   }
-  for (const [id, title] of [['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'], ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”']]) {
+  for (const [id, title] of [
+    ['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'],
+    ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”'],
+    ['11', '渔家傲·反第二次大“围剿”'], ['12', '菩萨蛮·大柏地'], ['13', '清平乐·会昌'], ['14-1', '十六字令三首（其一）'], ['14-2', '十六字令三首（其二）'],
+  ]) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
     await assertGeneratedIllustration(illustration, id, title);
@@ -253,9 +257,9 @@ try {
   await failedIllustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
   assert.equal(await failedIllustration.locator('#plArt .pl-error').textContent(), '配图暂时无法加载');
   assert.equal(await failedIllustration.locator('#plArt svg').count(), 0);
-  await failedIllustration.evaluate(() => { location.hash = 'poem=16'; });
-  await waitPoem(failedIllustration, '16');
-  await assertPlaceholderIllustration(failedIllustration, '七律·长征');
+  await failedIllustration.evaluate(() => { location.hash = 'poem=40'; });
+  await waitPoem(failedIllustration, '40');
+  await assertPlaceholderIllustration(failedIllustration, '五古·挽易昌陶');
   await failedIllustration.unroute(illustrationUrl);
   await failedIllustration.evaluate(() => { location.hash = 'poem=19'; });
   await waitPoem(failedIllustration, '19');
@@ -268,7 +272,7 @@ try {
   await compactEntry.goto(`${origin}/#poem=14-1`, { waitUntil: 'domcontentloaded' });
   await compactEntry.waitForFunction(() => document.querySelector('#curtain').classList.contains('boot'));
   await waitPoem(compactEntry, '14-1');
-  await assertPlaceholderIllustration(compactEntry, '十六字令三首（其一）');
+  await assertGeneratedIllustration(compactEntry, '14-1', '十六字令三首（其一）');
   const compactCurtain = await compactEntry.evaluate(() => {
     const animation = document.querySelector('#curtain').getAnimations()[0];
     animation.pause();
