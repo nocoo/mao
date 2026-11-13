@@ -1,15 +1,24 @@
 {
-  "id": "57-2",
+  "id": "57",
   "structure": {
-    "formLabel": "诗 · 七言绝句二十八字",
+    "formLabel": "诗 · 七言绝句（二首）",
     "stanzas": [
       {
-        "label": "正文",
+        "label": "其一",
         "lineIndexes": [
           0,
           1,
           2,
           3
+        ]
+      },
+      {
+        "label": "其二",
+        "lineIndexes": [
+          4,
+          5,
+          6,
+          7
         ]
       }
     ],
@@ -17,21 +26,51 @@
       {
         "lineIndex": 0,
         "offset": 6,
-        "character": "乡"
+        "character": "坚"
       },
       {
         "lineIndex": 1,
         "offset": 6,
-        "character": "肠"
+        "character": "旋"
       },
       {
         "lineIndex": 3,
+        "offset": 6,
+        "character": "弦"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 6,
+        "character": "乡"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 6,
+        "character": "肠"
+      },
+      {
+        "lineIndex": 7,
         "offset": 6,
         "character": "囊"
       }
     ]
   },
   "inlineTerms": [
+    {
+      "key": "龙华喋血",
+      "source": "品读版",
+      "sourceKey": "龙华喋血不眠夜"
+    },
+    {
+      "key": "犹制小诗",
+      "source": "品读版",
+      "sourceKey": "犹制小诗赋管弦"
+    },
+    {
+      "key": "赋管弦",
+      "source": "品读版",
+      "sourceKey": "犹制小诗赋管弦"
+    },
     {
       "key": "鉴湖",
       "source": "品读版",

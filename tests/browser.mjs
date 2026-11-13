@@ -233,8 +233,8 @@ try {
   for (const [id, title] of [
     ['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'],
     ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”'],
-    ['11', '渔家傲·反第二次大“围剿”'], ['12', '菩萨蛮·大柏地'], ['13', '清平乐·会昌'], ['14-1', '十六字令三首（其一）'], ['14-2', '十六字令三首（其二）'],
-    ['14-3', '十六字令三首（其三）'], ['15', '忆秦娥·娄山关'], ['16', '七律·长征'], ['17', '念奴娇·昆仑'], ['18', '清平乐·六盘山'],
+    ['11', '渔家傲·反第二次大“围剿”'], ['12', '菩萨蛮·大柏地'], ['13', '清平乐·会昌'], ['14', '十六字令三首'],
+    ['15', '忆秦娥·娄山关'], ['16', '七律·长征'], ['17', '念奴娇·昆仑'], ['18', '清平乐·六盘山'],
     ['20', '七律·人民解放军占领南京'],
   ]) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
@@ -269,12 +269,34 @@ try {
   await failedIllustration.close();
   pass('Generated illustration switches, reloads and reports download failures');
 
+  const grouped = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await monitor(grouped);
+  await grouped.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
+  await grouped.locator('#aPlay').click();
+  await grouped.waitForFunction(() => document.querySelector('#audio').currentTime > 0);
+  for (const [id, title, labels] of [
+    ['14', '十六字令三首', ['其一', '其二', '其三']],
+    ['26', '七律二首·送瘟神', ['其一', '其二']],
+    ['57', '七绝二首·纪念鲁迅八十寿辰', ['其一', '其二']],
+  ]) {
+    await grouped.evaluate(value => { location.hash = `poem=${value}`; }, id);
+    await waitPoem(grouped, id);
+    assert.equal(await grouped.locator('#tt').getAttribute('aria-label'), title);
+    assert.deepEqual(await grouped.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), labels);
+    assert.equal(await grouped.locator('#aPlay').isDisabled(), true);
+    assert.equal(await grouped.locator('#seek').isDisabled(), true);
+    assert.equal(await grouped.locator('#audio').getAttribute('src'), null);
+    assert.equal(await grouped.locator('#pMode').textContent(), '暂无录音');
+  }
+  await grouped.close();
+  pass('Grouped poems retain their parts and show unavailable recordings');
+
   const compactEntry = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: 'no-preference' });
   await monitor(compactEntry);
-  await compactEntry.goto(`${origin}/#poem=14-1`, { waitUntil: 'domcontentloaded' });
+  await compactEntry.goto(`${origin}/#poem=14`, { waitUntil: 'domcontentloaded' });
   await compactEntry.waitForFunction(() => document.querySelector('#curtain').classList.contains('boot'));
-  await waitPoem(compactEntry, '14-1');
-  await assertGeneratedIllustration(compactEntry, '14-1', '十六字令三首（其一）');
+  await waitPoem(compactEntry, '14');
+  await assertGeneratedIllustration(compactEntry, '14', '十六字令三首');
   const compactCurtain = await compactEntry.evaluate(() => {
     const animation = document.querySelector('#curtain').getAnimations()[0];
     animation.pause();
@@ -283,7 +305,7 @@ try {
     const stage = document.querySelector('.stage').getBoundingClientRect();
     return { text: document.querySelector('#curNo').textContent, left: content.left, right: content.right, stageLeft: stage.left, stageRight: stage.right };
   });
-  assert.equal(compactCurtain.text, '14-1');
+  assert.equal(compactCurtain.text, '014');
   assert.ok(compactCurtain.left >= compactCurtain.stageLeft && compactCurtain.right <= compactCurtain.stageRight);
   await compactEntry.close();
   pass('Curtain boot, exact numbering, character stagger, 480ms transitions and navigation ordering');
@@ -352,9 +374,11 @@ try {
   await waitPoem(page, '16');
   assert.match(await page.title(), /七律·长征/);
   assert.match(await page.locator('#poem').innerText(), /腾细浪/);
-  assert.equal(await page.locator('.row').count(), 100);
+  assert.equal(await page.locator('.row').count(), 96);
+  assert.equal(await page.locator('#ixCnt').textContent(), '96');
+  assert.equal(await page.locator('#hudTotal').textContent(), '/ 96 篇');
   assert.equal(await page.locator('#appVersion').textContent(), `v${packageVersion}`);
-  assert.equal(await page.locator('.cell').count(), 100);
+  assert.equal(await page.locator('.cell').count(), 96);
   assert.equal(await page.locator('input[type=file]').count(), 0);
   await assertGeneratedIllustration(page, '16', '七律·长征');
   assert.deepEqual(await page.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), ['首联', '颔联', '颈联', '尾联']);
@@ -387,9 +411,9 @@ try {
   pass('Prototype layout, all records and random placeholder art without upload');
 
   await page.locator('[data-filter="正编"]').click();
-  assert.equal(await page.locator('.row').count(), 42);
+  assert.equal(await page.locator('.row').count(), 39);
   await page.locator('[data-filter="副编"]').click();
-  assert.equal(await page.locator('.row').count(), 25);
+  assert.equal(await page.locator('.row').count(), 24);
   await page.locator('[data-filter="补编"]').click();
   assert.equal(await page.locator('.row').count(), 33);
   await page.locator('[data-filter="全部"]').click();
@@ -580,11 +604,11 @@ try {
     return issues;
   }, { analysesById: analyses, illustrationsById: illustrations });
   assert.deepEqual(allIssues, []);
-  pass('All 100 texts, structural sections, inline notes and rhyme markers render correctly');
+  pass('All 96 texts, structural sections, inline notes and rhyme markers render correctly');
   await page.goto(`${origin}/#poem=16`, { waitUntil: 'networkidle' });
   await page.locator('#aVert').click();
   assert.deepEqual(await page.evaluate(checkVerticalGeometry), []);
-  pass('All 100 vertical layouts keep large, unclipped and horizontally reachable text');
+  pass('All 96 vertical layouts keep large, unclipped and horizontally reachable text');
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   await monitor(mobile);

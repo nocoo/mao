@@ -11,12 +11,12 @@ Create a distinct illustration for each requested reading record, using the poem
 
 | Collection | Reading records | Target illustrations |
 | --- | ---: | ---: |
-| 正编 | 42 | 42 |
-| 副编 | 25 | 25 |
+| 正编 | 39 | 39 |
+| 副编 | 24 | 24 |
 | 补编 | 33 | 33 |
-| Total | 100 | 100 |
+| Total | 96 | 96 |
 
-Use the exact record ID from `data/诗词/index.md`, including suffixes such as `14-1`; each split record receives its own image. The No. 19 sample can count toward the target only if its final display crop is accepted. If retained, 99 other images remain. Generate only the scope authorized by the user; approval of this style does not authorize an automatic 100-image run or publication. The 33 supplementary records include fragments and uncertain attribution: reflect their actual sources and do not invent facts.
+Use the exact record ID from `data/诗词/index.md`. Grouped poems 14, 26, and 57 each receive one illustration for the complete entry. Check `data/illustrations.json` for completed records. Generate only the scope authorized by the user; approval of this style does not authorize an automatic full-catalog run or publication. The 33 supplementary records include fragments and uncertain attribution: reflect their actual sources and do not invent facts.
 
 ## Art direction
 

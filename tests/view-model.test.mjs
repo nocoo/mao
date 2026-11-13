@@ -27,10 +27,10 @@ function payload(line) {
   return plain ? plain[1] + plain[2] : content;
 }
 
-test('View Model 保留 100 个编号及构建数据中的基础字段', () => {
-  assert.equal(viewModel.length, 100);
+test('View Model 保留 96 个编号及构建数据中的基础字段', () => {
+  assert.equal(viewModel.length, 96);
   assert.deepEqual(viewModel.map(poem => poem.id), library.poems.map(poem => poem.id));
-  assert.equal(new Set(viewModel.map(poem => poem.id)).size, 100);
+  assert.equal(new Set(viewModel.map(poem => poem.id)).size, 96);
 
   for (const [index, poem] of viewModel.entries()) {
     assert.deepEqual(Object.keys(poem), fields, poem.id);
@@ -76,7 +76,10 @@ test('每篇分析完整覆盖其正文并按体例分组', () => {
   const labels = id => byId.get(id).structure.stanzas.map(part => part.label);
   for (const id of ['02', '19', '33', '49', '59', '86', '94']) assert.deepEqual(labels(id), ['上阕', '下阕'], id);
   for (const id of ['16', '20', '47', '48', '63', '81']) assert.deepEqual(labels(id), ['首联', '颔联', '颈联', '尾联'], id);
-  for (const id of ['07', '14-1', '29', '40', '58', '65', '68', '75', '78']) assert.ok(!labels(id).some(label => ['首联', '颔联', '颈联', '尾联', '上阕', '下阕'].includes(label)), id);
+  for (const id of ['07', '14', '29', '40', '58', '65', '68', '75', '78']) assert.ok(!labels(id).some(label => ['首联', '颔联', '颈联', '尾联', '上阕', '下阕'].includes(label)), id);
+  assert.deepEqual(labels('14'), ['其一', '其二', '其三']);
+  assert.deepEqual(labels('26'), ['其一', '其二']);
+  assert.deepEqual(labels('57'), ['其一', '其二']);
   assert.deepEqual(labels('76'), ['正文', '署名']);
   assert.equal(byId.get('79').structure.formLabel, '诗 · 四言诗');
   for (const id of ['70', '72', '74']) assert.deepEqual(labels(id), ['残句']);
@@ -139,7 +142,9 @@ test('分析数据必须完整覆盖正文并唯一引用可见词项', () => {
 test('韵脚依据词体、原注及合行文本逐字定位', () => {
   const rhymes = id => byId.get(id).structure.rhymeMarks.map(mark => mark.character).join('');
   assert.equal(rhymes('03'), '国北苍江去处滔高');
-  assert.equal(rhymes('14-1'), '山鞍三');
+  assert.equal(rhymes('14'), '山鞍三山澜酣山残间');
+  assert.equal(rhymes('26'), '多何歌河波条尧桥摇烧');
+  assert.equal(rhymes('57'), '坚旋弦乡肠囊');
   assert.equal(rhymes('17'), '色彻鳖说雪截国热');
   assert.equal(rhymes('23'), '燕天船边年鞭篇间');
   assert.equal(rhymes('25'), '柳九有酒袖舞虎雨');
@@ -165,8 +170,23 @@ test('音频用作品编号和内容哈希关联 CDN，并保留展示字段', (
     priorityReview: recording.priority_review,
   });
 
-  for (const id of ['39', '51', '78']) assert.equal(byId.get(id).audio, null, id);
-  assert.deepEqual(viewModel.filter(poem => poem.audio === null).map(poem => poem.id), ['39', '51', '78']);
+  for (const id of ['14', '26', '39', '51', '57', '78']) assert.equal(byId.get(id).audio, null, id);
+  assert.deepEqual(viewModel.filter(poem => poem.audio === null).map(poem => poem.id), ['14', '26', '39', '51', '57', '78']);
+});
+
+test('音频清单与合并后的目录和文件统计一致', () => {
+  assert.deepEqual(manifest.poems.map(poem => poem.id), library.poems.map(poem => poem.id));
+  const recordings = manifest.poems.filter(poem => poem.file);
+  assert.equal(manifest.summary.total, 96);
+  assert.equal(manifest.summary.generated, 90);
+  assert.equal(manifest.summary.failed, 3);
+  assert.equal(manifest.summary.missing, 3);
+  assert.equal(recordings.length, manifest.summary.generated);
+  assert.deepEqual(manifest.poems.filter(poem => poem.status === 'missing').map(poem => poem.id), ['14', '26', '57']);
+  assert.equal(recordings.reduce((total, poem) => total + poem.bytes, 0), manifest.summary.audio_bytes);
+  assert.equal(Math.round(recordings.reduce((total, poem) => total + poem.seconds, 0) * 100) / 100, manifest.summary.audio_seconds);
+  assert.equal(recordings.filter(poem => poem.priority_review).length, manifest.summary.priority_review);
+  assert.equal(manifest.summary.original_generation_evidence.generated, 97);
 });
 
 test('典型注释保留两个来源的全部条目且不会合并', () => {

@@ -18,12 +18,12 @@ function note(id, source, kind) {
   return byId.get(id).notes.find(item => item.source === source && item.kind === kind);
 }
 
-test('索引的 100 个唯一编号和路径逐条保留，主目 67 + 补编 33', () => {
-  assert.deepEqual(library.counts, { total: 100, main: 67, supplement: 33, 正编: 42, 副编: 25, 补编: 33 });
-  assert.equal(new Set(library.poems.map(poem => poem.id)).size, 100);
-  assert.equal(new Set(library.poems.map(poem => poem.path)).size, 100);
+test('索引的 96 个唯一编号和路径逐条保留，主目 63 + 补编 33', () => {
+  assert.deepEqual(library.counts, { total: 96, main: 63, supplement: 33, 正编: 39, 副编: 24, 补编: 33 });
+  assert.equal(new Set(library.poems.map(poem => poem.id)).size, 96);
+  assert.equal(new Set(library.poems.map(poem => poem.path)).size, 96);
   const rows = [...index.matchAll(/^\|\s*([\d-]+)\s*\|\s*\[([^\]]+)\]\(<([^>]+)>\)/gm)];
-  assert.equal(rows.length, 100);
+  assert.equal(rows.length, 96);
   rows.forEach(([, id, title, path], position) => {
     assert.equal(library.poems[position].id, id);
     assert.equal(library.poems[position].title, title);
@@ -68,8 +68,8 @@ test('标题来自索引而非原文件简称，并按中点分题材', () => {
   assert.equal(byId.get('63').title, '七律·咏贾谊');
   assert.equal(byId.get('87').title, '七绝·豫章西望（1971年9月以后）');
   assert.equal(byId.get('88').title, '七绝·群山万壑（1971年9月以后）');
-  assert.equal(byId.get('14-1').form, '十六字令');
-  assert.equal(byId.get('14-1').subject, '十六字令三首（其一）');
+  assert.equal(byId.get('14').form, '十六字令');
+  assert.equal(byId.get('14').subject, '十六字令三首');
   assert.equal(byId.get('69').form, '五律');
   assert.equal(byId.get('69').subject, '五律（1915年5月）');
 });
@@ -86,18 +86,39 @@ test('23 短词与 40 长诗保留逐行边界，不截尾、不附注释', () =
 });
 
 test('优先校订正文，但不更正原始资料字词、标点或组诗', () => {
-  assert.ok(byId.get('26-1').body.includes('巡天遥看一千河。'));
-  assert.match(byId.get('26-1').versions.find(item => item.source === '初始文本').text, /巡天遥看一天河。/);
+  assert.ok(byId.get('26').body.includes('巡天遥看一千河。'));
+  assert.match(byId.get('26').versions.find(item => item.source === '初始文本').text, /巡天遥看一天河。/);
   assert.ok(byId.get('17').body.includes('搅得周天寒彻。'));
   assert.match(byId.get('17').versions.find(item => item.source === '初始文本').text, /搅得周天寒澈。/);
-  assert.equal(byId.get('14-3').body.at(-1), '天欲堕，赖以拄其间。');
+  assert.equal(byId.get('14').body.at(-1), '天欲堕，赖以拄其间。');
   assert.ok(byId.get('27').body.includes('敢教日月换新天。'));
   assert.equal(byId.get('02').body[0], '独立寒秋,');
-  assert.equal(byId.get('57-2').body[2], '剑南歌接秋风呤，');
-  assert.equal(byId.get('14-1').body.length, 2);
-  assert.equal(byId.get('26-1').body.length, 8);
-  assert.equal(byId.get('26-2').body.length, 8);
-  assert.match(byId.get('14-1').versions[0].text, /其三/);
+  assert.equal(byId.get('57').body[6], '剑南歌接秋风呤，');
+  assert.equal(byId.get('14').body.length, 6);
+  assert.equal(byId.get('26').body.length, 16);
+  assert.equal(byId.get('57').body.length, 8);
+  assert.match(byId.get('14').versions[0].text, /其三/);
+});
+
+test('三组作品保留每首正文和来源差异，不再拆分目录', () => {
+  assert.deepEqual(byId.get('14').body, [
+    '山，快马加鞭未下鞍。', '惊回首，离天三尺三。',
+    '山，倒海翻江卷巨澜。', '奔腾急，万马战犹酣。',
+    '山，刺破青天锷未残。', '天欲堕，赖以拄其间。',
+  ]);
+  assert.deepEqual(byId.get('26').body, [
+    '绿水青山枉自多，', '华佗无奈小虫何！', '千村薜荔人遗矢，', '万户萧疏鬼唱歌。',
+    '坐地日行八万里，', '巡天遥看一千河。', '牛郎欲问瘟神事，', '一样悲欢逐逝波。',
+    '春风杨柳万千条，', '六亿神州尽舜尧。', '红雨随心翻作浪，', '青山着意化为桥。',
+    '天连五岭银锄落，', '地动三河铁臂摇。', '借问瘟君欲何往，', '纸船明烛照天烧。',
+  ]);
+  assert.deepEqual(byId.get('57').body, [
+    '博大胆识铁石坚，', '刀光剑影任翔旋。', '龙华喋血不眠夜，', '犹制小诗赋管弦。',
+    '鉴湖越台名士乡，', '忧忡为国痛断肠。', '剑南歌接秋风呤，', '一例氤氲入诗囊。',
+  ]);
+  for (const id of ['14-1', '14-2', '14-3', '26-1', '26-2', '57-1', '57-2']) assert.equal(byId.has(id), false, id);
+  assert.match(byId.get('14').notes.map(item => item.text).join('\n'), /天欲堕/);
+  assert.match(byId.get('57').notes.map(item => item.text).join('\n'), /秋风呤/);
 });
 
 test('补编 81 的正文不混入 96，原始版本仍完整保留附诗', () => {
@@ -133,6 +154,8 @@ test('日期只规范明确的年月日数字，优先校勘、不用典故或�
   assert.equal(normalizeDate('一九○九年十月三十一日'), '1909年10月31日');
   assert.equal(normalizeDate('约一九一六年'), '约1916年');
   assert.equal(normalizeDate('1930 年 1 月'), '1930年1月');
+  assert.equal(normalizeDate('1934年1935年'), '1934年—1935年');
+  assert.equal(byId.get('14').date, '1934年—1935年');
   assert.equal(byId.get('34').date, '1962年12月26日');
   assert.equal(byId.get('32').date, '1961年11月17日');
   assert.equal(byId.get('07').date, '1930年1月');
@@ -152,7 +175,7 @@ test('诗前说明、小引、正文中的序语均进入 preface，不与正文
   assert.equal(byId.get('33').preface, '读陆游咏梅词，反其意而用之。');
   assert.match(byId.get('22').preface, /^一九五零年国庆观剧/);
   assert.match(byId.get('27').preface, /^一九五九年六月二十五日到韶山/);
-  for (const id of ['26-1', '26-2']) assert.match(byId.get(id).preface, /^读6月30日人民日报，余江县消灭了血吸虫/);
+  assert.match(byId.get('26').preface, /^读6月30日人民日报，余江县消灭了血吸虫/);
   assert.equal(byId.get('48').preface, '一九四七年中秋步运河上，闻西北野战军收复蟠龙作。');
   assert.equal(byId.get('48').body[0], '秋风度河上，大野入苍穹。');
   assert.match(byId.get('78').preface, /^中华民国26年4月5日[\s\S]*朱德/);
@@ -165,7 +188,7 @@ test('多行注释、题解、赏析按来源提取，兼容括号、行内及�
   assert.match(note('02', '品读版', '题解').text, /赵恒惕再次通缉毛泽东/);
   assert.match(note('24', '品读版', '题解').text, /六月一日[\s\S]*四日，第三次/);
   assert.match(note('44', '品读版', '注释').text, /〔六言诗〕[\s\S]*〔给彭德怀同志〕/);
-  assert.match(note('26-1', '品读版', '注释').text, /〔送瘟神〕[\s\S]*〔纸船明烛〕/);
+  assert.match(note('26', '品读版', '注释').text, /〔送瘟神〕[\s\S]*〔纸船明烛〕/);
   assert.ok(byId.get('17').notes.some(item => item.source === '品读版' && item.kind === '注释' && item.text.startsWith('原注\n')));
   assert.match(note('34', '品读版', '赏析').text, /^作法\n[\s\S]*四支大韵/);
   assert.match(note('27', '初始文本', '赏析').text, /真情壮采/);
@@ -197,7 +220,7 @@ test('versions 全量保留每份原始条目和组诗，缺失初始资料不�
       else mainWithTwo++;
     }
   }
-  assert.equal(mainWithTwo, 56);
+  assert.equal(mainWithTwo, 53);
   assert.equal(supplementWithTwo, 15);
   assert.equal(byId.get('44').versions.length, 1);
   assert.match(byId.get('55').versions[0].text, /七绝·刘菁蕡1958年[\s\S]*刘口/);
@@ -213,6 +236,13 @@ test('解析器只选择第一个正文，拒绝无正文及不安全或重复�
   assert.throws(() => parseIndex('## 正编\n| 01 | [示例](<a.md>) |\n| 01 | [示例](<b.md>) |'), /重复 id/);
   assert.throws(() => parseIndex('## 正编\n| 01 | [示例](<a.md>) |\n| 02 | [示例](<a.md>) |'), /重复 path/);
   assert.throws(() => parseIndex('## 正编\n| 01 | 无链接 |'), /无法解析/);
+  assert.throws(() => parseIndex('## 正编\n| 14-1 | [旧编号](<a.md>) |'), /无法解析/);
+});
+
+test('组诗正文保留分首标题，但不会把标题和注释当作诗句', () => {
+  const entry = { id: '00', title: '组诗', collection: '正编', path: 'data/诗词/00-组诗.md' };
+  const poem = parsePoem(entry, '# 组诗\n\n## 正文\n\n### 其一\n第一首。\n\n### 其二\n第二首。\n\n### 注释\n不能进入正文。\n\n## 品读版原始条目\n组诗\n第一首。\n第二首。');
+  assert.deepEqual(poem.body, ['第一首。', '第二首。']);
 });
 
 test('生成数据可直接作为经典脚本执行，与当前 Markdown 构建结果一致', async () => {

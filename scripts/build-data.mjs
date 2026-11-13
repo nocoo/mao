@@ -16,7 +16,7 @@ export function parseIndex(markdown) {
     const heading = line.match(/^## (正编|副编|补编)/);
     if (heading) collection = heading[1];
     if (!/^\|\s*\d/.test(line)) continue;
-    const row = line.match(/^\|\s*(\d{2}(?:-\d+)?)\s*\|\s*\[([^\]]+)\]\(<([^>]+)>\)\s*\|/);
+    const row = line.match(/^\|\s*(\d{2})\s*\|\s*\[([^\]]+)\]\(<([^>]+)>\)\s*\|/);
     if (!row || !collection) throw new Error(`无法解析索引行：${line}`);
     const [, id, title, relativePath] = row;
     if (!relativePath.endsWith('.md') || relativePath.startsWith('/') || /(?:^|\/)\.\.(?:\/|$)|[:\\]/.test(relativePath)) {
@@ -93,7 +93,8 @@ export function normalizeDate(text) {
   return text.trim()
     .replace(/[零〇○一二两三四五六七八九十百千]+(?=\s*[年月日])/g, chineseNumber)
     .replace(/(\d)\s+(?=[年月日])/g, '$1')
-    .replace(/([年月])\s+(?=\d)/g, '$1');
+    .replace(/([年月])\s+(?=\d)/g, '$1')
+    .replace(/(\d{4}年)(?=\d{4}年)/g, '$1—');
 }
 
 function metadata(header, label) {
@@ -104,6 +105,7 @@ function verseLines(text) {
   const lines = [];
   for (const raw of text.split('\n')) {
     const line = raw.trim();
+    if (/^###\s+其[一二三]$/.test(line)) continue;
     if (noteMarker(line) || /^#/.test(line)) break;
     if (line && !line.startsWith('>')) lines.push(line);
   }

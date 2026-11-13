@@ -1,34 +1,32 @@
 {
-  "id": "26-1",
+  "id": "26",
   "structure": {
-    "formLabel": "诗 · 七言律诗",
+    "formLabel": "诗 · 七言律诗（二首）",
     "stanzas": [
       {
-        "label": "首联",
+        "label": "其一",
         "lineIndexes": [
           0,
-          1
-        ]
-      },
-      {
-        "label": "颔联",
-        "lineIndexes": [
+          1,
           2,
-          3
-        ]
-      },
-      {
-        "label": "颈联",
-        "lineIndexes": [
+          3,
           4,
-          5
-        ]
-      },
-      {
-        "label": "尾联",
-        "lineIndexes": [
+          5,
           6,
           7
+        ]
+      },
+      {
+        "label": "其二",
+        "lineIndexes": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
         ]
       }
     ],
@@ -57,6 +55,31 @@
         "lineIndex": 7,
         "offset": 6,
         "character": "波"
+      },
+      {
+        "lineIndex": 8,
+        "offset": 6,
+        "character": "条"
+      },
+      {
+        "lineIndex": 9,
+        "offset": 6,
+        "character": "尧"
+      },
+      {
+        "lineIndex": 11,
+        "offset": 6,
+        "character": "桥"
+      },
+      {
+        "lineIndex": 13,
+        "offset": 6,
+        "character": "摇"
+      },
+      {
+        "lineIndex": 15,
+        "offset": 6,
+        "character": "烧"
       }
     ]
   },
@@ -105,6 +128,26 @@
       "key": "逝波",
       "source": "品读版",
       "sourceKey": "一样悲欢逐逝波"
+    },
+    {
+      "key": "尽舜尧",
+      "source": "初始文本",
+      "sourceKey": "尽舜尧"
+    },
+    {
+      "key": "红雨",
+      "source": "初始文本",
+      "sourceKey": "红雨"
+    },
+    {
+      "key": "三河",
+      "source": "品读版",
+      "sourceKey": "三河"
+    },
+    {
+      "key": "纸船明烛",
+      "source": "品读版",
+      "sourceKey": "纸船明烛"
     }
   ]
 }

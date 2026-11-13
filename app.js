@@ -566,6 +566,7 @@ for (let i = 0; i < 90; i++) {
   $('#bars').append(bar);
 }
 $('#ixCnt').textContent = String(library.length);
+$('#hudTotal').textContent = `/ ${library.length} 篇`;
 $('#appVersion').textContent = `v${version}`;
 $('#tTheme').textContent = matchMedia('(prefers-color-scheme: dark)').matches ? '昼' : '夜';
 setIndex(!matchMedia('(max-width:1180px)').matches);

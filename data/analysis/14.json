@@ -1,0 +1,103 @@
+{
+  "id": "14",
+  "structure": {
+    "formLabel": "词 · 十六字令（三首）",
+    "stanzas": [
+      {
+        "label": "其一",
+        "lineIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "label": "其二",
+        "lineIndexes": [
+          2,
+          3
+        ]
+      },
+      {
+        "label": "其三",
+        "lineIndexes": [
+          4,
+          5
+        ]
+      }
+    ],
+    "rhymeMarks": [
+      {
+        "lineIndex": 0,
+        "offset": 0,
+        "character": "山"
+      },
+      {
+        "lineIndex": 0,
+        "offset": 8,
+        "character": "鞍"
+      },
+      {
+        "lineIndex": 1,
+        "offset": 8,
+        "character": "三"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 0,
+        "character": "山"
+      },
+      {
+        "lineIndex": 2,
+        "offset": 8,
+        "character": "澜"
+      },
+      {
+        "lineIndex": 3,
+        "offset": 8,
+        "character": "酣"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 0,
+        "character": "山"
+      },
+      {
+        "lineIndex": 4,
+        "offset": 8,
+        "character": "残"
+      },
+      {
+        "lineIndex": 5,
+        "offset": 8,
+        "character": "间"
+      }
+    ]
+  },
+  "inlineTerms": [
+    {
+      "key": "离天三尺三",
+      "source": "初始文本",
+      "sourceKey": "离天三尺三"
+    },
+    {
+      "key": "巨澜",
+      "source": "品读版",
+      "sourceKey": "巨澜"
+    },
+    {
+      "key": "战犹酣",
+      "source": "初始文本",
+      "sourceKey": "战犹酣"
+    },
+    {
+      "key": "锷",
+      "source": "品读版",
+      "sourceKey": "锷(è鄂)"
+    },
+    {
+      "key": "拄",
+      "source": "初始文本",
+      "sourceKey": "拄"
+    }
+  ]
+}

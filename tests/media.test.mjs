@@ -5,9 +5,9 @@ import { audioUrl } from '../src/media.js';
 import { cdnFixtureFetch } from './cdn-fixtures.mjs';
 
 test('audio CDN URLs use the exact poem ID and content hash', () => {
-  assert.equal(audioUrl('14-1', 'a'.repeat(64)), 'https://m.no.mt/audio/14-1-aaaaaaaaaaaaaaaa.mp3');
+  assert.equal(audioUrl('14', 'a'.repeat(64)), 'https://m.no.mt/audio/14-aaaaaaaaaaaaaaaa.mp3');
   assert.equal(audioUrl('01', 'b'.repeat(64)), 'https://m.no.mt/audio/01-bbbbbbbbbbbbbbbb.mp3');
-  for (const [id, hash] of [['1', 'a'.repeat(64)], ['../01', 'a'.repeat(64)], ['01', 'invalid'], ['01', 'A'.repeat(64)]]) {
+  for (const [id, hash] of [['1', 'a'.repeat(64)], ['14-1', 'a'.repeat(64)], ['../01', 'a'.repeat(64)], ['01', 'invalid'], ['01', 'A'.repeat(64)]]) {
     assert.throws(() => audioUrl(id, hash), /Invalid audio/);
   }
 });
