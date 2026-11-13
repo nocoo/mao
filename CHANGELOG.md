@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.1
+
+- Add approved poem-specific woodcut illustrations for records 21–40, including one image for the grouped 《送瘟神》.
+- Serve all 40 completed illustrations through the CDN.
+
 ## v1.3.0
 
 - Restore the three original poetry groups as single catalog entries, retaining the individual poems and source annotations.
