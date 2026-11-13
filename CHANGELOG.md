@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.0
+
+- Restore the three original poetry groups as single catalog entries, retaining the individual poems and source annotations.
+- Update the catalog to 96 entries and use one illustration for the complete 《十六字令三首》.
+- Remove the seven obsolete individual recordings; the three grouped entries await new recordings.
+
 ## v1.2.0
 
 - Add poem-specific woodcut illustrations for the first 20 numbered works, including all three parts of record 14.

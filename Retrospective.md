@@ -1,5 +1,13 @@
 # Retrospective
 
+## Compare historical data with its original parser
+
+A provenance check fed the old split-ID index into the new parser, which intentionally rejects split IDs. Load the parser from the historical revision when comparing historical and current source data.
+
+## Verify paths and portable commands before editing
+
+Parallel grouping work guessed two data paths, used GNU-only `find -printf` on macOS, and attempted a manifest replacement with mismatched context. Locate files first, use portable inventory commands, and read the exact unique text before editing.
+
 ## Run frozen-lock checks with the cached pinned pnpm
 
 An offline lockfile check selected a different registry, causing the pnpm launcher to seek uncached package-manager metadata. Use the already-installed pinned pnpm executable with package-manager auto-switching disabled for offline frozen-lock checks.
