@@ -1,5 +1,9 @@
 # Retrospective
 
+## Stop and recheck ambiguous R2 preflights
+
+A batch upload halted when an object-existence check returned an unrecognized error. Preserve the verification ledger, inspect a fresh read-only check, and resume only after the object's state is confirmed; never treat an unknown error as a missing object.
+
 ## Monitor temporary generation jobs through their ledger
 
 A diagnostic tried to read a temporary driver after it had been removed while the Python process continued running. Inspect the live process and its persistent progress ledger instead of assuming the driver file remains available.

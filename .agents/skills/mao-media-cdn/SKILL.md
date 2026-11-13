@@ -21,7 +21,7 @@ Manage poem illustrations and recordings in Cloudflare R2 without exposing crede
 
 `audio/manifest.json` identifies the 90 available recordings, three failed records, and three grouped entries awaiting recordings. The project owner confirmed authorization for the current batch's reference voice and public distribution. Its historical attribution is unverified, and every recording requires listening review. Confirm rights for any new reference or intended use before publishing it; a general upload request does not establish those rights. See `audio/README.md` and `skills/mao-poetry-recitation/SKILL.md`. Do not invent audio for missing records.
 
-The current illustration mapping is `data/illustrations.json`; records 01–20 point to their uploaded images, with one image for grouped record 14. `src/media.js` derives audio URLs from each ID and the manifest's SHA-256; all 90 available recordings are on the CDN. Preserve generated originals and prompts, including `design/samples/19-snow-original.png` and `design/samples/19-snow-prompt.txt`. Make web-optimized derivatives separately. The `mao-poetry-illustration` skill defines the image style, generation, crop, and review requirements.
+The current illustration mapping is `data/illustrations.json`; records 01–40 point to their uploaded images, with one image for each grouped record. `src/media.js` derives audio URLs from each ID and the manifest's SHA-256; all 90 available recordings are on the CDN. Preserve generated originals and prompts, including `design/samples/19-snow-original.png` and `design/samples/19-snow-prompt.txt`. Make web-optimized derivatives separately. The `mao-poetry-illustration` skill defines the image style, generation, crop, and review requirements.
 
 ## Upload and verify
 

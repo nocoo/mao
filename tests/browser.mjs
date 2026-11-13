@@ -221,22 +221,20 @@ try {
 
   const illustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await monitor(illustration);
-  await illustration.goto(`${origin}/#poem=40`, { waitUntil: 'networkidle' });
-  await waitPoem(illustration, '40');
-  await assertPlaceholderIllustration(illustration, '五古·挽易昌陶');
-  for (const id of ['19', '40', '19']) {
+  await illustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
+  const approvedIds = Object.keys(illustrations);
+  const records = await illustration.evaluate(ids => window.POEM_LIBRARY.poems.map(({ id, title }) => ({ id, title, generated: ids.includes(id) })), approvedIds);
+  const placeholder = records.find(record => !record.generated);
+  assert.ok(placeholder, 'Expected at least one poem without a generated illustration');
+  for (const id of [placeholder.id, '19', placeholder.id, '19']) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
     if (id === '19') await assertGeneratedIllustration(illustration);
-    else await assertPlaceholderIllustration(illustration, '五古·挽易昌陶');
+    else await assertPlaceholderIllustration(illustration, placeholder.title);
   }
-  for (const [id, title] of [
-    ['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'],
-    ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”'],
-    ['11', '渔家傲·反第二次大“围剿”'], ['12', '菩萨蛮·大柏地'], ['13', '清平乐·会昌'], ['14', '十六字令三首'],
-    ['15', '忆秦娥·娄山关'], ['16', '七律·长征'], ['17', '念奴娇·昆仑'], ['18', '清平乐·六盘山'],
-    ['20', '七律·人民解放军占领南京'],
-  ]) {
+  const approved = records.filter(record => record.generated);
+  assert.equal(approved.length, approvedIds.length);
+  for (const { id, title } of approved) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
     await assertGeneratedIllustration(illustration, id, title);
@@ -259,9 +257,9 @@ try {
   await failedIllustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
   assert.equal(await failedIllustration.locator('#plArt .pl-error').textContent(), '配图暂时无法加载');
   assert.equal(await failedIllustration.locator('#plArt svg').count(), 0);
-  await failedIllustration.evaluate(() => { location.hash = 'poem=40'; });
-  await waitPoem(failedIllustration, '40');
-  await assertPlaceholderIllustration(failedIllustration, '五古·挽易昌陶');
+  await failedIllustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, placeholder.id);
+  await waitPoem(failedIllustration, placeholder.id);
+  await assertPlaceholderIllustration(failedIllustration, placeholder.title);
   await failedIllustration.unroute(illustrationUrl);
   await failedIllustration.evaluate(() => { location.hash = 'poem=19'; });
   await waitPoem(failedIllustration, '19');
