@@ -234,6 +234,7 @@ try {
     ['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'],
     ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”'],
     ['11', '渔家傲·反第二次大“围剿”'], ['12', '菩萨蛮·大柏地'], ['13', '清平乐·会昌'], ['14-1', '十六字令三首（其一）'], ['14-2', '十六字令三首（其二）'],
+    ['14-3', '十六字令三首（其三）'], ['15', '忆秦娥·娄山关'], ['16', '七律·长征'], ['17', '念奴娇·昆仑'], ['18', '清平乐·六盘山'],
   ]) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
@@ -354,7 +355,7 @@ try {
   assert.equal(await page.locator('#appVersion').textContent(), `v${packageVersion}`);
   assert.equal(await page.locator('.cell').count(), 100);
   assert.equal(await page.locator('input[type=file]').count(), 0);
-  assert.equal(await page.locator('#plArt svg').count(), 1);
+  await assertGeneratedIllustration(page, '16', '七律·长征');
   assert.deepEqual(await page.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), ['首联', '颔联', '颈联', '尾联']);
   assert.equal(await page.locator('#tt .ch').count(), 2);
   assert.equal(await page.locator('#poem .term').count(), 14);
