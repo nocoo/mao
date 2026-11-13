@@ -230,7 +230,7 @@ try {
     if (id === '19') await assertGeneratedIllustration(illustration);
     else await assertPlaceholderIllustration(illustration, '七律·长征');
   }
-  for (const [id, title] of [['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争']]) {
+  for (const [id, title] of [['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争'], ['06', '采桑子·重阳'], ['07', '如梦令·元旦'], ['08', '减字木兰花·广昌路上'], ['09', '蝶恋花·从汀州向长沙'], ['10', '渔家傲·反第一次大“围剿”']]) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
     await assertGeneratedIllustration(illustration, id, title);
