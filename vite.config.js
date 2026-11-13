@@ -4,8 +4,7 @@ import { cp, mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
-const version = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version;
-const live = `${JSON.stringify({ status: 'ok', version })}\n`;
+const live = () => `${JSON.stringify({ status: 'ok', version: JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version })}\n`;
 
 function liveMiddleware(server, built = false) {
   server.middlewares.use((request, response, next) => {
@@ -16,7 +15,7 @@ function liveMiddleware(server, built = false) {
     }
     let body;
     try {
-      body = built ? readFileSync(new URL('./dist/api/live', import.meta.url), 'utf8') : live;
+      body = built ? readFileSync(new URL('./dist/api/live', import.meta.url), 'utf8') : live();
     } catch {
       response.writeHead(503, { 'Cache-Control': 'no-store' }).end();
       return;
@@ -46,7 +45,7 @@ export default defineConfig({
       } catch { /* Building from a source archive without Git is still supported. */ }
       await writeFile(fileURLToPath(new URL('./dist/build-info.json', import.meta.url)), `${JSON.stringify({ revision })}\n`);
       await mkdir(fileURLToPath(new URL('./dist/api/', import.meta.url)), { recursive: true });
-      await writeFile(fileURLToPath(new URL('./dist/api/live', import.meta.url)), live);
+      await writeFile(fileURLToPath(new URL('./dist/api/live', import.meta.url)), live());
       await writeFile(fileURLToPath(new URL('./dist/_headers', import.meta.url)), '/api/live\n  Content-Type: application/json; charset=utf-8\n  Cache-Control: no-store\n');
     },
   }],

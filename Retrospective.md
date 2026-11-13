@@ -1,5 +1,9 @@
 # Retrospective
 
+## Run frozen-lock checks with the cached pinned pnpm
+
+An offline lockfile check selected a different registry, causing the pnpm launcher to seek uncached package-manager metadata. Use the already-installed pinned pnpm executable with package-manager auto-switching disabled for offline frozen-lock checks.
+
 ## Verify CDN objects with an accepted HTTP client
 
 A public CDN verification request using Python's default urllib client received HTTP 403 after the first object was uploaded, while the same URL was accessible with curl. Check the HTTP response and object identity before updating site mappings; resume with the verified client and never overwrite an existing object blindly.

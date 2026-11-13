@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.0
+
+- Add poem-specific woodcut illustrations for the first 20 numbered works, including all three parts of record 14.
+- Serve illustrations and recordings through Cloudflare R2, preserving byte-range seeking and reducing the site build size.
+- Keep illustrations upright, enlarge them on wide screens, and display each poem's title beneath its image.
+- Add project skills for illustration production and CDN media uploads. All 97 synthetic recordings still require listening review; three remain unavailable.
+
 ## v1.1.0
 
 - Rebuild the reading room around the new poetry design, with catalog, matrix, responsive and vertical reading.

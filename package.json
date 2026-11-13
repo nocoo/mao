@@ -1,7 +1,7 @@
 {
   "name": "shanhe-poetry-room",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "毛主席诗词 · 山河诗卷，一座纸本风格的数字阅览室",
   "type": "module",
   "packageManager": "pnpm@11.28.5",
