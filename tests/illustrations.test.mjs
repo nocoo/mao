@@ -12,7 +12,7 @@ test('generated illustrations map existing poem IDs to versioned CDN URLs', () =
     assert.ok(ids.has(id), `unknown poem ${id}`);
     assert.match(url, new RegExp(`^https://m\\.no\\.mt/illustrations/${id}-[a-f0-9]{16}\\.webp$`));
   }
-  for (let number = 1; number <= 40; number++) {
+  for (let number = 1; number <= 60; number++) {
     const id = String(number).padStart(2, '0');
     assert.ok(illustrations[id], `missing approved illustration ${id}`);
   }
@@ -21,4 +21,6 @@ test('generated illustrations map existing poem IDs to versioned CDN URLs', () =
   assert.equal(illustrations['20'], 'https://m.no.mt/illustrations/20-7e3a28a9a24fa46d.webp');
   assert.equal(illustrations['26'], 'https://m.no.mt/illustrations/26-deb3e624815cb923.webp');
   assert.equal(illustrations['40'], 'https://m.no.mt/illustrations/40-999e717be6359b28.webp');
+  assert.equal(illustrations['57'], 'https://m.no.mt/illustrations/57-4788ae03794e59a6.webp');
+  assert.equal(illustrations['60'], 'https://m.no.mt/illustrations/60-1ef37eab5aa6d897.webp');
 });
