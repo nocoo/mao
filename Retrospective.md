@@ -1,5 +1,9 @@
 # Retrospective
 
+## Monitor temporary generation jobs through their ledger
+
+A diagnostic tried to read a temporary driver after it had been removed while the Python process continued running. Inspect the live process and its persistent progress ledger instead of assuming the driver file remains available.
+
 ## Validate batch prompts before generation
 
 A batch prompt omitted the shared woodcut-style wording and another named the wrong kind of fly. Review every prompt against the poem, shared style, and display crop before making paid image requests.
