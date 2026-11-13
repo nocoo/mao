@@ -25,18 +25,18 @@ async function monitor(page) {
   });
 }
 async function waitPoem(page, id) { await page.waitForFunction(value => document.querySelector('#hero').dataset.poemId === value, id); }
-async function assertGeneratedIllustration(page) {
+async function assertGeneratedIllustration(page, id = '19', title = '沁园春·雪') {
   const image = page.locator('#plArt img');
   await image.waitFor({ state: 'attached' });
   await image.evaluate(node => node.decode());
-  assert.equal(await image.getAttribute('src'), illustrationUrl);
-  assert.equal(await image.getAttribute('alt'), '《沁园春·雪》配图');
+  assert.equal(await image.getAttribute('src'), illustrations[id]);
+  assert.equal(await image.getAttribute('alt'), `《${title}》配图`);
   assert.equal(await page.locator('#plArt svg').count(), 0);
   const loaded = await image.evaluate(node => ({ complete: node.complete, width: node.naturalWidth, height: node.naturalHeight }));
   assert.equal(loaded.complete, true);
   assert.ok(loaded.width > 0 && loaded.height > 0);
   assert.equal(await page.locator('#plTag').count(), 0);
-  assert.equal(await page.locator('#plCap').textContent(), '《沁园春·雪》');
+  assert.equal(await page.locator('#plCap').textContent(), `《${title}》`);
 }
 async function assertPlaceholderIllustration(page, title) {
   assert.equal(await page.locator('#plArt img').count(), 0);
@@ -229,6 +229,11 @@ try {
     await waitPoem(illustration, id);
     if (id === '19') await assertGeneratedIllustration(illustration);
     else await assertPlaceholderIllustration(illustration, '七律·长征');
+  }
+  for (const [id, title] of [['01', '贺新郎·别友'], ['02', '沁园春·长沙'], ['03', '菩萨蛮·黄鹤楼'], ['04', '西江月·井冈山'], ['05', '清平乐·蒋桂战争']]) {
+    await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
+    await waitPoem(illustration, id);
+    await assertGeneratedIllustration(illustration, id, title);
   }
   await illustration.close();
 

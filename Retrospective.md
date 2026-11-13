@@ -1,5 +1,9 @@
 # Retrospective
 
+## Verify CDN objects with an accepted HTTP client
+
+A public CDN verification request using Python's default urllib client received HTTP 403 after the first object was uploaded, while the same URL was accessible with curl. Check the HTTP response and object identity before updating site mappings; resume with the verified client and never overwrite an existing object blindly.
+
 ## Respect image-generation call limits
 
 Two concurrent image requests succeeded, but immediately starting the remaining requests exceeded the deployment's rate limit. Preserve successful originals, honor the service's retry delay, and space subsequent requests instead of launching the entire batch at once.
