@@ -1,5 +1,9 @@
 # Retrospective
 
+## Keep prompt preparation input manageable
+
+A prompt-design agent repeatedly received `invalid_request_body` after loading many source documents and an image attachment. Start a clean session with text-only source and prompt references, and inspect artwork separately before generation.
+
 ## Verify configuration filenames before review
 
 A review looked for `vite.config.mjs`, but the repository uses `vite.config.js`. Discover the actual filename before reading it.
@@ -22,7 +26,7 @@ A diagnostic tried to read a temporary driver after it had been removed while th
 
 ## Validate batch prompts before generation
 
-A batch prompt omitted the shared woodcut-style wording and another named the wrong kind of fly. Review every prompt against the poem, shared style, and display crop before making paid image requests.
+A batch prompt omitted the shared woodcut-style wording, another named the wrong kind of fly, and a later batch omitted an explicit no-lettering constraint. Review every prompt against the poem, shared style, exclusions, and display crop before making paid image requests.
 
 ## Compare historical data with its original parser
 
