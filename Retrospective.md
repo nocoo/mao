@@ -1,5 +1,9 @@
 # Retrospective
 
+## Verify configuration filenames before review
+
+A review looked for `vite.config.mjs`, but the repository uses `vite.config.js`. Discover the actual filename before reading it.
+
 ## Verify proper names in illustration prompts
 
 A prompt misspelled the name of a historical terrace and another used ambiguous wording for a rifle. Check place names against the source and clarify ambiguous visual nouns before making image requests.
