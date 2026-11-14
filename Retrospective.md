@@ -1,5 +1,9 @@
 # Retrospective
 
+## Verify review selectors before browser checks
+
+A gallery check targeted nonexistent `.card` and `#count` elements, so it timed out despite the page being available. Read the actual gallery markup and assert its real selectors before running the browser check.
+
 ## Keep prompt preparation input manageable
 
 A prompt-design agent repeatedly received `invalid_request_body` after loading many source documents and an image attachment. Start a clean session with text-only source and prompt references, and inspect artwork separately before generation.
