@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0
+
+- Add approved poem-specific woodcut illustrations for records 41–80, including one image for the grouped 《纪念鲁迅八十寿辰》.
+- Serve all 80 completed illustrations through the CDN.
+
 ## v1.3.1
 
 - Add approved poem-specific woodcut illustrations for records 21–40, including one image for the grouped 《送瘟神》.
