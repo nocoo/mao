@@ -1,5 +1,9 @@
 # Retrospective
 
+## Resolve relocated shared rules and skills
+
+A release looked up shared files at old symlink locations after the system repositories were reorganized. Resolve the real `AGENTS.md` path and locate the current skill directory before reading shared instructions.
+
 ## Verify review selectors before browser checks
 
 A gallery check targeted nonexistent `.card` and `#count` elements, so it timed out despite the page being available. Read the actual gallery markup and assert its real selectors before running the browser check.
