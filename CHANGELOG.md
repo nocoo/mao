@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.0
+
+- Replace v1 poetry recitations with the Drama 3 v2 batch and supplement the remaining 6 poems, completing audio recordings for all 96 catalog entries.
+- Upload all 95 new/updated MP3 recordings to Cloudflare R2 and remove the 89 superseded v1 audio objects.
+- Refine the bottom audio player seek track and organic waveform visualization.
+
 ## v1.4.1
 
 - Add approved poem-specific woodcut illustrations for records 81–96, completing illustrations for all 96 catalog entries.
