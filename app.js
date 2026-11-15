@@ -428,6 +428,7 @@ function step(delta) {
   select(library[(index + delta + library.length) % library.length].id);
 }
 
+for (let i = 0; i < 88; i++) $('#bars').append(el('i'));
 const player = createPlayer({ onPrevious: () => step(-1), onNext: () => step(1) });
 $('#chips').addEventListener('click', event => { const button = event.target.closest('[data-filter]'); if (button) { filter = button.dataset.filter; renderIndex(); } });
 $('#q').addEventListener('input', renderIndex);
@@ -559,12 +560,6 @@ for (let i = 0; i < 5; i++) {
 }
 const echoes = [0, 1, 2].map(i => `<polygon class="echo" style="--i:${i}" points="${points}"/>`).join('');
 $('#beacon').innerHTML = `<div class="beams"></div><svg class="bstar" viewBox="-100 -100 200 200">${echoes}<polygon class="b-under" points="${points}"/><g class="b-facets">${facets}</g><g class="b-glints">${glints}</g><polygon class="b-edge" points="${points}"/></svg>`;
-for (let i = 0; i < 90; i++) {
-  const bar = el('i');
-  bar.style.setProperty('--h', String(.25 + ((i * 37) % 75) / 100));
-  bar.style.setProperty('--t', `${.34 + ((i * 17) % 50) / 100}s`);
-  $('#bars').append(bar);
-}
 $('#ixCnt').textContent = String(library.length);
 $('#hudTotal').textContent = `/ ${library.length} 篇`;
 $('#appVersion').textContent = `v${version}`;

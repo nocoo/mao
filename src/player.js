@@ -34,6 +34,47 @@ function playbackErrorText(error) {
   return error?.name === 'NotAllowedError' ? '浏览器阻止了播放，请再次点击' : '录音播放失败，请重试';
 }
 
+function shapeWave(bars, seedValue) {
+  const items = bars?.children;
+  if (!items?.length) return;
+  const seed = Number.parseInt(seedValue, 10) || 19;
+  const phaseA = (seed * 1.37) % (Math.PI * 2);
+  const phaseB = (seed * 2.71) % (Math.PI * 2);
+  const phaseC = (seed * 4.19) % (Math.PI * 2);
+  const count = items.length;
+  for (let i = 0; i < count; i++) {
+    const t = (i + 0.5) / count;
+    const taper = Math.pow(Math.sin(Math.PI * t), 0.45);
+    const phrase = 0.5 + 0.5 * Math.sin(t * Math.PI * 3.5 + phaseA);
+    const cadence = 0.5 + 0.5 * Math.sin(t * Math.PI * 11 + phaseB);
+    const detail = 0.5 + 0.5 * Math.cos(t * Math.PI * 23 + phaseC);
+    const amplitude = 0.18 + 0.80 * taper * (0.42 * phrase + 0.36 * cadence + 0.22 * detail);
+    const bar = items[i];
+    bar.style?.setProperty?.('--h', amplitude.toFixed(3));
+    bar.style?.setProperty?.('--t', `${(0.95 + 0.55 * detail).toFixed(2)}s`);
+    bar.style?.setProperty?.('--dl', `${(-(i * 0.048 + 0.12 * cadence)).toFixed(2)}s`);
+  }
+}
+
+function syncWave(bars, progress, hasRecording, playing) {
+  const items = bars?.children;
+  if (!items?.length) return;
+  bars.classList?.toggle?.('idle', !hasRecording);
+  const count = items.length;
+  const headIndex = playing && hasRecording ? Math.min(count - 1, Math.floor(progress * count)) : -1;
+  for (let i = 0; i < count; i++) {
+    const pos = (i + 0.5) / count;
+    const state = !hasRecording
+      ? 'future'
+      : i === headIndex || (playing && Math.abs(i - headIndex) <= 1)
+        ? 'head'
+        : pos <= progress
+          ? 'past'
+          : 'future';
+    if (items[i].dataset) items[i].dataset.state = state;
+  }
+}
+
 export function createPlayer({ onPrevious, onNext } = {}) {
   const app = required('app');
   const playButton = required('pp');
@@ -45,6 +86,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
   const line = required('pLine');
   const ring = required('ring');
   const seek = required('seek');
+  const bars = document.getElementById('bars');
   const previousButton = required('prevL');
   const nextButton = required('nextL');
   const audio = required('audio');
@@ -77,8 +119,10 @@ export function createPlayer({ onPrevious, onNext } = {}) {
     rateButton.disabled = unavailable;
     seek.disabled = unavailable || !duration;
     seek.value = String(Math.round(progress * 1000));
+    seek.style?.setProperty?.('--seek-p', `${(progress * 100).toFixed(2)}%`);
     seek.setAttribute('aria-valuetext', `${formatTime(current)} / ${duration ? formatTime(duration) : '--:--'}`);
     ring.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - progress));
+    syncWave(bars, progress, hasRecording, playing);
 
     if (unavailable) {
       actionText.textContent = '暂无录音';
@@ -164,6 +208,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
       audio.removeAttribute('src');
     }
     audio.load();
+    shapeWave(bars, poem?.id);
     render();
   }
 
@@ -182,6 +227,14 @@ export function createPlayer({ onPrevious, onNext } = {}) {
   };
   seek.addEventListener('input', seekFromControl);
   seek.addEventListener('change', seekFromControl);
+  bars?.addEventListener?.('click', event => {
+    const duration = finiteDuration(audio);
+    if (!hasRecording || !duration || typeof bars.getBoundingClientRect !== 'function') return;
+    const rect = bars.getBoundingClientRect();
+    if (!rect.width) return;
+    const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+    seekTo(ratio * duration);
+  });
   previousButton.addEventListener('click', () => {
     audio.pause();
     onPrevious?.();
