@@ -170,19 +170,18 @@ test('音频用作品编号和内容哈希关联 CDN，并保留展示字段', (
     priorityReview: recording.priority_review,
   });
 
-  for (const id of ['14', '26', '39', '51', '57', '78']) assert.equal(byId.get(id).audio, null, id);
-  assert.deepEqual(viewModel.filter(poem => poem.audio === null).map(poem => poem.id), ['14', '26', '39', '51', '57', '78']);
+  assert.deepEqual(viewModel.filter(poem => poem.audio === null).map(poem => poem.id), []);
 });
 
 test('音频清单与合并后的目录和文件统计一致', () => {
   assert.deepEqual(manifest.poems.map(poem => poem.id), library.poems.map(poem => poem.id));
   const recordings = manifest.poems.filter(poem => poem.file);
   assert.equal(manifest.summary.total, 96);
-  assert.equal(manifest.summary.generated, 90);
-  assert.equal(manifest.summary.failed, 3);
-  assert.equal(manifest.summary.missing, 3);
+  assert.equal(manifest.summary.generated, 96);
+  assert.equal(manifest.summary.failed, 0);
+  assert.equal(manifest.summary.missing, 0);
   assert.equal(recordings.length, manifest.summary.generated);
-  assert.deepEqual(manifest.poems.filter(poem => poem.status === 'missing').map(poem => poem.id), ['14', '26', '57']);
+  assert.deepEqual(manifest.poems.filter(poem => poem.status === 'missing').map(poem => poem.id), []);
   assert.equal(recordings.reduce((total, poem) => total + poem.bytes, 0), manifest.summary.audio_bytes);
   assert.equal(Math.round(recordings.reduce((total, poem) => total + poem.seconds, 0) * 100) / 100, manifest.summary.audio_seconds);
   assert.equal(recordings.filter(poem => poem.priority_review).length, manifest.summary.priority_review);

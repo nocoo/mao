@@ -293,15 +293,16 @@ try {
   ]) {
     await grouped.evaluate(value => { location.hash = `poem=${value}`; }, id);
     await waitPoem(grouped, id);
+    await grouped.waitForFunction(() => document.querySelector('#audio').readyState >= 1);
     assert.equal(await grouped.locator('#tt').getAttribute('aria-label'), title);
     assert.deepEqual(await grouped.locator('#poem .st').evaluateAll(nodes => nodes.map(node => node.dataset.l)), labels);
-    assert.equal(await grouped.locator('#aPlay').isDisabled(), true);
-    assert.equal(await grouped.locator('#seek').isDisabled(), true);
-    assert.equal(await grouped.locator('#audio').getAttribute('src'), null);
-    assert.equal(await grouped.locator('#pMode').textContent(), '暂无录音');
+    assert.equal(await grouped.locator('#aPlay').isDisabled(), false);
+    assert.equal(await grouped.locator('#seek').isDisabled(), false);
+    assert.match(await grouped.locator('#audio').getAttribute('src'), new RegExp(`/${id}-`));
+    assert.match(await grouped.locator('#pMode').textContent(), /合成朗诵/);
   }
   await grouped.close();
-  pass('Grouped poems retain their parts and show unavailable recordings');
+  pass('Grouped poems retain their parts and expose playable recordings');
 
   const compactEntry = await browser.newPage({ viewport: { width: 320, height: 568 }, reducedMotion: 'no-preference' });
   await monitor(compactEntry);
@@ -497,11 +498,12 @@ try {
   await page.locator('#tMatrix').click();
   await page.locator('.cell[data-id="39"]').click();
   await waitPoem(page, '39');
-  assert.equal(await page.locator('#aPlay').isDisabled(), true);
-  assert.equal(await page.locator('#seek').isDisabled(), true);
-  assert.match(await page.locator('#pMode').textContent(), /待|无/);
+  await page.waitForFunction(() => document.querySelector('#audio').readyState >= 1);
+  assert.equal(await page.locator('#aPlay').isDisabled(), false);
+  assert.equal(await page.locator('#seek').isDisabled(), false);
+  assert.match(await page.locator('#pMode').textContent(), /合成朗诵/);
   assert.equal(await page.locator('#audio').evaluate(audio => audio.paused), true);
-  pass('Real MP3 playback, pause, speed across poems, seeking and unavailable recording');
+  pass('Real MP3 playback, pause, speed across poems, seeking and poem switching');
 
   const retry = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   let requests = 0;

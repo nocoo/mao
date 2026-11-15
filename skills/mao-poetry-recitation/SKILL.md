@@ -1,59 +1,56 @@
 ---
 name: mao-poetry-recitation
-description: Generate Mao Zedong poetry recitations offline with local Fish Audio Drama 3 and an authorized broadcast-style voice reference. Use for 毛主席诗词朗诵, 央广风格朗诵, or pure-voice poetry audio for this project.
-compatibility: Apple Silicon macOS with the existing Fish Drama 3 and fish-drama-podcast workspaces, FFmpeg, and local Whisper.
+description: Generate or regenerate Mao Zedong poetry recitations with Fish Audio Drama 3 conditioned on audio/19-沁园春·雪.mp3, update audio/*.mp3 and audio/manifest.json, and verify playback checks. Use for 毛主席诗词朗诵, 补录或重录单篇音频, and updating audio/manifest.json in this repository.
 ---
 
 # Mao poetry recitation
 
-Produce expressive, full-bodied, mid-20th-century Chinese broadcast-style recitation with a single voice. Do not add music, sound effects, a second voice, or ambient tracks. The current generator has no independent style instruction: its delivery is guided by the reference recording, not guaranteed by a text prompt. Have the user judge the actual style, voice, and any background sound; do not claim historical authenticity or impersonate an identified broadcaster.
+Produce expressive Chinese broadcast-style solo poetry recitations for records in this repository. Do not mix music, sound effects, a second voice, or ambient tracks. Have the user review pronunciation, completeness, and delivery by listening; do not treat automated silence scanning or ASR as listening approval.
 
-## Inputs and permissions
+## Scope and reference voice
 
-- Select the requested poem's **正文** from `data/诗词/` in this repository, or use the exact text supplied by the user. Confirm whether a request for one poem in a series means one piece or the full series. Do not include notes, explanations, or titles unless requested. Preserve the selected version and all characters; do not silently resolve variants.
-- Before cloning another person's voice, confirm the user's consent or other legal right for the reference and intended use. The user's confirmation for a past test is not blanket permission for later uses or publication. Do not publish, distribute, or add recordings to this repository without separate authorization.
-- The tested reference is `~/workspace/references/tts/十六字令-朗诵参考/单首试听/01-央广播报版.m4a`, SHA-256 `3540c3a826f1708a1b013ccaa9bf529ed609419b35978832ac1e6e68df5d7135`. Its uploader labels it as a Central People's Broadcasting Station broadcast: <https://www.bilibili.com/video/BV1jLVzzXEju/>. The narrator and historical provenance are unverified. It is not bundled with this skill; if missing or changed, stop and ask for the original or an explicitly approved, authorized alternative. Do not silently substitute another voice.
-- The tested reference transcript is exactly `山，快马加鞭未下鞍。惊回首，离天三尺三。`. For a different reference, require its matching transcript and verify its speech and absence of music by listening; never pair it with the default transcript.
+- All 96 catalog entries (`01`–`96`) come from `data/诗词/index.md` via `scripts/build-data.mjs`. Never edit `assets/poems.js` directly.
+- Poem `19` (`audio/19-沁园春·雪.mp3`, SHA-256 `7e7924821ff552da1a7437909894be2d777f44f48dba107d14fb54e37cd4b87c`, `1,022,371` bytes, `63.84s`) is the project reference anchor. Do not overwrite or delete it unless explicitly instructed.
+- When cloning for V2 batches or single-poem re-takes, extract the first `33.0` seconds (`上阕`, 44.1 kHz mono PCM16 WAV) of `audio/19-沁园春·雪.mp3` with exact plain transcript:
+  `北国风光，千里冰封，万里雪飘。望长城内外，惟余莽莽；大河上下，顿失滔滔。山舞银蛇，原驰蜡象，欲与天公试比高。须晴日，看红装素裹，分外妖娆。`
+- Obtain explicit owner authorization before using a new reference voice or uploading generated MP3s to public CDN (`mao-media-cdn`).
 
-## Local workflow
+## Text normalization rules
 
-This skill relies on the existing local `fish-drama-podcast` skill and its locked runner. Read `~/workspace/personal/workflow/agents/skills/fish-drama-podcast/SKILL.md` first and follow its dependency checks, lock, planning, generation, verification, offline ASR and preservation rules. Do not run the model directly, bypass its lock, install packages, download weights, or send audio to a remote service. If the runner, model, reference or Whisper is missing, report the missing dependency and stop.
+When extracting `body` lines from `scripts/build-data.mjs` (`buildLibrary()`), preserve all poem characters and normalize only non-spoken markers or missing punctuation so `split_drama3_text` splits cleanly:
 
-Prepare a UTF-8 plain-text source file outside the repository. It must end in a complete sentence; do not add emotion tags or spoken instructions. Use the reference as the voice and delivery guide. Check memory, disk and competing workloads before generation.
+- Remove residual missing-text markers: `（下佚）` / `(下佚)` (e.g., `67`).
+- Remove inline attribution markers: `（毛）` / `（萧）` (e.g., `67`, `71`).
+- Normalize ASCII commas `,` to full-width `，` (e.g., `02`, `03`, `06`, `15`, `16`, `18`, `24`, `25`, `33`, `34`, `43`).
+- Compact spaced signature lines and punctuate cleanly (e.g., `76`: `军 长 朱 德` → `军长朱德，`, `党代表 毛泽东` → `党代表毛泽东。`).
+- Add clause/terminal punctuation on unpunctuated lines (e.g., `89`) and ensure the final character ends cleanly with punctuation (`09`, `43`).
+- Record every applied rule in that poem's `adjustments` array in `audio/manifest.json`.
 
-The following example uses the tested reference. Set `SOURCE` to the prepared absolute source path and verify the reference hash and authorization before running it. The temporary input directory and output are new, separate from the model workspace; the runner snapshots the inputs and refuses an existing output directory.
+## Generation and promotion workflow
 
-```bash
-set -euo pipefail
-ROOT="$HOME/workspace/references/tts/outputs/fish-drama-3"
-WORKSPACE="$HOME/workspace/references/tts/fish-drama-3"
-SKILL="$HOME/workspace/personal/workflow/agents/skills/fish-drama-podcast"
-RUN="$SKILL/scripts/run.sh"
-REF="$HOME/workspace/references/tts/十六字令-朗诵参考/单首试听/01-央广播报版.m4a"
-SOURCE="/absolute/path/to/poem.txt"
+Synthesis runs via the cross-repo skill stack under `~/workspace/personal/system/system2/antigravity/skills/`:
 
-printf '%s  %s\n' '3540c3a826f1708a1b013ccaa9bf529ed609419b35978832ac1e6e68df5d7135' "$REF" | shasum -a 256 -c
-"$WORKSPACE/.venv/bin/python" -B -m unittest discover -s "$SKILL/tests" -v
-mkdir -p "$ROOT"
-INPUT=$(mktemp -d "$ROOT/poem-input-XXXXXXXX")
-OUT="$ROOT/poem-$(date +%Y%m%d-%H%M%S)-${INPUT##*-}"
-ffmpeg -hide_banner -loglevel error -n -i "$REF" -ac 1 -ar 44100 -c:a pcm_s16le "$INPUT/reference.wav"
-printf '山，快马加鞭未下鞍。惊回首，离天三尺三。\n' > "$INPUT/reference.txt"
-"$RUN" plan --source "$SOURCE" --reference "$INPUT/reference.wav" --reference-text "$INPUT/reference.txt" --output "$OUT"
-```
+1. `mao-poetry-recitation` (`scripts/mao_recitation.py`): inspects missing/target poem IDs against `audio/manifest.json`, delegates generation, and promotes verified MP3s into `audio/`.
+2. `fish-drama-3` (`scripts/fish_drama3_batch.py`): prepares `reference.wav`, `reference.txt`, `items.json`, and builds the remote worker (`fishaudio/drama-3` FP8 + `fishaudio/s2-pro` DAC codec, `-45 dBFS` edge alignment, `target-v2` `dynaudnorm`, `44.1 kHz` mono MP3).
+3. `colab-fleet` (`scripts/colab_fleet.py`): schedules the batch job on Google Colab `G4` (blackwell 102 GB VRAM, omitting `--high-mem`), downloads `tts_outputs_v2.tar.gz` and `result.json`, and cleans up the Colab session in `finally`.
 
-Inspect `plan.json` and announce the poem, sentence/token counts, internal chunks, edits, joins and rough duration before generating. Follow the runner's sentence/token rules; if planning requests an edit, review it and never change or omit poem characters. A short poem is intentionally shorter than the podcast skill's 30–60 minute target: never pad or repeat it.
+Typical incremental commands from the `mao` repo root:
 
 ```bash
-/usr/bin/time -p "$RUN" generate --output "$OUT" 2>&1 | tee "$OUT/generate.log"
-"$RUN" verify --output "$OUT"
-/usr/bin/time -p "$RUN" asr --output "$OUT" 2>&1 | tee "$OUT/asr.log"
+PY=python3.14
+MAO_SKILL=~/workspace/personal/system/system2/antigravity/skills/mao-poetry-recitation/scripts/mao_recitation.py
+
+$PY "$MAO_SKILL" status --mao-repo .
+$PY "$MAO_SKILL" generate --mao-repo . --ids 01,16 --accel g4
+$PY "$MAO_SKILL" apply-job --mao-repo . --job-dir ~/.local/state/colab-fleet/jobs/job-<id>
 ```
 
-Monitor CPU and RSS during generation as described by the runner skill. Keep the source, reference, output and logs for provenance. Deliver `podcast.wav` and `podcast.mp3` with their paths and actual duration. Report ASR differences, validation and resource measurements; do not treat ASR as a listening verdict or automatically reroll. Ask the user to check pronunciation, completeness, feeling, era style and absence of background sound before acceptance.
+## Verification and CDN boundary
 
-## Tested example
+After updating `audio/*.mp3` and `audio/manifest.json`, run the full local verification suite from the `mao` root before committing:
 
-The accepted listening test used `十六字令三首（其一）`, the reference above, and one model block. The output was 9.34 seconds with no added background track. Offline ASR reported homophone differences for `加鞭` and `鞍惊`; this does not prove a pronunciation error. The user judged the result satisfactory. This is evidence for that specific run, not a guarantee for other poems or references.
+```bash
+pnpm build && pnpm test && pnpm deploy:check && pnpm test:worker && pnpm test:browser && pnpm test:fullscreen
+```
 
-For Pi, this repository's `skills/` directory is not a default discovery location. From the repository root, load this skill explicitly with `pi --skill skills/mao-poetry-recitation`, or configure that directory as a skill location.
+Local replacement and commits do not upload MP3s to `https://m.no.mt/`. When deploying updated or new tracks, run the `mao-media-cdn` workflow separately to upload content-hashed objects (`audio/<id>-<first-16-sha256-hex>.mp3`) to Cloudflare R2.
