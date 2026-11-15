@@ -15,3 +15,23 @@ pnpm build:data && pnpm exec vite --host 127.0.0.1 --port 4173 --strictPort
 ```
 
 If the domain does not reach the project, check the local Caddy mapping and the server before opening the page.
+
+
+## Verification
+
+Quality follows System1 v1.3.0 Native Mode (`nocoo/base-ci v2026.15`) in `.github/workflows/quality-slots.yml` and `.github/workflows/ci.yml`. Status: `enforced` | `planned` | `manual` | `N/A`.
+
+| Slot | Status | Evidence |
+| --- | --- | --- |
+| `S1` Types | N/A | Plain JS project without TypeScript |
+| `S2` Lint | planned | No lint script configured |
+| `S3` Workflow | enforced | SHA-pinned workflow action check in CI |
+| `G1` Secrets | enforced | `gitleaks` scan in CI |
+| `G2` Dependencies | enforced | `osv-scanner` scan (`pnpm-lock.yaml`) in CI |
+| `B1` Build | enforced | `pnpm run build && pnpm run deploy:check` in CI |
+| `L1` Unit | enforced | `pnpm run test:coverage` in CI |
+| `L2` Runtime | enforced | `pnpm run test:worker -- --http-only` in CI |
+| `L3` Integration | enforced | `pnpm run test:worker -- --http-only` in CI |
+| `L4` E2E | enforced | `pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen` in CI |
+| `P1` Package | N/A | Deployed as Cloudflare Worker, not an npm package |
+| `Z1` Gate | enforced | `quality / Z1: Gate` required status check on `main` |
