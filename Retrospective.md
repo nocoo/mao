@@ -1,5 +1,9 @@
 # Retrospective
 
+## Compare illustration keys without relying on object enumeration
+
+A complete-catalog test initially compared JSON object keys in enumeration order, which places integer-like IDs before leading-zero IDs. Sort the mapping keys before comparing them with the ordered poem index.
+
 ## Resolve relocated shared rules and skills
 
 A release looked up shared files at old symlink locations after the system repositories were reorganized. Resolve the real `AGENTS.md` path and locate the current skill directory before reading shared instructions.
