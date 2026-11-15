@@ -11,6 +11,9 @@ const analyses = Object.fromEntries(readdirSync('data/analysis').filter(name => 
 const packageVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
 const illustrations = JSON.parse(readFileSync('data/illustrations.json', 'utf8'));
 const illustrationUrl = illustrations['19'];
+const fallbackId = '20';
+const fallbackUrl = illustrations[fallbackId];
+const expectedIds = Array.from({ length: 96 }, (_, index) => String(index + 1).padStart(2, '0'));
 const chrome = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch(existsSync(chrome) ? { executablePath: chrome } : {});
 const errors = [], failedRequests = [], externalRequests = [];
@@ -222,18 +225,13 @@ try {
   const illustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await monitor(illustration);
   await illustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
-  const approvedIds = Object.keys(illustrations);
+  const approvedIds = Object.keys(illustrations).sort();
+  assert.deepEqual(approvedIds, expectedIds, 'Illustration mapping must cover all 96 poems');
   const records = await illustration.evaluate(ids => window.POEM_LIBRARY.poems.map(({ id, title }) => ({ id, title, generated: ids.includes(id) })), approvedIds);
-  const placeholder = records.find(record => !record.generated);
-  assert.ok(placeholder, 'Expected at least one poem without a generated illustration');
-  for (const id of [placeholder.id, '19', placeholder.id, '19']) {
-    await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
-    await waitPoem(illustration, id);
-    if (id === '19') await assertGeneratedIllustration(illustration);
-    else await assertPlaceholderIllustration(illustration, placeholder.title);
-  }
+  assert.deepEqual(records.map(record => record.id), expectedIds, 'Browser poem library must contain all 96 real IDs');
   const approved = records.filter(record => record.generated);
   assert.equal(approved.length, approvedIds.length);
+  assert.equal(approved.length, 96);
   for (const { id, title } of approved) {
     await illustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, id);
     await waitPoem(illustration, id);
@@ -253,19 +251,35 @@ try {
 
   const failedIllustration = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await monitor(failedIllustration);
+  let fixtureBundleMutations = 0;
+  await failedIllustration.route('**/assets/index-*.js', async route => {
+    const response = await route.fetch();
+    const body = await response.text();
+    assert.equal(body.split(fallbackUrl).length - 1, 1, 'Fallback fixture URL must occur exactly once in the built JS bundle');
+    fixtureBundleMutations++;
+    await route.fulfill({ response, body: body.replace(fallbackUrl, '') });
+  });
   await failedIllustration.route(illustrationUrl, route => route.abort());
   await failedIllustration.goto(`${origin}/#poem=19`, { waitUntil: 'networkidle' });
+  assert.equal(fixtureBundleMutations, 1, 'Fallback fixture must modify exactly one built JS bundle');
   assert.equal(await failedIllustration.locator('#plArt .pl-error').textContent(), '配图暂时无法加载');
   assert.equal(await failedIllustration.locator('#plArt svg').count(), 0);
-  await failedIllustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, placeholder.id);
-  await waitPoem(failedIllustration, placeholder.id);
-  await assertPlaceholderIllustration(failedIllustration, placeholder.title);
+  const fallbackTitle = records.find(record => record.id === fallbackId).title;
+  await failedIllustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, fallbackId);
+  await waitPoem(failedIllustration, fallbackId);
+  await assertPlaceholderIllustration(failedIllustration, fallbackTitle);
   await failedIllustration.unroute(illustrationUrl);
   await failedIllustration.evaluate(() => { location.hash = 'poem=19'; });
   await waitPoem(failedIllustration, '19');
   await assertGeneratedIllustration(failedIllustration);
+  await failedIllustration.evaluate(value => { location.hash = `poem=${encodeURIComponent(value)}`; }, fallbackId);
+  await waitPoem(failedIllustration, fallbackId);
+  await assertPlaceholderIllustration(failedIllustration, fallbackTitle);
+  await failedIllustration.evaluate(() => { location.hash = 'poem=19'; });
+  await waitPoem(failedIllustration, '19');
+  await assertGeneratedIllustration(failedIllustration);
   await failedIllustration.close();
-  pass('Generated illustration switches, reloads and reports download failures');
+  pass('Generated illustration switches, reloads and recovers from download failures');
 
   const grouped = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await monitor(grouped);
@@ -406,7 +420,7 @@ try {
   await page.keyboard.press('Escape');
   await page.locator('#scroll').evaluate(node => { node.scrollTop = 0; });
   pass('Prototype title, four couplets, source-backed annotations and rhyme');
-  pass('Prototype layout, all records and random placeholder art without upload');
+  pass('Prototype layout, all records and generated CDN art without upload');
 
   await page.locator('[data-filter="正编"]').click();
   assert.equal(await page.locator('.row').count(), 39);
@@ -551,7 +565,7 @@ try {
       if (document.querySelector('#hero').dataset.poemId !== poem.id) issues.push(`${poem.id}: selection`);
       const generated = Object.hasOwn(illustrationsById, poem.id);
       const art = document.querySelector('#plArt');
-      if (Boolean(art.querySelector('img')) !== generated || Boolean(art.querySelector('svg')) === generated) issues.push(`${poem.id}: illustration type`);
+      if (!generated || Boolean(art.querySelector('img')) !== generated || Boolean(art.querySelector('svg')) === generated) issues.push(`${poem.id}: illustration type`);
       if (document.querySelector('#plTag')) issues.push(`${poem.id}: illustration tag still present`);
       if (document.querySelector('#plCap').textContent !== `《${poem.title}》`) issues.push(`${poem.id}: illustration caption`);
       const analysis = analysesById[poem.id];

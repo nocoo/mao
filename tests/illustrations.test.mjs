@@ -6,15 +6,13 @@ import { parseIndex } from '../scripts/build-data.mjs';
 const illustrations = JSON.parse(await readFile(new URL('../data/illustrations.json', import.meta.url), 'utf8'));
 const index = parseIndex(await readFile(new URL('../data/诗词/index.md', import.meta.url), 'utf8'));
 
-test('generated illustrations map existing poem IDs to versioned CDN URLs', () => {
-  const ids = new Set(index.map(poem => poem.id));
+test('generated illustrations map the complete poem index to versioned CDN URLs', () => {
+  const expectedIds = Array.from({ length: 96 }, (_, index) => String(index + 1).padStart(2, '0'));
+  assert.equal(index.length, 96, 'poem index must contain exactly 96 records');
+  assert.deepEqual(index.map(poem => poem.id), expectedIds, 'poem index must be complete and ordered');
+  assert.deepEqual(Object.keys(illustrations).sort(), expectedIds, 'illustration mapping must cover exactly the complete poem index');
   for (const [id, url] of Object.entries(illustrations)) {
-    assert.ok(ids.has(id), `unknown poem ${id}`);
     assert.match(url, new RegExp(`^https://m\\.no\\.mt/illustrations/${id}-[a-f0-9]{16}\\.webp$`));
-  }
-  for (let number = 1; number <= 80; number++) {
-    const id = String(number).padStart(2, '0');
-    assert.ok(illustrations[id], `missing approved illustration ${id}`);
   }
   assert.equal(illustrations['14'], 'https://m.no.mt/illustrations/14-076b8d597d2b47bf.webp');
   assert.equal(illustrations['19'], 'https://m.no.mt/illustrations/19-114c726821a2b4fd.webp');

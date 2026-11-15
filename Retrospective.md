@@ -1,5 +1,13 @@
 # Retrospective
 
+## Verify CDN cache directives semantically
+
+An upload verifier rejected a correct `Cache-Control` value because the CDN inserted optional spaces after commas. Compare the parsed directives and inspect the saved response before retrying any upload.
+
+## Serialize image derivatives without spreading bytes
+
+A browser-based WebP conversion exceeded the JavaScript call-stack limit while spreading a large byte array into a string. Serialize blobs without a large argument spread and validate the local output before uploading.
+
 ## Compare illustration keys without relying on object enumeration
 
 A complete-catalog test initially compared JSON object keys in enumeration order, which places integer-like IDs before leading-zero IDs. Sort the mapping keys before comparing them with the ordered poem index.

@@ -1,0 +1,120 @@
+{
+  "status": "verified",
+  "bucket": "mao",
+  "content_type": "image/webp",
+  "cache_control": "public, max-age=31536000, immutable",
+  "items": [
+    {
+      "id": "81",
+      "url": "https://m.no.mt/illustrations/81-461496cbb1775b20.webp",
+      "sha256": "461496cbb1775b20726f26c8792d12c18addd240d0a16a7548a9429cff40d5a2",
+      "bytes": 646870,
+      "verified_at": "2026-11-15T00:13:24.778Z"
+    },
+    {
+      "id": "82",
+      "url": "https://m.no.mt/illustrations/82-2ca242457f563789.webp",
+      "sha256": "2ca242457f563789f6d6066e3cb78f87d586ccf50c5eb6ab8beb993e0f224656",
+      "bytes": 587176,
+      "verified_at": "2026-11-15T00:13:31.570Z"
+    },
+    {
+      "id": "83",
+      "url": "https://m.no.mt/illustrations/83-1eb6a6b50ebaaa2f.webp",
+      "sha256": "1eb6a6b50ebaaa2f7e098a21488eb9320ca59beb98c5c80f492852fc1673fad7",
+      "bytes": 658202,
+      "verified_at": "2026-11-15T00:13:38.407Z"
+    },
+    {
+      "id": "84",
+      "url": "https://m.no.mt/illustrations/84-939a51dee6bc4c38.webp",
+      "sha256": "939a51dee6bc4c38413129191dab9552f854336e574005e825e34b1c589bd612",
+      "bytes": 632090,
+      "verified_at": "2026-11-15T00:13:48.031Z"
+    },
+    {
+      "id": "85",
+      "url": "https://m.no.mt/illustrations/85-843f136dbea7be51.webp",
+      "sha256": "843f136dbea7be514e1f9dd18701a9604ba04bcdb474c16791f5977673c78e53",
+      "bytes": 718570,
+      "verified_at": "2026-11-15T00:13:54.329Z"
+    },
+    {
+      "id": "86",
+      "url": "https://m.no.mt/illustrations/86-a5c53b04de737e9b.webp",
+      "sha256": "a5c53b04de737e9b9228b92e9df68fe7e0ba6fdebcc96e28703a3c585c1f4490",
+      "bytes": 672638,
+      "verified_at": "2026-11-15T00:14:01.532Z"
+    },
+    {
+      "id": "87",
+      "url": "https://m.no.mt/illustrations/87-aa7da4e020b2ea48.webp",
+      "sha256": "aa7da4e020b2ea4894782f95434334d335cd0774fab6d74b12f485d9331defc1",
+      "bytes": 694560,
+      "verified_at": "2026-11-15T00:14:09.728Z"
+    },
+    {
+      "id": "88",
+      "url": "https://m.no.mt/illustrations/88-0558a916497c00d7.webp",
+      "sha256": "0558a916497c00d758e12fc6d062bb1d657bf3c6b141417bc69261875a06974a",
+      "bytes": 644818,
+      "verified_at": "2026-11-15T00:14:16.543Z"
+    },
+    {
+      "id": "89",
+      "url": "https://m.no.mt/illustrations/89-aed2b66486d730c5.webp",
+      "sha256": "aed2b66486d730c59e552d32944e64c3d4f797f4209ec675fd75c63914819b23",
+      "bytes": 639396,
+      "verified_at": "2026-11-15T00:14:22.789Z"
+    },
+    {
+      "id": "90",
+      "url": "https://m.no.mt/illustrations/90-b4ad638816187520.webp",
+      "sha256": "b4ad638816187520091e1e77fb78fc59e6fa84fd0809159dbd583129cc7c1bf0",
+      "bytes": 677818,
+      "verified_at": "2026-11-15T00:14:29.804Z"
+    },
+    {
+      "id": "91",
+      "url": "https://m.no.mt/illustrations/91-d822a4ff769f548e.webp",
+      "sha256": "d822a4ff769f548e1cdf6122aa2525d8704b1f4e0d9e33d5e3fab1022844c697",
+      "bytes": 637678,
+      "verified_at": "2026-11-15T00:14:36.691Z"
+    },
+    {
+      "id": "92",
+      "url": "https://m.no.mt/illustrations/92-a3f236959dd2fb07.webp",
+      "sha256": "a3f236959dd2fb079c168250ca4d193d1a532cec5c9976967717e76efdaab448",
+      "bytes": 796762,
+      "verified_at": "2026-11-15T00:14:43.645Z"
+    },
+    {
+      "id": "93",
+      "url": "https://m.no.mt/illustrations/93-a7b7779b0aab4db4.webp",
+      "sha256": "a7b7779b0aab4db47bb1fbe99f6bc9a1ce96e585cb7aa962a49cc4da158cf7b9",
+      "bytes": 651278,
+      "verified_at": "2026-11-15T00:14:50.401Z"
+    },
+    {
+      "id": "94",
+      "url": "https://m.no.mt/illustrations/94-8229463dedfc3a62.webp",
+      "sha256": "8229463dedfc3a6285a84c2c4eaa1262046f6da7cb1484383ee1e98ddddc6f5e",
+      "bytes": 640588,
+      "verified_at": "2026-11-15T00:14:56.632Z"
+    },
+    {
+      "id": "95",
+      "url": "https://m.no.mt/illustrations/95-4127adf1f114ec48.webp",
+      "sha256": "4127adf1f114ec48cfdb6b2103131a848a7819f7a076ed064286eae0d1f58454",
+      "bytes": 582140,
+      "verified_at": "2026-11-15T00:15:02.900Z"
+    },
+    {
+      "id": "96",
+      "url": "https://m.no.mt/illustrations/96-a6b81943eac1b23e.webp",
+      "sha256": "a6b81943eac1b23e739009d00ba3aa985a43e6ce177303f4d6eaaac8f0732f91",
+      "bytes": 675624,
+      "verified_at": "2026-11-15T00:15:10.215Z"
+    }
+  ]
+}
