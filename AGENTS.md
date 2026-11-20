@@ -1,37 +1,48 @@
 # Mao Poetry Room
 
-See [README.md](README.md) for project setup and checks, and [Retrospective.md](Retrospective.md) for incident history.
+Static red-and-paper Mao Zedong poetry reading room (`shanhe-poetry-room`) built with Vite, native ES modules, and CSS, deployed to Cloudflare Workers (`mao.hexly.ai`) with Cloudflare R2 media (`https://m.no.mt`).
+Docs: [README.md](README.md) · [Retrospective](Retrospective.md) · [Quality CI](.github/workflows/quality-slots.yml)
+Skills: [mao-poetry-illustration](.agents/skills/mao-poetry-illustration/SKILL.md) · [mao-poetry-recitation](.agents/skills/mao-poetry-recitation/SKILL.md) · [mao-media-cdn](.agents/skills/mao-media-cdn/SKILL.md)
 
-For poem illustration work, use the [mao-poetry-illustration skill](.agents/skills/mao-poetry-illustration/SKILL.md). For poetry recitation synthesis and manifest updates, use the [mao-poetry-recitation skill](.agents/skills/mao-poetry-recitation/SKILL.md). For media uploads and CDN migration, use the [mao-media-cdn skill](.agents/skills/mao-media-cdn/SKILL.md).
+## Commands
 
-## Local development
-
-Open the project in Chrome at https://mao.dev.hexly.ai through Caddy, rather than a localhost URL.
-
-On this machine, Caddy proxies the domain to `127.0.0.1:4173`, while `pnpm dev` defaults to port 7065. Reuse an existing project server on port 4173, or start one from the repository root:
+Run from repository root with Node.js 22.13+ and pnpm (`pnpm@11.28.5`; CI uses Node 26.12.1). Build `dist/` before running worker or browser suites.
 
 ```sh
-pnpm build:data && pnpm exec vite --host 127.0.0.1 --port 4173 --strictPort
+pnpm install --frozen-lockfile
+pnpm run build:data && pnpm exec vite --host 127.0.0.1 --port 4173 --strictPort  # https://mao.dev.hexly.ai via Caddy
+pnpm run dev              # local Vite dev on 127.0.0.1:7065 (--strictPort)
+pnpm run build && pnpm run deploy:check   # B1 build + Wrangler dry-run (no deploy)
+pnpm run test:coverage    # L1 Node tests + coverage/lcov.info
+pnpm run test:worker -- --http-only       # L2/L3 isolated local Worker HTTP checks
+pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 E2E
 ```
 
-If the domain does not reach the project, check the local Caddy mapping and the server before opening the page.
+## Invariants
 
+- Open local dev in Chrome at `https://mao.dev.hexly.ai` via Caddy (`127.0.0.1:4173`), not localhost; reuse a running port `4173` server and verify Caddy mapping if unreachable.
+- Edit source data in `data/诗词/`, `data/analysis/`, `data/illustrations.json`, and `audio/manifest.json` — never edit generated `assets/poems.js` (`pnpm run build:data` regenerates it).
+- Keep static assets on default assets-first routing (`worker/index.js` forwards to `ASSETS`, no `run_worker_first`); MP3s stay out of `dist/` and stream via CDN (`https://m.no.mt`).
+- Pass `--env-file /dev/null` when running ad-hoc `wrangler` commands locally so unrelated `.env` files are not loaded.
+- Use the repo skills above for poem illustrations, recitation synthesis/manifest updates, and R2 media uploads; never invent missing audio or treat automated checks as listening approval.
+- A local commit does not authorize R2 uploads or site deployment (`mao.hexly.ai`); obtain explicit authorization before uploading media or running [release.yml](.github/workflows/release.yml).
 
-## Verification
+## Quality & Local Gates
 
-Quality follows System1 v1.3.0 Native Mode (`nocoo/base-ci v2026.15`) in `.github/workflows/quality-slots.yml` and `.github/workflows/ci.yml`. Status: `enforced` | `planned` | `manual` | `N/A`.
+Follows `system1-quality`; CI slot definitions and pinned `base-ci` revision live in [.github/workflows/quality-slots.yml](.github/workflows/quality-slots.yml) (called by [ci.yml](.github/workflows/ci.yml), with `quality / Z1: Gate` required on `main`). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
-| Slot | Status | Evidence |
+- **Exceptions / gaps**: `S1 Types` is `N/A` (plain JS without TypeScript); `S2 Lint` is `planned` (no lint script); `P1 Package` is `N/A` (Cloudflare Worker, not npm); `L1 Unit` has no numeric coverage floor.
+- **Browser scope**: Chromium is `enforced` in CI; Safari and Firefox are not independently verified.
+- **Local hooks**: None configured (`.husky/` and `.githooks/` are absent); run local checks manually before commit/push, with CI `quality / Z1: Gate` as the independent backstop.
+
+## Resources & Isolation
+
+| Lane | Endpoint / State | Boundary |
 | --- | --- | --- |
-| `S1` Types | N/A | Plain JS project without TypeScript |
-| `S2` Lint | planned | No lint script configured |
-| `S3` Workflow | enforced | SHA-pinned workflow action check in CI |
-| `G1` Secrets | enforced | `gitleaks` scan in CI |
-| `G2` Dependencies | enforced | `osv-scanner` scan (`pnpm-lock.yaml`) in CI |
-| `B1` Build | enforced | `pnpm run build && pnpm run deploy:check` in CI |
-| `L1` Unit | enforced | `pnpm run test:coverage` in CI |
-| `L2` Runtime | enforced | `pnpm run test:worker -- --http-only` in CI |
-| `L3` Integration | enforced | `pnpm run test:worker -- --http-only` in CI |
-| `L4` E2E | enforced | `pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen` in CI |
-| `P1` Package | N/A | Deployed as Cloudflare Worker, not an npm package |
-| `Z1` Gate | enforced | `quality / Z1: Gate` required status check on `main` |
+| Dev (Caddy) | `https://mao.dev.hexly.ai` -> `127.0.0.1:4173` | Reuse running `4173` server; `pnpm run dev` / `preview` bind `127.0.0.1:7065` |
+| Tests | Ephemeral Worker port + temp dir (`test:worker`); `127.0.0.1:4175` (`test:browser`), `4176` (`test:fullscreen`) | Built `dist/` + mocked CDN fixtures; do not run fixed-port browser suites concurrently |
+| CDN / Prod | `https://m.no.mt` (R2 bucket `mao`), `https://mao.hexly.ai` (Worker) | Read-only checks (`pnpm run verify:production`) unless upload or deployment is authorized |
+
+## Retrospective
+
+Record incident narratives in [Retrospective.md](Retrospective.md); promote recurring project constraints to `Invariants` above and enforceable safeguards to tests or hooks.
