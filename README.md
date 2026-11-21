@@ -1,55 +1,69 @@
-# 山河诗卷 · Mao Poetry Room
+<h1 align="center">山河诗卷 · Mao Poetry Room</h1>
+<p align="center">纸本风格的毛泽东诗词数字阅览室，提供目录检索、矩阵视图、校勘解析与配乐朗诵播放。</p>
+<p align="center"><a href="https://mao.hexly.ai">站点</a> · <a href="docs/README.en.md">English</a></p>
 
-A static poetry reading room based on the design prototype in `mao-poetry.html`: a red-and-paper reading stage, catalog, matrix, study materials, and recordings. Built with Vite, native JavaScript and CSS; Cloudflare R2 serves media through a CDN, with no production framework or database.
+## 这是什么
 
-## Run and verify
+`山河诗卷`（`shanhe-poetry-room`）是一座基于 Vite、原生 ES 模块与 CSS 构建的静态红纸风格数字阅览室，部署在 Cloudflare Workers（[mao.hexly.ai](https://mao.hexly.ai)），并通过 Cloudflare R2 CDN 分发音频与插图资源。
 
-Node.js 22.13+ and pnpm are required. CI uses Node.js 26.12.1 and pnpm 11.28.5.
+全站无前端框架或数据库依赖。`audio/` 下收录 96 篇条目的本地 MP3（1 首参考录音与 95 首基于 Fish Audio Drama 3 合成的朗诵，非历史广播），所有录音仍需人工试听复核；本仓库仅包含源码与构建流程，本地提交不代表媒体上传或线上发布授权。
 
-```bash
-pnpm install
-pnpm dev              # http://127.0.0.1:7065 or https://mao.dev.hexly.ai
-pnpm build            # regenerate poem data and build dist/
-pnpm preview          # preview dist/ on 127.0.0.1:7065
-pnpm test             # data, view model, player, deployment tests
-pnpm test:coverage    # Node tests and coverage/lcov.info
-pnpm deploy:check     # Wrangler local dry run; no deployment
-pnpm test:worker      # build first; isolated local Worker and HTTP checks
-pnpm test:browser     # build first; preview on 4175 and check interactions
-pnpm test:fullscreen  # build first; preview on 4176 and check nine viewports
+## 功能
+
+- **96 篇诗词档案**：涵盖正编 39 篇、副编 24 篇、补编 33 篇，保留三组联章诗原始分组，区分律诗、双调词、单调词、古体、残句等体裁标注，并提供校勘注释、创作背景、赏析与押韵标色。
+- **多模式阅读与导航**：支持按标题、年份、编号或诗句检索，支持矩阵总览、横/竖排切换、亮/暗主题与 `prefers-reduced-motion` 无障碍模式。
+- **CDN 音频播放与快捷键**：支持播放/暂停、进度跳转、倍速与上下篇切换（未做逐字逐句时间轴同步），提供 `Space`、`←`/`→`、`↑`/`↓`、`/`、`L`、`M`、`T`、`V`、`N`、`Esc` 快捷键。
+- **健康检查端点**：`GET /api/live` 返回构建期生成的 JSON 状态与版本号（`Cache-Control: no-store`）。
+
+## 使用
+
+在线访问：[mao.hexly.ai](https://mao.hexly.ai)。
+
+本地预览构建产物：
+
+```sh
+pnpm install --frozen-lockfile
+pnpm run build            # 生成 assets/poems.js 并构建 dist/
+pnpm run preview          # 在 127.0.0.1:7065 预览 dist/
 ```
 
-Browser tests use local Google Chrome on macOS, or `CHROME_PATH` / Playwright Chromium on other systems. Test servers stop automatically. The development and preview commands use a fixed port and cannot run together.
+## 开发
 
-## Reading
+需要 Node.js 22.13+ 与 pnpm（`pnpm@11.28.5`；CI 使用 Node `26.12.1`）。编辑诗词与解析请修改 [`data/诗词/index.md`](data/诗词/index.md)、[`data/analysis/`](data/analysis/)、[`data/illustrations.json`](data/illustrations.json) 与 [`audio/manifest.json`](audio/manifest.json)，切勿直接手改自动生成的 [`assets/poems.js`](assets/poems.js)。
 
-The catalog contains 96 indexed entries: 39 正编, 24 副编, and 33 补编. Three original poetry groups each appear as one entry with their individual poems preserved in order. The prototype's star-curtain entrance and poem transitions are skipped when reduced motion is requested. Search by title, year, number, or verse; the matrix opens any record. Each page presents its reading text, available notes, context, appreciation, editorial remarks, and original versions. Structural labels follow the individual form: regulated verse, lyric stanzas, single-stanza lyrics, older verse, fragments, and memorial texts are not treated alike. Rhyme highlights are available only where identified; uncertain cases remain unmarked. These analyses are editorial readings of the available records, not a fully verified prosodic or historical edition. Sources remain separate, and missing material is identified rather than invented. All 96 records use their generated CDN illustrations; grouped records 14, 26, and 57 each share one illustration. Records without an illustration randomly reuse three prototype placeholders. These illustrations are not historical images.
-
-Vertical reading moves the illustration to the left and arranges verse columns right to left. Longer works scroll horizontally by touch, trackpad, or arrow keys when the reading area is focused; on mobile, the rail's “横” button returns to horizontal reading. Layout refinement references Unslop by [Damir Sokolovsky](https://x.com/heydamir), CC BY 4.0.
-
-The player streams the selected poem's MP3 from the CDN. It supports play/pause, seeking, speed, and previous/next poem. No sentence timestamps are available, so the interface does not claim word- or line-synchronized highlighting. All 96 catalog entries now have local MP3 recordings (`01`–`96`). Keyboard shortcuts: `Space` play/pause, `←` / `→` seek outside the reading area, `↑` / `↓` change poem, `/` search, `L` catalog, `M` matrix, `T` theme, `V` vertical text, `N` notes, `Esc` close.
-
-The 96 MP3s in `audio/` comprise reference track `19-沁园春·雪.mp3` and 95 V2 synthetic recitations generated with Fish Audio Drama 3 (`fishaudio/drama-3` FP8 + `fishaudio/s2-pro`) on Google Colab G4, not historical broadcasts. The narrator and historical provenance of the reference voice are unverified. No background track was mixed; the absence of background sound and the completeness, pronunciation, and delivery of **all recordings require human listening review**. See [`audio/README.md`](audio/README.md) and [`audio/manifest.json`](audio/manifest.json). The project owner confirmed authorization for the reference voice and its intended distribution. A local commit is not a website deployment approval, and updating local V2 audio requires a separate authorized R2 upload before deploying.
-
-## Data and architecture
-
-[`data/诗词/index.md`](data/诗词/index.md) and the indexed Markdown files are authoritative. [`scripts/build-data.mjs`](scripts/build-data.mjs) extracts the reading text, prefaces, source-specific annotations and original versions into [`assets/poems.js`](assets/poems.js). Edit Markdown, not the generated file. [`data/illustrations.json`](data/illustrations.json) maps record IDs to generated CDN illustrations; records without an entry use a prototype placeholder. Each record in [`data/analysis/`](data/analysis/) references that text by line index and available annotations by source; it does not duplicate or rewrite the reading text. Rhyme marks reference specific characters and offsets within the source text, including multiple verse endings on one line. An empty list means the rhyme has not been determined, not that the work lacks rhyme; partial analyses include a note. [`src/view-model.js`](src/view-model.js) validates and maps those records and the audio manifest into presentation data; [`src/media.js`](src/media.js) derives each audio CDN URL from its poem ID and content hash, [`src/player.js`](src/player.js) controls playback, and [`app.js`](app.js) renders the views and connects user actions.
-
-Builds include the original documents and locally hosted font licenses, but not the MP3 files; the source recordings remain in `audio/`. Text from the corpus is rendered as text, not executable HTML. Anonymous `GET /api/live` serves build-generated JSON with `status: "ok"` and the raw version from `package.json`, with `Cache-Control: no-store`; it establishes asset delivery, not audio content quality or external dependency health. R2 serves the MP3 byte ranges directly. Local tests verify the source recordings against the manifest and use isolated CDN fixtures; the release verifier checks a real CDN audio range. See [`data/诗词/校勘记录.md`](data/诗词/校勘记录.md) for textual caveats, and [`skills/mao-poetry-recitation/SKILL.md`](skills/mao-poetry-recitation/SKILL.md) for the offline generation workflow and permissions.
-
-## CI and deployment
-
-[CI](.github/workflows/ci.yml) runs the pinned `nocoo/base-ci` workflow: workflow validation, Gitleaks, OSV, build, Wrangler dry run, Node tests with LCOV, local Worker HTTP checks, and Chromium browser checks. There is no coverage threshold, TypeScript check, or application lint configuration. Safari and Firefox have not been independently accepted.
-
-[Release](.github/workflows/release.yml) deploys a successful same-repository `main` push-CI to the Cloudflare Worker at `mao.hexly.ai`, verifies the source run and commit, rebuilds, and checks the published revision, health endpoint and a byte range of the recording. When credentials are absent, automatic deployment is skipped; a manually triggered deployment fails. CI success or a skipped deployment does not establish that the site is live.
-
-To enable deployment, configure `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in GitHub Actions. The token must have Workers deployment and custom-domain permissions. Never put credentials in the repository. A successful prior main push-CI can be deployed manually using its run ID:
-
-```bash
-gh secret set CLOUDFLARE_API_TOKEN --repo nocoo/mao
-gh secret set CLOUDFLARE_ACCOUNT_ID --repo nocoo/mao
-gh run list --repo nocoo/mao --workflow CI
-gh workflow run release.yml --repo nocoo/mao --ref main -f source-run-id=SUCCESSFUL_PUSH_CI_RUN_ID
+```sh
+pnpm run build:data       # 重新生成 assets/poems.js
+pnpm run dev              # 启动本地 Vite 开发服务器（127.0.0.1:7065）
+pnpm run deploy:check     # Wrangler 本地 dry-run（不实际部署）
+pnpm run verify:production # 只读检查线上站点与 CDN 字节范围
 ```
 
-Cloudflare domain ownership, token permissions, public routing, voice rights, and the published revision must be verified before an actual release. Do not treat this local implementation as release authorization.
+## 测试
+
+Worker 与浏览器测试需先执行 `pnpm run build` 生成 `dist/`，并使用隔离的本地 CDN fixture，不会向远端 R2 上传或发布。
+
+```sh
+pnpm run test             # 运行数据、ViewModel、播放器与部署脚本测试
+pnpm run test:coverage    # Node 单元测试与 coverage/lcov.info
+pnpm run test:worker      # 隔离本地 Worker 与 HTTP 检查
+pnpm run test:browser     # :4175 端口 Chromium 交互测试
+pnpm run test:fullscreen  # :4176 端口九视口全屏截图与布局检查
+```
+
+## 技术栈
+
+- **前端与视图**：原生 JavaScript（ES Modules）、CSS（[`app.js`](app.js)、[`src/view-model.js`](src/view-model.js)、[`src/media.js`](src/media.js)、[`src/player.js`](src/player.js)）
+- **构建与数据管线**：Vite、Node.js 构建脚本（[`scripts/build-data.mjs`](scripts/build-data.mjs)）
+- **部署与存储**：Cloudflare Workers（Wrangler）、Cloudflare R2 CDN
+- **测试与质量**：Node Test Runner、Playwright、GitHub Actions（[CI](.github/workflows/ci.yml)、[Release](.github/workflows/release.yml)）
+
+## 文档
+
+- [项目契约](AGENTS.md)
+- [音频说明](audio/README.md) · [校勘记录](data/诗词/校勘记录.md)
+- [更新日志](CHANGELOG.md) · [复盘记录](Retrospective.md)
+- [朗诵生成技能](skills/mao-poetry-recitation/SKILL.md)
+
+## 许可证
+
+本仓库未附带独立的根目录 `LICENSE` 文件。内置字体、参考文献及音频素材各自遵循其原始来源声明。
