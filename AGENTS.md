@@ -13,6 +13,7 @@ pnpm install --frozen-lockfile
 pnpm run build:data && pnpm exec vite --host 127.0.0.1 --port 4173 --strictPort  # https://mao.dev.hexly.ai via Caddy
 pnpm run dev              # local Vite dev on 127.0.0.1:7065 (--strictPort)
 pnpm run build && pnpm run deploy:check   # B1 build + Wrangler dry-run (no deploy)
+pnpm run lint                             # S2: Biome lint and format check
 pnpm run test:coverage    # L1 Node tests + coverage/lcov.info
 pnpm run test:worker -- --http-only       # L2/L3 isolated local Worker HTTP checks
 pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 E2E
@@ -31,17 +32,17 @@ pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 
 
 Follows `system1-quality`; CI slot definitions and pinned `base-ci` revision live in [.github/workflows/quality-slots.yml](.github/workflows/quality-slots.yml) (called by [ci.yml](.github/workflows/ci.yml), with `quality / Z1: Gate` required on `main`). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
-- **Exceptions / gaps**: `S1 Types` is `N/A` (plain JS without TypeScript); `S2 Lint` is `planned` (no lint script); `P1 Package` is `N/A` (Cloudflare Worker, not npm); `L1 Unit` has no numeric coverage floor.
+- **Exceptions / gaps**: `S1 Types` is `N/A` (plain JS without TypeScript); `S2 Lint` is `enforced` via Biome (`pnpm run lint`); `P1 Package` is `N/A` (Cloudflare Worker, not npm); `L1 Unit` has no numeric coverage floor.
 - **Browser scope**: Chromium is `enforced` in CI; Safari and Firefox are not independently verified.
 - **Local hooks**: None configured (`.husky/` and `.githooks/` are absent); run local checks manually before commit/push, with CI `quality / Z1: Gate` as the independent backstop.
 
 ## Resources & Isolation
 
-| Lane | Endpoint / State | Boundary |
-| --- | --- | --- |
-| Dev (Caddy) | `https://mao.dev.hexly.ai` -> `127.0.0.1:4173` | Reuse running `4173` server; `pnpm run dev` / `preview` bind `127.0.0.1:7065` |
-| Tests | Ephemeral Worker port + temp dir (`test:worker`); `127.0.0.1:4175` (`test:browser`), `4176` (`test:fullscreen`) | Built `dist/` + mocked CDN fixtures; do not run fixed-port browser suites concurrently |
-| CDN / Prod | `https://m.no.mt` (R2 bucket `mao`), `https://mao.hexly.ai` (Worker) | Read-only checks (`pnpm run verify:production`) unless upload or deployment is authorized |
+| Lane        | Endpoint / State                                                                                                | Boundary                                                                                  |
+| ----------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Dev (Caddy) | `https://mao.dev.hexly.ai` -> `127.0.0.1:4173`                                                                  | Reuse running `4173` server; `pnpm run dev` / `preview` bind `127.0.0.1:7065`             |
+| Tests       | Ephemeral Worker port + temp dir (`test:worker`); `127.0.0.1:4175` (`test:browser`), `4176` (`test:fullscreen`) | Built `dist/` + mocked CDN fixtures; do not run fixed-port browser suites concurrently    |
+| CDN / Prod  | `https://m.no.mt` (R2 bucket `mao`), `https://mao.hexly.ai` (Worker)                                            | Read-only checks (`pnpm run verify:production`) unless upload or deployment is authorized |
 
 ## Retrospective
 

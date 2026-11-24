@@ -1,4 +1,5 @@
 ---
+
 name: mao-poetry-recitation
 description: Generate or regenerate Mao Zedong poetry recitations with Fish Audio Drama 3 conditioned on audio/19-沁园春·雪.mp3, update audio/*.mp3 and audio/manifest.json, and verify playback checks. Use for 毛主席诗词朗诵, 补录或重录单篇音频, and updating audio/manifest.json in this repository.
 ---

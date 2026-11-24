@@ -26,10 +26,16 @@ jobs:
 
   s2-lint:
     name: "S2: Lint"
-    if: ${{ vars.ENABLE_S2_LINT == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "TODO - no lint script configured"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: nocoo/base-ci/.github/actions/setup-js@6424d395d36a815d931f10e557762eb635d511c0 # v2026.16
+        with:
+          package-manager: pnpm
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          install-policy: blocked
+      - run: pnpm run lint
 
   s3-workflow:
     name: "S3: Workflow"
@@ -184,6 +190,7 @@ jobs:
           echo "l4-e2e: ${{ needs.l4-e2e.result }}"
           echo "p1-package: ${{ needs.p1-package.result }}"
           for r in \
+            "${{ needs.s2-lint.result }}" \
             "${{ needs.s3-workflow.result }}" \
             "${{ needs.g1-secrets.result }}" \
             "${{ needs.g2-dependencies.result }}" \
@@ -199,7 +206,6 @@ jobs:
           done
           for r in \
             "${{ needs.s1-types.result }}" \
-            "${{ needs.s2-lint.result }}" \
             "${{ needs.p1-package.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
               echo "Optional slot failed: $r"

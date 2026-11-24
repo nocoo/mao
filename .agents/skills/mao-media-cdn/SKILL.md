@@ -1,4 +1,5 @@
 ---
+
 name: mao-media-cdn
 description: Upload and verify Mao Poetry Room illustration and audio assets on Cloudflare R2, associate CDN URLs with poem IDs, and migrate site media references. Use for 山河诗卷媒体上传、音频或配图 CDN 迁移、R2 upload, or updating existing hosted assets.
 ---
@@ -9,14 +10,14 @@ Manage poem illustrations and recordings in Cloudflare R2 without exposing crede
 
 ## Target and inventory
 
-| Item | Target |
-| --- | --- |
-| R2 bucket | `mao` |
-| Public origin | `https://m.no.mt` |
-| Poem IDs | Exact IDs from `data/诗词/index.md`, including leading zeroes |
-| Illustration | `illustrations/<id>-<first-16-sha256-hex>.webp` |
-| Audio | `audio/<id>-<first-16-sha256-hex>.mp3` |
-| Favicon | `assets/favicon-<first-16-sha256-hex>.svg` |
+| Item           | Target                                                        |
+| -------------- | ------------------------------------------------------------- |
+| R2 bucket      | `mao`                                                         |
+| Public origin  | `https://m.no.mt`                                             |
+| Poem IDs       | Exact IDs from `data/诗词/index.md`, including leading zeroes |
+| Illustration   | `illustrations/<id>-<first-16-sha256-hex>.webp`               |
+| Audio          | `audio/<id>-<first-16-sha256-hex>.mp3`                        |
+| Favicon        | `assets/favicon-<first-16-sha256-hex>.svg`                    |
 | Cache metadata | `public, max-age=31536000, immutable` for content-hashed keys |
 
 `audio/manifest.json` identifies the 90 available recordings, three failed records, and three grouped entries awaiting recordings. The project owner confirmed authorization for the current batch's reference voice and public distribution. Its historical attribution is unverified, and every recording requires listening review. Confirm rights for any new reference or intended use before publishing it; a general upload request does not establish those rights. See `audio/README.md` and `skills/mao-poetry-recitation/SKILL.md`. Do not invent audio for missing records.

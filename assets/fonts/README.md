@@ -18,15 +18,15 @@
 - UI 种子：`随机选读正编副编补编全部总目展开收起关闭返回目录搜索前一首后一首再遇注释题解赏析资料版本与备注编者说明所选无该类内容随手翻页复制诗词已复制请手动选取今日偶读年文档原始出处没有找到未知键盘帮助等`。
 - 字形数取字体 `maxp.numGlyphs`，含 `.notdef`、替换字形及组件，不等同于请求字符数；字符覆盖以 Unicode `cmap` 实测。
 
-| 文件 | 请求码点 | 实际 cmap 码点 | 字形数 | 实际 wght 轴 | 字节 | KiB |
-| --- | ---: | ---: | ---: | --- | ---: | ---: |
-| [noto-serif-sc-ui.woff2](./noto-serif-sc-ui.woff2) | 419 | 418 | 474 | 200–900 | 126,164 | 123.21 |
-| [noto-serif-sc-01.woff2](./noto-serif-sc-01.woff2) | 500 | 501 | 502 | 200–900 | 171,928 | 167.90 |
-| [noto-serif-sc-02.woff2](./noto-serif-sc-02.woff2) | 500 | 501 | 502 | 400–600 | 177,968 | 173.80 |
-| [noto-serif-sc-03.woff2](./noto-serif-sc-03.woff2) | 500 | 501 | 503 | 200–900 | 218,564 | 213.44 |
-| [noto-serif-sc-04.woff2](./noto-serif-sc-04.woff2) | 500 | 501 | 502 | 200–900 | 230,820 | 225.41 |
-| [noto-serif-sc-05.woff2](./noto-serif-sc-05.woff2) | 270 | 271 | 273 | 200–900 | 135,744 | 132.56 |
-| [ma-shan-zheng-heading.woff2](./ma-shan-zheng-heading.woff2) | 37 | 38 | 39 | 静态 400 | 14,620 | 14.28 |
+| 文件                                                         | 请求码点 | 实际 cmap 码点 | 字形数 | 实际 wght 轴 |    字节 |    KiB |
+| ------------------------------------------------------------ | -------: | -------------: | -----: | ------------ | ------: | -----: |
+| [noto-serif-sc-ui.woff2](./noto-serif-sc-ui.woff2)           |      419 |            418 |    474 | 200–900      | 126,164 | 123.21 |
+| [noto-serif-sc-01.woff2](./noto-serif-sc-01.woff2)           |      500 |            501 |    502 | 200–900      | 171,928 | 167.90 |
+| [noto-serif-sc-02.woff2](./noto-serif-sc-02.woff2)           |      500 |            501 |    502 | 400–600      | 177,968 | 173.80 |
+| [noto-serif-sc-03.woff2](./noto-serif-sc-03.woff2)           |      500 |            501 |    503 | 200–900      | 218,564 | 213.44 |
+| [noto-serif-sc-04.woff2](./noto-serif-sc-04.woff2)           |      500 |            501 |    502 | 200–900      | 230,820 | 225.41 |
+| [noto-serif-sc-05.woff2](./noto-serif-sc-05.woff2)           |      270 |            271 |    273 | 200–900      | 135,744 | 132.56 |
+| [ma-shan-zheng-heading.woff2](./ma-shan-zheng-heading.woff2) |       37 |             38 |     39 | 静态 400     |  14,620 |  14.28 |
 
 **字体文件总计：1,075,808 字节（1050.59 KiB）；Noto 1,061,188 字节，Ma Shan Zheng 14,620 字节。**
 

@@ -1,7 +1,7 @@
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import assert from "node:assert/strict";
+import test from "node:test";
 
-import worker from '../worker/index.js';
+import worker from "../worker/index.js";
 
 function setup(response) {
   const requests = [];
@@ -9,7 +9,7 @@ function setup(response) {
     ASSETS: {
       async fetch(request) {
         requests.push(request);
-        return typeof response === 'function' ? response(request) : response;
+        return typeof response === "function" ? response(request) : response;
       },
     },
   };
@@ -17,11 +17,14 @@ function setup(response) {
 }
 
 for (const [name, request] of [
-  ['homepage', new Request('https://mao.example/')],
-  ['static asset', new Request('https://mao.example/assets/index.js')],
-  ['liveness endpoint', new Request('https://mao.example/api/live')],
-  ['audio path with a range', new Request('https://mao.example/audio/recording.mp3', { headers: { range: 'bytes=0-31' } })],
-  ['mutation', new Request('https://mao.example/api/live', { method: 'POST', body: 'test' })],
+  ["homepage", new Request("https://mao.example/")],
+  ["static asset", new Request("https://mao.example/assets/index.js")],
+  ["liveness endpoint", new Request("https://mao.example/api/live")],
+  [
+    "audio path with a range",
+    new Request("https://mao.example/audio/recording.mp3", { headers: { range: "bytes=0-31" } }),
+  ],
+  ["mutation", new Request("https://mao.example/api/live", { method: "POST", body: "test" })],
 ]) {
   test(`forwards ${name} to the asset binding unchanged`, async () => {
     const expected = new Response(name, { status: 200 });
@@ -34,9 +37,11 @@ for (const [name, request] of [
   });
 }
 
-test('propagates asset binding errors', async () => {
-  const failure = new Error('asset unavailable');
-  const { env } = setup(() => { throw failure; });
+test("propagates asset binding errors", async () => {
+  const failure = new Error("asset unavailable");
+  const { env } = setup(() => {
+    throw failure;
+  });
 
-  await assert.rejects(worker.fetch(new Request('https://mao.example/'), env), failure);
+  await assert.rejects(worker.fetch(new Request("https://mao.example/"), env), failure);
 });

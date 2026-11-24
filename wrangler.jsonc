@@ -10,7 +10,5 @@
     "binding": "ASSETS",
     "not_found_handling": "none"
   },
-  "routes": [
-    { "pattern": "mao.hexly.ai", "custom_domain": true }
-  ]
+  "routes": [{ "pattern": "mao.hexly.ai", "custom_domain": true }]
 }

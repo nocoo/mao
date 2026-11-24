@@ -1,4 +1,5 @@
 ---
+
 name: mao-poetry-illustration
 description: Design, generate, review, and integrate poem-specific illustrations for the Mao Poetry Room in its approved revolutionary woodcut style. Use for 山河诗卷诗词配图、生成插画、配图风格 or illustration batches in this repository.
 ---
@@ -10,11 +11,11 @@ Create a distinct illustration for each requested reading record, using the poem
 ## Scope
 
 | Collection | Reading records | Target illustrations |
-| --- | ---: | ---: |
-| 正编 | 39 | 39 |
-| 副编 | 24 | 24 |
-| 补编 | 33 | 33 |
-| Total | 96 | 96 |
+| ---------- | --------------: | -------------------: |
+| 正编       |              39 |                   39 |
+| 副编       |              24 |                   24 |
+| 补编       |              33 |                   33 |
+| Total      |              96 |                   96 |
 
 Use the exact record ID from `data/诗词/index.md`. Grouped poems 14, 26, and 57 each receive one illustration for the complete entry. Check `data/illustrations.json` for completed records. Generate only the scope authorized by the user; approval of this style does not authorize an automatic full-catalog run or publication. The 33 supplementary records include fragments and uncertain attribution: reflect their actual sources and do not invent facts.
 
@@ -28,14 +29,14 @@ Use the exact record ID from `data/诗词/index.md`. Grouped poems 14, 26, and 5
 
 ## Format and generation
 
-| Item | Setting |
-| --- | --- |
-| Model | `gpt-image-2.5-sunburst` via the `agi-image-generation` skill |
-| Quality | `high` |
-| Native output | Portrait PNG, 1024 × 1536 (2:3) |
-| Website frame | Portrait 3:4 |
-| Original | Preserve the unmodified generated PNG and its provenance metadata |
-| Website copy | Make a separate optimized derivative; review the actual 3:4 crop |
+| Item          | Setting                                                           |
+| ------------- | ----------------------------------------------------------------- |
+| Model         | `gpt-image-2.5-sunburst` via the `agi-image-generation` skill     |
+| Quality       | `high`                                                            |
+| Native output | Portrait PNG, 1024 × 1536 (2:3)                                   |
+| Website frame | Portrait 3:4                                                      |
+| Original      | Preserve the unmodified generated PNG and its provenance metadata |
+| Website copy  | Make a separate optimized derivative; review the actual 3:4 crop  |
 
 Read and follow the available `agi-image-generation` skill for the current helper and credential setup. Do not print, record, or commit credential values or authenticated headers. The helper is text-only: the reference image and prompt guide an agent's visual judgment, but do not claim the model received the sample as an image. If a reference-image edit is requested, use a verified image-editing route instead.
 
