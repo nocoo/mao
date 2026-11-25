@@ -111,7 +111,7 @@ button {
   outline-offset: 2px;
 }
 [hidden] {
-  display: none;
+  display: none !important;
 }
 svg {
   display: block;
@@ -3005,12 +3005,12 @@ h1 .ch i {
   .echo,
   .b-glints polygon,
   .spk {
-    animation: none;
+    animation: none !important;
   }
   .enter *,
   .enter h1::before {
-    animation-duration: 0.01s;
-    animation-delay: 0s;
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
   }
 }
 @media print {
@@ -3023,7 +3023,7 @@ h1 .ch i {
   .curtain,
   .fx,
   .beacon {
-    display: none;
+    display: none !important;
   }
   .app {
     display: block;
@@ -3103,8 +3103,8 @@ h1 .ch i {
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  transform: none !important;
+  box-shadow: none !important;
 }
 #seek {
   -webkit-appearance: none;
@@ -3379,9 +3379,9 @@ button:disabled {
   *,
   *::before,
   *::after {
-    scroll-behavior: auto;
-    animation-duration: 0.01ms;
-    animation-iteration-count: 1;
-    transition: none;
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
   }
 }
