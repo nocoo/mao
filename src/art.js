@@ -1,4 +1,5 @@
 const C = { R: "#D6251A", RD: "#A2160E", P: "#EEE5D2", PD: "#D9CDB2", K: "#13100F", G: "#E8B43A" };
+/** @param {number} seed */
 const rng = (seed) => () => {
   seed |= 0;
   seed = (seed + 0x6d2b79f5) | 0;
@@ -6,6 +7,11 @@ const rng = (seed) => () => {
   t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
+/**
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} r
+ */
 const starPts = (cx, cy, r) => {
   let s = "";
   for (let i = 0; i < 10; i++) {
@@ -15,11 +21,21 @@ const starPts = (cx, cy, r) => {
   }
   return s;
 };
+/**
+ * @param {number} ang
+ * @param {string} fill
+ * @param {number} op
+ */
 const bands = (ang, fill, op, gap = 46, wd = 15) => {
   let s = "";
   for (let y = -220; y < 620; y += gap) s += `<rect x="-250" y="${y}" width="800" height="${wd}"/>`;
   return `<g fill="${fill}" opacity="${op}" transform="rotate(${ang} 150 200)">${s}</g>`;
 };
+/**
+ * @param {number} seed
+ * @param {number} n
+ * @param {string} fill
+ */
 const dots = (seed, n, fill, y0 = 0, y1 = 400) => {
   const r = rng(seed);
   let s = "";
@@ -27,6 +43,11 @@ const dots = (seed, n, fill, y0 = 0, y1 = 400) => {
     s += `<circle cx="${(r() * 300).toFixed(1)}" cy="${(y0 + r() * (y1 - y0)).toFixed(1)}" r="${(0.6 + r() * 1.7).toFixed(2)}"/>`;
   return `<g fill="${fill}">${s}</g>`;
 };
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} r
+ */
 const flower = (x, y, r) => {
   let s = "";
   for (let i = 0; i < 5; i++) {
@@ -72,7 +93,11 @@ const ART = {
     ${dots(33, 60, C.P)}`,
 };
 
+/** @type {readonly ("xue" | "changzheng" | "yongmei")[]} */
+const ART_KEYS = ["xue", "changzheng", "yongmei"];
+
+/** @param {number} index */
 export function artwork(index) {
-  const key = ["xue", "changzheng", "yongmei"][index];
+  const key = ART_KEYS[index];
   return `<svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ART[key]()}</svg>`;
 }

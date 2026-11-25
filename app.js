@@ -1,3 +1,4 @@
+/// <reference path="./src/globals.d.ts" />
 import "./assets/poems.js";
 import manifest from "./audio/manifest.json";
 import illustrations from "./data/illustrations.json";
@@ -6,13 +7,26 @@ import { createLibraryViewModel } from "./src/view-model.js";
 import { createPlayer } from "./src/player.js";
 import { artwork } from "./src/art.js";
 
-const $ = (selector) => document.querySelector(selector);
+/**
+ * @typedef {import("./src/view-model.js").PoemViewModel} PoemViewModel
+ * @typedef {import("./src/view-model.js").ParsedAnnotation} ParsedAnnotation
+ * @typedef {import("./src/view-model.js").PlainNote} PlainNote
+ */
+
+/**
+ * @param {string} selector
+ * @returns {HTMLElement}
+ */
+const $ = (selector) => /** @type {HTMLElement} */ (document.querySelector(selector));
 const analysisFiles = import.meta.glob("./data/analysis/*.json", {
   eager: true,
   import: "default",
 });
 const analyses = Object.fromEntries(
-  Object.values(analysisFiles).map((analysis) => [analysis.id, analysis]),
+  Object.values(analysisFiles).map((analysis) => [
+    /** @type {{ id: string }} */ (analysis).id,
+    analysis,
+  ]),
 );
 const library = createLibraryViewModel(window.POEM_LIBRARY, manifest, analyses);
 const byId = new Map(library.map((poem) => [poem.id, poem]));
@@ -22,19 +36,32 @@ const scroll = $("#scroll");
 const poemNode = $("#poem");
 const matrix = $("#matrix");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+/** @type {PoemViewModel | undefined} */
 let current;
+/** @type {PoemViewModel | undefined} */
 let pending;
+/** @type {ReturnType<typeof setTimeout> | undefined} */
 let swapTimer;
 let filter = "全部";
 let notesVisible = true;
 let vertical = false;
 let activeNote = -1;
 let activeNoteType = "inline";
+/** @type {HTMLElement | null | undefined} */
 let noteAnchor;
+/** @type {{ top: number; left: number }} */
 let notePosition;
-let matrixFocus;
+/** @type {HTMLElement | null} */
+let matrixFocus = null;
+/** @type {Animation[]} */
 let layoutAnimations = [];
 
+/**
+ * @param {string} tag
+ * @param {string} [className]
+ * @param {string} [text]
+ * @returns {HTMLElement}
+ */
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -42,16 +69,18 @@ function el(tag, className, text) {
   return node;
 }
 
+/** @param {boolean} open */
 function setIndex(open) {
   app.dataset.index = open ? "1" : "0";
   $("#tIndex").setAttribute("aria-pressed", String(open));
   $("#index").inert = !open;
 }
 
+/** @param {boolean} open */
 function setMatrix(open) {
   if (open) {
     closeNote();
-    matrixFocus = document.activeElement;
+    matrixFocus = /** @type {HTMLElement | null} */ (document.activeElement);
   }
   matrix.classList.toggle("in", open);
   matrix.inert = !open;
@@ -60,12 +89,13 @@ function setMatrix(open) {
   else matrixFocus?.focus();
 }
 
+/** @param {string} text */
 function searchText(text) {
   return text.toLowerCase().replace(/[\s·，。；、：?!？！:;,.]/g, "");
 }
 
 function renderIndex() {
-  const q = searchText($("#q").value.trim());
+  const q = searchText(/** @type {HTMLInputElement} */ ($("#q")).value.trim());
   const matches = library.filter(
     (p) =>
       (filter === "全部" || p.collection === filter) &&
@@ -123,7 +153,7 @@ function renderMatrix() {
       `cell${p.audio ? " open" : ""}${p.id === current?.id ? " cur" : ""}`,
     );
     button.dataset.id = p.id;
-    button.style.setProperty("--i", Math.min(index, 50));
+    button.style.setProperty("--i", String(Math.min(index, 50)));
     button.setAttribute("aria-label", `${p.id} ${p.title}，${p.audio ? "有录音" : "录音待补"}`);
     button.append(el("span", "n", p.id), el("span", "t", p.title));
     cells.append(button);
@@ -132,6 +162,7 @@ function renderMatrix() {
     `${library.length} 篇资料 · ${library.filter((p) => p.audio).length} 段录音`;
 }
 
+/** @param {string[]} body */
 function linesForDisplay(body) {
   const lines = [];
   let line = "";
@@ -154,19 +185,34 @@ function linesForDisplay(body) {
 const punctuation = /[，。；、：？！“”《》—·]/;
 const clauseBreak = /[，。；：？！]/;
 
+/**
+ * @param {string} text
+ * @param {ParsedAnnotation[]} annotations
+ * @param {Set<number>} used
+ * @param {Set<number>} rhymeOffsets
+ * @param {number} lineNumber
+ * @returns {HTMLElement}
+ */
 function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
   const line = el("p", "ln");
   let clause = el("span", "cl");
   line.append(clause);
+  /**
+   * @param {string} textPart
+   * @param {number} start
+   * @param {HTMLElement | null} [term]
+   */
   function append(textPart, start, term = null) {
     for (let i = 0; i < textPart.length; ) {
-      const character = String.fromCodePoint(textPart.codePointAt(i));
+      const codePoint = textPart.codePointAt(i);
+      if (codePoint === undefined) break;
+      const character = String.fromCodePoint(codePoint);
       const glyph = el(
         "span",
         `c${punctuation.test(character) ? " pu" : ""}${rhymeOffsets.has(start + i) ? " rh" : ""}`,
         character,
       );
-      glyph.style.setProperty("--d", Math.min(lineNumber * 85 + (start + i) * 17, 1500));
+      glyph.style.setProperty("--d", String(Math.min(lineNumber * 85 + (start + i) * 17, 1500)));
       (term || clause).append(glyph);
       i += character.length;
       if (
@@ -182,6 +228,7 @@ function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
   }
   let pos = 0;
   while (pos < text.length) {
+    /** @type {{ at: number; key: string; index: number } | undefined} */
     let match;
     annotations.forEach((note, index) => {
       if (!note.key || used.has(index)) return;
@@ -197,7 +244,7 @@ function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
       break;
     }
     append(text.slice(pos, match.at), pos);
-    const term = el("button", "term");
+    const term = /** @type {HTMLButtonElement} */ (el("button", "term"));
     term.dataset.note = String(match.index);
     term.disabled = !notesVisible;
     term.dataset.k = String(match.index + 1);
@@ -210,6 +257,7 @@ function renderLine(text, annotations, used, rhymeOffsets, lineNumber) {
   return line;
 }
 
+/** @param {PoemViewModel} p */
 function renderBody(p) {
   poemNode.replaceChildren();
   poemNode.style.setProperty(
@@ -218,12 +266,18 @@ function renderBody(p) {
   );
   if (p.preface) poemNode.append(el("p", "pre", p.preface));
   const annotations = p.inlineAnnotations;
+  /** @type {Set<number>} */
   const used = new Set();
   let lineNumber = 0;
+  /** @type {Map<number, number[]>} */
   const rhymeMarks = new Map();
   for (const mark of p.structure.rhymeMarks) {
-    if (!rhymeMarks.has(mark.lineIndex)) rhymeMarks.set(mark.lineIndex, []);
-    rhymeMarks.get(mark.lineIndex).push(mark.offset);
+    let offsets = rhymeMarks.get(mark.lineIndex);
+    if (!offsets) {
+      offsets = [];
+      rhymeMarks.set(mark.lineIndex, offsets);
+    }
+    offsets.push(mark.offset);
   }
   for (const part of p.structure.stanzas) {
     const stanza = el("div", "st");
@@ -231,6 +285,7 @@ function renderBody(p) {
     stanza.setAttribute("role", "group");
     stanza.setAttribute("aria-label", part.label);
     let text = "";
+    /** @type {Set<number>} */
     let rhymeOffsets = new Set();
     function flush() {
       if (!text) return;
@@ -261,17 +316,18 @@ function renderBody(p) {
   }
   poemNode.classList.toggle("no-notes", !notesVisible);
   poemNode.classList.remove("show-rhyme");
-  $("#aRhyme").disabled = !p.structure.rhymeMarks.length;
-  $("#aRhyme").title = p.structure.rhymeMarks.length
+  const rhymeButton = /** @type {HTMLButtonElement} */ ($("#aRhyme"));
+  rhymeButton.disabled = !p.structure.rhymeMarks.length;
+  rhymeButton.title = p.structure.rhymeMarks.length
     ? p.structure.rhymeNote || "显示或隐藏韵脚"
     : "韵脚暂未核定";
-  $("#aRhyme").setAttribute(
+  rhymeButton.setAttribute(
     "aria-label",
     p.structure.rhymeNote ? `韵脚：${p.structure.rhymeNote}` : "显示或隐藏韵脚",
   );
-  $("#aRhyme").setAttribute("aria-pressed", "false");
-  $("#aNotesN").textContent = annotations.length;
-  $("#aNotes").disabled = !annotations.length;
+  rhymeButton.setAttribute("aria-pressed", "false");
+  $("#aNotesN").textContent = String(annotations.length);
+  /** @type {HTMLButtonElement} */ ($("#aNotes")).disabled = !annotations.length;
 }
 
 function updateVerticalHint() {
@@ -281,6 +337,11 @@ function updateVerticalHint() {
     wrap.scrollWidth > wrap.clientWidth + 1 ? "右起竖读 · 横向滑动" : "右起竖读";
 }
 
+/**
+ * @param {string} number
+ * @param {string} title
+ * @param {string} className
+ */
 function block(number, title, className) {
   const article = el("article", `blk ${className} rv in`);
   const heading = el("h3");
@@ -289,6 +350,11 @@ function block(number, title, className) {
   return article;
 }
 
+/**
+ * @param {HTMLElement} container
+ * @param {PlainNote[]} records
+ * @param {string} empty
+ */
 function addTextBlocks(container, records, empty) {
   if (!records.length) {
     container.append(el("p", "empty", empty));
@@ -303,11 +369,13 @@ function addTextBlocks(container, records, empty) {
   }
 }
 
+/** @param {ParsedAnnotation} note */
 function displayAnnotation(note) {
   const text = note.text.replace(/\n\s*\n(\d{1,4})\s*$/, "\n\n原文末尾另列数字：$1");
   return `${note.source} · ${text}`;
 }
 
+/** @param {PoemViewModel} p */
 function renderStudy(p) {
   const study = $("#study");
   study.replaceChildren();
@@ -371,7 +439,7 @@ function renderStudy(p) {
     details.append(el("summary", "", `${version.source} · 完整条目`), el("pre", "", version.text));
     versions.append(details);
   }
-  const source = el("a", "source-link", "打开原始文档 ↗");
+  const source = /** @type {HTMLAnchorElement} */ (el("a", "source-link", "打开原始文档 ↗"));
   source.href = encodeURI(p.path);
   source.target = "_blank";
   source.rel = "noopener noreferrer";
@@ -392,7 +460,13 @@ function closeNote() {
   for (const node of document.querySelectorAll(".term.sel")) node.classList.remove("sel");
 }
 
+/**
+ * @param {number} index
+ * @param {HTMLElement | null} anchor
+ * @param {"inline" | "source"} [type]
+ */
 function openNote(index, anchor, type = "inline") {
+  if (!current) return;
   const notes = type === "inline" ? current.inlineAnnotations : current.annotations;
   const note = notes[index];
   if (!note || !anchor) return;
@@ -422,6 +496,7 @@ function openNote(index, anchor, type = "inline") {
   $("#popX").focus({ preventScroll: true });
 }
 
+/** @param {PoemViewModel} p */
 function render(p) {
   current = p;
   closeNote();
@@ -445,23 +520,23 @@ function render(p) {
   [...title].forEach((character, index) => {
     const wrapper = el("span", "ch");
     const glyph = el("i", "", character);
-    glyph.style.setProperty("--i", index);
+    glyph.style.setProperty("--i", String(index));
     wrapper.append(glyph);
     heading.append(wrapper);
   });
   heading.style.setProperty(
     "--tk",
-    title.length <= 1 ? 1 : title.length <= 2 ? 0.94 : title.length <= 4 ? 0.62 : 0.4,
+    String(title.length <= 1 ? 1 : title.length <= 2 ? 0.94 : title.length <= 4 ? 0.62 : 0.4),
   );
   renderBody(p);
   updateVerticalHint();
-  const illustration = illustrations[p.id];
+  const illustration = /** @type {Record<string, string>} */ (illustrations)[p.id];
   const plate = $("#plate");
   const art = $("#plArt");
   plate.classList.toggle("has-generated", Boolean(illustration));
   plate.setAttribute("aria-label", `《${p.title}》配图`);
   if (illustration) {
-    const image = el("img", "pl-img");
+    const image = /** @type {HTMLImageElement} */ (el("img", "pl-img"));
     image.alt = `《${p.title}》配图`;
     image.addEventListener("error", () => {
       if (art.contains(image)) art.replaceChildren(el("span", "pl-error", "配图暂时无法加载"));
@@ -488,6 +563,7 @@ function render(p) {
   poemNode.scrollTop = 0;
 }
 
+/** @param {PoemViewModel} poem */
 function enterPoem(poem) {
   render(poem);
   const hero = $("#hero");
@@ -498,12 +574,16 @@ function enterPoem(poem) {
   }
 }
 
+/**
+ * @param {string} id
+ * @param {boolean} [history]
+ */
 function select(id, history = true) {
   const poem = byId.get(id);
   if (!poem || poem.id === (pending || current)?.id) return;
   if (history) window.history.pushState(null, "", `#poem=${encodeURIComponent(poem.id)}`);
   closeNote();
-  $("#audio").pause();
+  /** @type {HTMLAudioElement} */ ($("#audio")).pause();
   clearTimeout(swapTimer);
   pending = poem;
   const curtain = $("#curtain");
@@ -524,31 +604,40 @@ function select(id, history = true) {
   }, 480);
 }
 
+/** @param {number} delta */
 function step(delta) {
-  const index = library.findIndex((poem) => poem.id === (pending || current).id);
+  const active = pending || current;
+  if (!active) return;
+  const index = library.findIndex((poem) => poem.id === active.id);
   select(library[(index + delta + library.length) % library.length].id);
 }
 
 for (let i = 0; i < 88; i++) $("#bars").append(el("i"));
 const player = createPlayer({ onPrevious: () => step(-1), onNext: () => step(1) });
 $("#chips").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-filter]");
-  if (button) {
+  const button = /** @type {HTMLElement | null} */ (
+    /** @type {Element | null} */ (event.target)?.closest("[data-filter]")
+  );
+  if (button?.dataset.filter) {
     filter = button.dataset.filter;
     renderIndex();
   }
 });
 $("#q").addEventListener("input", renderIndex);
 $("#list").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-id]");
-  if (button) {
+  const button = /** @type {HTMLElement | null} */ (
+    /** @type {Element | null} */ (event.target)?.closest("[data-id]")
+  );
+  if (button?.dataset.id) {
     select(button.dataset.id);
     if (matchMedia("(max-width:1180px)").matches) setIndex(false);
   }
 });
 $("#cells").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-id]");
-  if (button) {
+  const button = /** @type {HTMLElement | null} */ (
+    /** @type {Element | null} */ (event.target)?.closest("[data-id]")
+  );
+  if (button?.dataset.id) {
     setMatrix(false);
     select(button.dataset.id);
   }
@@ -559,13 +648,15 @@ $("#mxBtn").addEventListener("click", () => setMatrix(true));
 $("#mxX").addEventListener("click", () => setMatrix(false));
 matrix.addEventListener("keydown", (event) => {
   if (event.key !== "Tab") return;
-  const buttons = [...matrix.querySelectorAll("button:not(:disabled)")];
+  const buttons = /** @type {HTMLButtonElement[]} */ ([
+    ...matrix.querySelectorAll("button:not(:disabled)"),
+  ]);
   if (event.shiftKey && document.activeElement === buttons[0]) {
     event.preventDefault();
-    buttons.at(-1).focus();
+    buttons.at(-1)?.focus();
   } else if (!event.shiftKey && document.activeElement === buttons.at(-1)) {
     event.preventDefault();
-    buttons[0].focus();
+    buttons[0]?.focus();
   }
 });
 $("#tTheme").addEventListener("click", () => {
@@ -578,8 +669,8 @@ $("#tTheme").addEventListener("click", () => {
 });
 $("#aVert").addEventListener("click", () => {
   closeNote();
-  const plate = document.querySelector(".plate-col");
-  const sheet = document.querySelector(".sheet");
+  const plate = /** @type {HTMLElement} */ (document.querySelector(".plate-col"));
+  const sheet = /** @type {HTMLElement} */ (document.querySelector(".sheet"));
   const from = plate.getBoundingClientRect();
   for (const animation of layoutAnimations) animation.cancel();
   layoutAnimations = [];
@@ -625,7 +716,7 @@ $("#aNotes").addEventListener("click", () => {
   notesVisible = !notesVisible;
   poemNode.classList.toggle("no-notes", !notesVisible);
   poemNode.querySelectorAll(".term").forEach((term) => {
-    term.disabled = !notesVisible;
+    /** @type {HTMLButtonElement} */ (term).disabled = !notesVisible;
   });
   $("#aNotes").setAttribute("aria-pressed", String(notesVisible));
   updateVerticalHint();
@@ -639,27 +730,38 @@ $("#aStudy").addEventListener("click", () =>
   $("#study").scrollIntoView({ behavior: reducedMotion.matches ? "instant" : "smooth" }),
 );
 poemNode.addEventListener("click", (event) => {
-  const term = event.target.closest("[data-note]");
+  const term = /** @type {HTMLElement | null} */ (
+    /** @type {Element | null} */ (event.target)?.closest("[data-note]")
+  );
   if (term && notesVisible) openNote(Number(term.dataset.note), term);
 });
 $("#study").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-note]");
+  const button = /** @type {HTMLElement | null} */ (
+    /** @type {Element | null} */ (event.target)?.closest("[data-note]")
+  );
   if (button) openNote(Number(button.dataset.note), button, "source");
 });
 $("#popX").addEventListener("click", closeNote);
+/** @param {number} delta */
 function stepNote(delta) {
+  if (!current) return;
   const notes = activeNoteType === "inline" ? current.inlineAnnotations : current.annotations;
   const index = (activeNote + delta + notes.length) % notes.length;
-  const anchor =
+  const anchor = /** @type {HTMLElement | null} */ (
     activeNoteType === "inline"
       ? poemNode.querySelector(`[data-note="${index}"]`)
-      : document.querySelector(`#study [data-note="${index}"]`);
-  openNote(index, anchor, activeNoteType);
+      : document.querySelector(`#study [data-note="${index}"]`)
+  );
+  openNote(index, anchor, activeNoteType === "inline" ? "inline" : "source");
 }
 $("#popPrev").addEventListener("click", () => stepNote(-1));
 $("#popNext").addEventListener("click", () => stepNote(1));
 document.addEventListener("click", (event) => {
-  if (activeNote >= 0 && !event.target.closest("#pop, [data-note]")) closeNote();
+  if (
+    activeNote >= 0 &&
+    !(/** @type {Element | null} */ (event.target)?.closest("#pop, [data-note]"))
+  )
+    closeNote();
 });
 function closeMovedNote() {
   if (activeNote < 0 || !noteAnchor?.isConnected) return;
@@ -671,11 +773,11 @@ scroll.addEventListener("scroll", closeMovedNote, { passive: true });
 $("#poemWrap").addEventListener("scroll", closeMovedNote, { passive: true });
 window.addEventListener("popstate", () => {
   const id = new URLSearchParams(location.hash.slice(1)).get("poem");
-  if (byId.has(id)) select(id, false);
+  if (id && byId.has(id)) select(id, false);
 });
 window.addEventListener("hashchange", () => {
   const id = new URLSearchParams(location.hash.slice(1)).get("poem");
-  if (byId.has(id)) select(id, false);
+  if (id && byId.has(id)) select(id, false);
 });
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
@@ -683,16 +785,17 @@ window.addEventListener("keydown", (event) => {
     else closeNote();
     return;
   }
+  const activeElement = document.activeElement;
   if (
     event.metaKey ||
     event.ctrlKey ||
     event.altKey ||
-    /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) ||
+    /INPUT|TEXTAREA|SELECT/.test(activeElement?.tagName || "") ||
     !matrix.inert
   )
     return;
   if (
-    document.activeElement.closest("#poemWrap") &&
+    activeElement?.closest("#poemWrap") &&
     [
       "ArrowLeft",
       "ArrowRight",
@@ -706,7 +809,7 @@ window.addEventListener("keydown", (event) => {
   )
     return;
   const key = event.key.toLowerCase();
-  if (key === " " && !document.activeElement.closest("button, a, summary")) {
+  if (key === " " && !activeElement?.closest("button, a, summary")) {
     event.preventDefault();
     player.toggle();
   } else if (key === "/") {
@@ -729,7 +832,8 @@ window.addEventListener("keydown", (event) => {
   else if (key === "m") setMatrix(true);
   else if (key === "t") $("#tTheme").click();
   else if (key === "v") $("#aVert").click();
-  else if (key === "n" && !$("#aNotes").disabled) $("#aNotes").click();
+  else if (key === "n" && !(/** @type {HTMLButtonElement} */ ($("#aNotes")).disabled))
+    $("#aNotes").click();
 });
 
 const points = Array.from({ length: 10 }, (_, i) => {
@@ -737,6 +841,10 @@ const points = Array.from({ length: 10 }, (_, i) => {
   const radius = i % 2 ? 38.2 : 100;
   return `${(Math.cos(a) * radius).toFixed(2)},${(Math.sin(a) * radius).toFixed(2)}`;
 }).join(" ");
+/**
+ * @param {number} radius
+ * @param {number} degrees
+ */
 const starPoint = (radius, degrees) => {
   const angle = (degrees * Math.PI) / 180;
   return `${(Math.cos(angle) * radius).toFixed(2)},${(Math.sin(angle) * radius).toFixed(2)}`;
@@ -763,7 +871,7 @@ setIndex(!matchMedia("(max-width:1180px)").matches);
 new ResizeObserver(updateVerticalHint).observe($("#poemWrap"));
 document.fonts.ready.then(updateVerticalHint);
 const initial = new URLSearchParams(location.hash.slice(1)).get("poem");
-const first = byId.get(initial) || byId.get("19") || library[0];
+const first = (initial ? byId.get(initial) : undefined) || byId.get("19") || library[0];
 $("#curNo").textContent = first.id.padStart(3, "0");
 enterPoem(first);
 const curtain = $("#curtain");
@@ -773,7 +881,8 @@ if (!reducedMotion.matches) {
   void curtain.offsetWidth;
   curtain.classList.add("boot");
 }
-if (!byId.has(initial)) history.replaceState(null, "", `#poem=${encodeURIComponent(current.id)}`);
+if ((!initial || !byId.has(initial)) && current)
+  history.replaceState(null, "", `#poem=${encodeURIComponent(current.id)}`);
 reducedMotion.addEventListener("change", (event) => {
   if (!event.matches) return;
   clearTimeout(swapTimer);

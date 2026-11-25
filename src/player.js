@@ -1,45 +1,64 @@
+/** @typedef {import("./view-model.js").PoemViewModel} PoemViewModel */
+
 const RATES = [1, 1.25, 0.8];
 const CIRCUMFERENCE = 207.3;
 
+/**
+ * @param {string} id
+ * @returns {HTMLElement}
+ */
 function required(id) {
   const node = document.getElementById(id);
   if (!node) throw new Error(`播放器缺少 #${id}`);
   return node;
 }
 
+/**
+ * @param {HTMLAudioElement} audio
+ * @returns {number | null}
+ */
 function finiteDuration(audio) {
   return Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : null;
 }
 
+/** @param {number} value */
 function formatTime(value) {
   const seconds = Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
+/** @param {number} value */
 function formatRate(value) {
   return `${Number.isInteger(value) ? value.toFixed(1) : value.toFixed(2)}×`;
 }
 
+/** @param {MediaError | null} error */
 function mediaErrorText(error) {
+  /** @type {Record<number, string>} */
   const messages = {
     1: "录音加载已中止",
     2: "录音文件无法下载",
     3: "录音文件解码失败",
     4: "浏览器不支持此录音",
   };
-  return messages[error?.code] || "录音加载失败";
+  return messages[error?.code ?? 0] || "录音加载失败";
 }
 
+/** @param {unknown} error */
 function playbackErrorText(error) {
-  return error?.name === "NotAllowedError"
-    ? "浏览器阻止了播放，请再次点击"
-    : "录音播放失败，请重试";
+  const name =
+    typeof error === "object" && error !== null && "name" in error ? error.name : undefined;
+  return name === "NotAllowedError" ? "浏览器阻止了播放，请再次点击" : "录音播放失败，请重试";
 }
 
+/**
+ * @param {HTMLElement | null} bars
+ * @param {string | undefined} seedValue
+ */
 function shapeWave(bars, seedValue) {
   const items = bars?.children;
   if (!items?.length) return;
-  const seed = Number.parseInt(seedValue, 10) || 19;
+  const seed = Number.parseInt(seedValue ?? "", 10) || 19;
   const phaseA = (seed * 1.37) % (Math.PI * 2);
   const phaseB = (seed * 2.71) % (Math.PI * 2);
   const phaseC = (seed * 4.19) % (Math.PI * 2);
@@ -51,17 +70,23 @@ function shapeWave(bars, seedValue) {
     const cadence = 0.5 + 0.5 * Math.sin(t * Math.PI * 11 + phaseB);
     const detail = 0.5 + 0.5 * Math.cos(t * Math.PI * 23 + phaseC);
     const amplitude = 0.18 + 0.8 * taper * (0.42 * phrase + 0.36 * cadence + 0.22 * detail);
-    const bar = items[i];
+    const bar = /** @type {HTMLElement} */ (items[i]);
     bar.style?.setProperty?.("--h", amplitude.toFixed(3));
     bar.style?.setProperty?.("--t", `${(0.95 + 0.55 * detail).toFixed(2)}s`);
     bar.style?.setProperty?.("--dl", `${(-(i * 0.048 + 0.12 * cadence)).toFixed(2)}s`);
   }
 }
 
+/**
+ * @param {HTMLElement | null} bars
+ * @param {number} progress
+ * @param {boolean} hasRecording
+ * @param {boolean} playing
+ */
 function syncWave(bars, progress, hasRecording, playing) {
   const items = bars?.children;
   if (!items?.length) return;
-  bars.classList?.toggle?.("idle", !hasRecording);
+  bars?.classList?.toggle?.("idle", !hasRecording);
   const count = items.length;
   const headIndex =
     playing && hasRecording ? Math.min(count - 1, Math.floor(progress * count)) : -1;
@@ -74,27 +99,32 @@ function syncWave(bars, progress, hasRecording, playing) {
         : pos <= progress
           ? "past"
           : "future";
-    if (items[i].dataset) items[i].dataset.state = state;
+    const bar = /** @type {HTMLElement} */ (items[i]);
+    if (bar.dataset) bar.dataset.state = state;
   }
 }
 
+/**
+ * @param {{ onPrevious?: () => void; onNext?: () => void }} [options]
+ */
 export function createPlayer({ onPrevious, onNext } = {}) {
   const app = required("app");
-  const playButton = required("pp");
-  const actionButton = required("aPlay");
+  const playButton = /** @type {HTMLButtonElement} */ (required("pp"));
+  const actionButton = /** @type {HTMLButtonElement} */ (required("aPlay"));
   const actionText = required("aPlayT");
-  const rateButton = required("rate");
+  const rateButton = /** @type {HTMLButtonElement} */ (required("rate"));
   const mode = required("pMode");
   const position = required("pIdx");
   const line = required("pLine");
   const ring = required("ring");
-  const seek = required("seek");
+  const seek = /** @type {HTMLInputElement} */ (required("seek"));
   const bars = document.getElementById("bars");
-  const previousButton = required("prevL");
-  const nextButton = required("nextL");
-  const audio = required("audio");
+  const previousButton = /** @type {HTMLButtonElement} */ (required("prevL"));
+  const nextButton = /** @type {HTMLButtonElement} */ (required("nextL"));
+  const audio = /** @type {HTMLAudioElement} */ (required("audio"));
   const actionIcon = actionButton.querySelector?.("use");
 
+  /** @type {PoemViewModel | null} */
   let poem = null;
   let hasRecording = false;
   let hasStarted = false;
@@ -157,7 +187,8 @@ export function createPlayer({ onPrevious, onNext } = {}) {
       actionButton.setAttribute("aria-label", label);
       mode.textContent = loading ? "载入合成朗诵" : "合成朗诵";
       position.textContent = `${formatTime(current)} / ${duration ? formatTime(duration) : "--:--"}`;
-      line.textContent = loading ? `正在载入《${poem.title}》` : poem.title;
+      const title = poem?.title ?? "";
+      line.textContent = loading ? `正在载入《${title}》` : title;
     }
 
     actionIcon?.setAttribute("href", playing ? "#i-pause" : "#i-play");
@@ -165,6 +196,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
     rateButton.setAttribute("aria-label", `播放倍速 ${audio.playbackRate}`);
   }
 
+  /** @param {number} value */
   function seekTo(value) {
     const duration = finiteDuration(audio);
     if (!hasRecording || !duration || !Number.isFinite(value)) return;
@@ -200,6 +232,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
     }
   }
 
+  /** @param {PoemViewModel | null | undefined} nextPoem */
   function setPoem(nextPoem) {
     selection += 1;
     poem = nextPoem || null;
@@ -216,7 +249,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
     } catch {}
     audio.defaultPlaybackRate = RATES[rateIndex];
     audio.playbackRate = RATES[rateIndex];
-    if (hasRecording) {
+    if (hasRecording && url) {
       audio.src = url;
     } else {
       audio.removeAttribute("src");
@@ -316,6 +349,7 @@ export function createPlayer({ onPrevious, onNext } = {}) {
   return {
     setPoem,
     toggle,
+    /** @param {number} seconds */
     seekBy(seconds) {
       seekTo(audio.currentTime + Number(seconds));
     },

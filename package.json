@@ -8,6 +8,7 @@
   "scripts": {
     "build:data": "node scripts/build-data.mjs",
     "build": "node scripts/build-data.mjs && vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "biome check --error-on-warnings .",
     "lint:fix": "biome check --write .",
     "dev": "node scripts/build-data.mjs && vite --host 127.0.0.1 --port 7065 --strictPort",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.6.8",
     "playwright": "^1.65.0",
+    "typescript": "^7.0.2",
     "vite": "^8.3.6",
     "wrangler": "4.156.0"
   }

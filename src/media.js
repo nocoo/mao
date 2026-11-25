@@ -1,3 +1,8 @@
+/**
+ * @param {string} id
+ * @param {string} sha256
+ * @returns {string}
+ */
 export function audioUrl(id, sha256) {
   if (!/^\d{2}$/.test(id) || !/^[a-f0-9]{64}$/.test(sha256)) {
     throw new TypeError("Invalid audio ID or SHA-256");

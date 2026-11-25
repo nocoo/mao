@@ -1,9 +1,79 @@
 import { audioUrl } from "./media.js";
 
+/**
+ * @typedef {{ kind: string; source: string; text: string }} RawNote
+ * @typedef {{ source: string; text: string }} RawVersion
+ * @typedef {{
+ *   id: string;
+ *   title: string;
+ *   form: string;
+ *   subject: string;
+ *   collection: string;
+ *   date: string;
+ *   year: number | null;
+ *   body: string[];
+ *   preface: string;
+ *   path: string;
+ *   versions: RawVersion[];
+ *   notes: RawNote[];
+ * }} RawPoem
+ * @typedef {{ poems?: RawPoem[]; counts?: Record<string, number> }} RawPoemLibrary
+ * @typedef {{
+ *   id: string;
+ *   file?: string | null;
+ *   seconds?: number | null;
+ *   sha256?: string | null;
+ *   status: string;
+ *   priority_review?: boolean;
+ * }} ManifestRecording
+ * @typedef {{ poems?: ManifestRecording[] }} AudioManifest
+ * @typedef {{ key: string; text: string; source: string }} ParsedAnnotation
+ * @typedef {{ text: string; source: string }} PlainNote
+ * @typedef {{
+ *   url: string;
+ *   seconds: number;
+ *   status: string;
+ *   priorityReview: boolean | undefined;
+ * }} AudioInfo
+ * @typedef {{ label: string; lineIndexes: number[] }} Stanza
+ * @typedef {{ lineIndex: number; offset: number; character: string }} RhymeMark
+ * @typedef {{
+ *   formLabel: string;
+ *   displayDate?: string;
+ *   rhymeNote?: string;
+ *   stanzas: Stanza[];
+ *   rhymeMarks: RhymeMark[];
+ * }} PoemStructure
+ * @typedef {{
+ *   id: string;
+ *   title: string;
+ *   form: string;
+ *   subject: string;
+ *   collection: string;
+ *   date: string;
+ *   year: number | null;
+ *   body: string[];
+ *   preface: string;
+ *   path: string;
+ *   versions: RawVersion[];
+ *   audio: AudioInfo | null;
+ *   annotations: ParsedAnnotation[];
+ *   context: PlainNote[];
+ *   appreciation: PlainNote[];
+ *   remarks: PlainNote[];
+ *   structure: PoemStructure;
+ *   inlineAnnotations: ParsedAnnotation[];
+ * }} PoemViewModel
+ */
+
 const BRACKET_ANNOTATION = /^[①-⑳]?\s*〔([^〕]+)〕\s*(.*)$/;
 const NUMBERED_ANNOTATION = /^[（(](\d+)[)）]\s*(.*)$/;
 const PLAIN_ANNOTATION = /^([^。！？；…\n]{1,40}?)[：:∶；;]\s*(.*)$/;
 
+/**
+ * @param {string} line
+ * @returns {{ key: string; text: string } | null}
+ */
 function marker(line) {
   const bracket = line.match(BRACKET_ANNOTATION);
   if (bracket) return { key: bracket[1].trim(), text: bracket[2] };
@@ -18,8 +88,15 @@ function marker(line) {
   return plain ? { key: plain[1].trim(), text: plain[2] } : null;
 }
 
+/**
+ * @param {string} noteText
+ * @param {string} source
+ * @returns {ParsedAnnotation[]}
+ */
 export function parseAnnotations(noteText, source) {
+  /** @type {ParsedAnnotation[]} */
   const annotations = [];
+  /** @type {{ key: string; text: string } | undefined} */
   let current;
 
   const flush = () => {
@@ -44,12 +121,37 @@ export function parseAnnotations(noteText, source) {
   return annotations;
 }
 
+/**
+ * @overload
+ * @param {RawPoem} poem
+ * @param {string} kind
+ * @param {true} withKeys
+ * @returns {ParsedAnnotation[]}
+ */
+/**
+ * @overload
+ * @param {RawPoem} poem
+ * @param {string} kind
+ * @param {false} [withKeys]
+ * @returns {PlainNote[]}
+ */
+/**
+ * @param {RawPoem} poem
+ * @param {string} kind
+ * @param {boolean} [withKeys]
+ * @returns {ParsedAnnotation[] | PlainNote[]}
+ */
 function notesOfType(poem, kind, withKeys = false) {
   const notes = poem.notes.filter((note) => note.kind === kind);
   if (withKeys) return notes.flatMap((note) => parseAnnotations(note.text, note.source));
   return notes.map((note) => ({ text: note.text, source: note.source }));
 }
 
+/**
+ * @param {string} id
+ * @param {Map<string, ManifestRecording>} recordings
+ * @returns {AudioInfo | null}
+ */
 function audioFor(id, recordings) {
   const recording = recordings.get(id);
   if (
@@ -61,17 +163,26 @@ function audioFor(id, recordings) {
     return null;
   }
   return {
-    url: audioUrl(id, recording.sha256),
-    seconds: recording.seconds,
+    url: audioUrl(id, recording.sha256 ?? ""),
+    seconds: /** @type {number} */ (recording.seconds),
     status: recording.status,
     priorityReview: recording.priority_review,
   };
 }
 
+/**
+ * @param {unknown} value
+ * @returns {value is Record<string, unknown>}
+ */
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+/**
+ * @param {RawPoem[]} poems
+ * @param {unknown} analyses
+ * @returns {asserts analyses is Record<string, Record<string, unknown>>}
+ */
 function validateAnalyses(poems, analyses) {
   if (!isRecord(analyses)) throw new TypeError("analyses 必须是以编号为键的对象");
   const ids = new Set(poems.map((poem) => poem.id));
@@ -85,6 +196,11 @@ function validateAnalyses(poems, analyses) {
   }
 }
 
+/**
+ * @param {RawPoem} poem
+ * @param {Record<string, unknown>} analysis
+ * @returns {PoemStructure}
+ */
 function structureFor(poem, analysis) {
   const { structure } = analysis;
   if (!isRecord(structure)) throw new TypeError(`分析 ${poem.id} 缺少 structure 对象`);
@@ -101,6 +217,7 @@ function structureFor(poem, analysis) {
     throw new TypeError(`分析 ${poem.id} 的 stanzas 必须是非空数组`);
   }
 
+  /** @type {number[]} */
   const lineIndexes = [];
   const labels = new Set();
   const stanzas = structure.stanzas.map((stanza, index) => {
@@ -113,13 +230,16 @@ function structureFor(poem, analysis) {
     if (!Array.isArray(stanza.lineIndexes) || !stanza.lineIndexes.length) {
       throw new TypeError(`分析 ${poem.id} 的 stanza ${index} 缺少行索引`);
     }
+    /** @type {number[]} */
+    const stanzaIndexes = [];
     for (const lineIndex of stanza.lineIndexes) {
       if (!Number.isInteger(lineIndex) || lineIndex < 0 || lineIndex >= poem.body.length) {
         throw new RangeError(`分析 ${poem.id} 的行索引 ${lineIndex} 超出正文范围`);
       }
       lineIndexes.push(lineIndex);
+      stanzaIndexes.push(lineIndex);
     }
-    return { label: stanza.label, lineIndexes: [...stanza.lineIndexes] };
+    return { label: stanza.label, lineIndexes: stanzaIndexes };
   });
   const expectedIndexes = poem.body.map((_, index) => index);
   if (
@@ -143,7 +263,9 @@ function structureFor(poem, analysis) {
   const rhymeMarks = structure.rhymeMarks.map((mark) => {
     if (
       !isRecord(mark) ||
+      typeof mark.lineIndex !== "number" ||
       !Number.isInteger(mark.lineIndex) ||
+      typeof mark.offset !== "number" ||
       !Number.isInteger(mark.offset) ||
       mark.lineIndex < 0 ||
       mark.lineIndex >= poem.body.length ||
@@ -180,6 +302,12 @@ function structureFor(poem, analysis) {
   };
 }
 
+/**
+ * @param {RawPoem} poem
+ * @param {Record<string, unknown>} analysis
+ * @param {ParsedAnnotation[]} annotations
+ * @returns {ParsedAnnotation[]}
+ */
 function inlineAnnotationsFor(poem, analysis, annotations) {
   if (!Array.isArray(analysis.inlineTerms))
     throw new TypeError(`分析 ${poem.id} 的 inlineTerms 必须是数组`);
@@ -212,6 +340,12 @@ function inlineAnnotationsFor(poem, analysis, annotations) {
   });
 }
 
+/**
+ * @param {RawPoemLibrary} library
+ * @param {AudioManifest} manifest
+ * @param {unknown} analyses
+ * @returns {PoemViewModel[]}
+ */
 export function createLibraryViewModel(library, manifest, analyses) {
   const poems = library?.poems ?? [];
   const recordings = new Map((manifest?.poems ?? []).map((poem) => [poem.id, poem]));
