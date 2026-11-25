@@ -33,7 +33,7 @@ pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 
 
 Follows `system1-quality`; CI slot definitions and pinned `base-ci` revision live in [.github/workflows/quality-slots.yml](.github/workflows/quality-slots.yml) (called by [ci.yml](.github/workflows/ci.yml), with `quality / Z1: Gate` required on `main`). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
-- **Exceptions / gaps**: `S1 Types` is `enforced` via `tsc --noEmit` (`checkJs: true`, `pnpm run typecheck`); `S2 Lint` is `enforced` via Biome (`pnpm run lint`); `P1 Package` is `N/A` (Cloudflare Worker, not npm); `L1 Unit` has no numeric coverage floor.
+- **Exceptions / gaps**: `S1 Types` is `enforced` via `tsc --noEmit` (`checkJs: true`, `pnpm run typecheck`); `S2 Lint` is `enforced` via Biome (`pnpm run lint`); `P1 Package` is `enforced` via `pnpm run deploy:check` on the `B1` artifact; `L1 Unit` has no numeric coverage floor.
 - **Browser scope**: Chromium is `enforced` in CI; Safari and Firefox are not independently verified.
 - **Local hooks**: None configured (`.husky/` and `.githooks/` are absent); run local checks manually before commit/push, with CI `quality / Z1: Gate` as the independent backstop.
 
