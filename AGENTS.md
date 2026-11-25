@@ -16,8 +16,8 @@ pnpm run build && pnpm run deploy:check   # B1 build + Wrangler dry-run (no depl
 pnpm run typecheck                        # S1: TypeScript checkJs
 pnpm run lint                             # S2: Biome lint and format check
 pnpm run test:coverage    # L1 Node tests + coverage/lcov.info
-pnpm run test:worker -- --http-only       # L2/L3 isolated local Worker HTTP checks
-pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 E2E
+pnpm run test:worker -- --http-only       # L2 isolated local Worker HTTP checks
+pnpm run test:browser && pnpm run test:fullscreen  # L4 E2E (Chromium against built dist/)
 ```
 
 ## Invariants
@@ -33,7 +33,7 @@ pnpm run test:worker && pnpm run test:browser && pnpm run test:fullscreen  # L4 
 
 Follows `system1-quality`; CI slot definitions and pinned `base-ci` revision live in [.github/workflows/quality-slots.yml](.github/workflows/quality-slots.yml) (called by [ci.yml](.github/workflows/ci.yml), with `quality / Z1: Gate` required on `main`). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
-- **Exceptions / gaps**: `S1 Types` is `enforced` via `tsc --noEmit` (`checkJs: true`, `pnpm run typecheck`); `S2 Lint` is `enforced` via Biome (`pnpm run lint`); `P1 Package` is `enforced` via `pnpm run deploy:check` on the `B1` artifact; `L1 Unit` has no numeric coverage floor.
+- **Exceptions / gaps**: `S1 Types` is `enforced` via `tsc --noEmit` (`checkJs: true`, `pnpm run typecheck`); `S2 Lint` is `enforced` via Biome (`pnpm run lint`); `L2 Runtime` is `enforced` via `test:worker -- --http-only` on the `B1` artifact; `L3 Integration` is `N/A` (Worker HTTP checks run in `L2`, skipped unless `vars.ENABLE_L3_INTEGRATION == 'true'`); `L4 E2E` is `enforced` via Chromium Playwright suites (`test:browser` and `test:fullscreen`) on the `B1` artifact; `P1 Package` is `enforced` via `pnpm run deploy:check` on the `B1` artifact; `L1 Unit` has no numeric coverage floor.
 - **Browser scope**: Chromium is `enforced` in CI; Safari and Firefox are not independently verified.
 - **Local hooks**: None configured (`.husky/` and `.githooks/` are absent); run local checks manually before commit/push, with CI `quality / Z1: Gate` as the independent backstop.
 
