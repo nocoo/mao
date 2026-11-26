@@ -47,7 +47,7 @@ pnpm run test             # 运行数据、ViewModel、播放器与部署脚本�
 pnpm run test:coverage    # Node 单元测试与 coverage/lcov.info
 pnpm run test:worker      # 隔离本地 Worker 与 HTTP 检查
 pnpm run test:browser     # :4175 端口 Chromium 交互测试
-pnpm run test:fullscreen  # :4176 端口九视口全屏截图与布局检查
+pnpm run test:fullscreen  # :4176 端口桌面端全屏与竖排布局检查
 ```
 
 ## 技术栈

@@ -47,7 +47,7 @@ pnpm run test             # run data, view-model, player, and deployment tests
 pnpm run test:coverage    # Node unit tests with coverage/lcov.info
 pnpm run test:worker      # isolated local Worker and HTTP checks
 pnpm run test:browser     # Chromium interaction tests on :4175
-pnpm run test:fullscreen  # nine-viewport layout checks on :4176
+pnpm run test:fullscreen  # desktop fullscreen and vertical layout checks on :4176
 ```
 
 ## Stack
