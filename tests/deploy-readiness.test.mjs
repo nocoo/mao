@@ -13,10 +13,10 @@ test("unified pipeline.yml replaces ci.yml and release.yml", () => {
   assert.match(pipeline, /uses:\s*\.\/\.github\/workflows\/quality-slots\.yml/);
 });
 
-test("deploy job reuses B1 artifact and pins base-ci v2026.24", () => {
+test("deploy job reuses B1 artifact and pins base-ci v2026.25", () => {
   assert.match(
     pipeline,
-    /nocoo\/base-ci\/\.github\/workflows\/deploy-worker\.yml@3703a073693d598159e87f77f99587e586c14cfe/,
+    /nocoo\/base-ci\/\.github\/workflows\/deploy-worker\.yml@9933a7461a312cfaac526ccc5907357a7e3f669a/,
   );
   assert.match(pipeline, /artifact-name:\s*mao-static-site/);
   assert.match(pipeline, /artifact-path:\s*dist/);
