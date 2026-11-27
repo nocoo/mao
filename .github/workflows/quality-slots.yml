@@ -30,7 +30,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -55,7 +55,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -81,7 +81,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/lint-workflows@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/lint-workflows@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
       - name: Record tested SHA
         id: record-sha
         if: always()
@@ -102,7 +102,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/scan-secrets@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/scan-secrets@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
       - name: Record tested SHA
         id: record-sha
         if: always()
@@ -122,7 +122,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/scan-dependencies@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/scan-dependencies@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           lockfiles: "pnpm-lock.yaml"
       - name: Record tested SHA
@@ -143,7 +143,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -173,7 +173,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -200,7 +200,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -241,7 +241,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/illustrations/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -251,7 +251,7 @@ jobs:
         with:
           name: mao-static-site
           path: dist
-      - uses: nocoo/base-ci/.github/actions/setup-playwright@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-playwright@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           browsers: chromium
@@ -276,7 +276,7 @@ jobs:
           sparse-checkout: |
             /*
             !/design/
-      - uses: nocoo/base-ci/.github/actions/setup-js@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+      - uses: nocoo/base-ci/.github/actions/setup-js@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           package-manager: pnpm
           runtime-version: ${{ env.PNPM_VERSION }}
@@ -313,7 +313,7 @@ jobs:
     steps:
       - name: Verify quality slots
         id: gate
-        uses: nocoo/base-ci/.github/actions/z1-gate@e5876a604547b1ddb0916f16dd841a4f832609a0 # v2026.20
+        uses: nocoo/base-ci/.github/actions/z1-gate@3703a073693d598159e87f77f99587e586c14cfe # v2026.24
         with:
           needs-json: ${{ toJSON(needs) }}
           expected-sha: ${{ github.sha }}
