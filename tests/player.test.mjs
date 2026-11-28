@@ -16,14 +16,22 @@ class FakeClassList {
 }
 
 class FakeNode {
-  constructor() {
+  constructor(children = []) {
     this.attributes = new Map();
+    this.children = children;
     this.classList = new FakeClassList();
+    this.dataset = {};
     this.disabled = false;
     this.listeners = new Map();
-    this.style = {};
+    this.rect = { left: 0, width: 100 };
+    this.style = {
+      setProperty: (name, value) => {
+        this.style[name] = value;
+      },
+    };
     this.textContent = "";
     this.value = "0";
+    this.icon = null;
   }
 
   addEventListener(type, listener) {
@@ -32,16 +40,22 @@ class FakeNode {
     this.listeners.set(type, listeners);
   }
 
-  dispatch(type) {
-    for (const listener of this.listeners.get(type) || []) listener({ type, target: this });
+  dispatch(type, event = {}) {
+    for (const listener of this.listeners.get(type) || []) {
+      listener({ type, target: this, ...event });
+    }
   }
 
-  click() {
-    this.dispatch("click");
+  click(event) {
+    this.dispatch("click", event);
   }
 
-  querySelector() {
-    return null;
+  getBoundingClientRect() {
+    return this.rect;
+  }
+
+  querySelector(selector) {
+    return selector === "use" ? this.icon : null;
   }
 
   setAttribute(name, value) {
@@ -106,13 +120,22 @@ function fixture() {
     "pLine",
     "ring",
     "seek",
+    "bars",
     "prevL",
     "nextL",
     "audio",
   ];
   const nodes = Object.fromEntries(
-    ids.map((id) => [id, id === "audio" ? new FakeAudio() : new FakeNode()]),
+    ids.map((id) => [
+      id,
+      id === "audio"
+        ? new FakeAudio()
+        : id === "bars"
+          ? new FakeNode(Array.from({ length: 8 }, () => new FakeNode()))
+          : new FakeNode(),
+    ]),
   );
+  nodes.aPlay.icon = new FakeNode();
   globalThis.document = {
     baseURI: "https://example.test/reader/index.html",
     getElementById(id) {
@@ -257,4 +280,89 @@ test("加载失败和播放拒绝显示明确错误，切诗清除旧状态", as
   await player.toggle();
   assert.match(nodes.pLine.textContent, /浏览器阻止/);
   assert.equal(nodes.app.classList.contains("playing"), false);
+
+  nodes.audio.playResult = new Error("network");
+  await player.toggle();
+  assert.equal(nodes.pLine.textContent, "录音播放失败，请重试");
+
+  for (const [code, expected] of [
+    [1, /中止/],
+    [2, /无法下载/],
+    [4, /不支持/],
+    [99, /加载失败/],
+  ]) {
+    nodes.audio.error = { code };
+    nodes.audio.dispatch("error");
+    assert.match(nodes.pLine.textContent, expected);
+  }
+});
+
+test("波形图点击、按钮切换、媒体加载事件与异常兜底", async () => {
+  const nodes = fixture();
+  const player = createPlayer();
+
+  player.setPoem(null);
+  assert.equal(nodes.pLine.textContent, "请选择诗词");
+  assert.equal(nodes.bars.classList.contains("idle"), true);
+  assert.equal(nodes.bars.children[0].dataset.state, "future");
+  nodes.rate.click();
+  await player.toggle();
+  assert.equal(nodes.audio.playCalls, 0);
+
+  player.setPoem(poem({ url: "https://m.no.mt/audio/wave.mp3", seconds: 100, status: "ready" }));
+  assert.equal(nodes.bars.classList.contains("idle"), false);
+  assert.ok(nodes.bars.children[0].style["--h"]);
+
+  nodes.audio.duration = 100;
+  nodes.audio.dispatch("durationchange");
+  nodes.audio.dispatch("waiting");
+  assert.equal(nodes.pMode.textContent, "载入合成朗诵");
+  nodes.audio.dispatch("canplay");
+  assert.equal(nodes.pMode.textContent, "合成朗诵");
+
+  nodes.pp.click();
+  await Promise.resolve();
+  nodes.audio.dispatch("playing");
+  assert.equal(nodes.aPlay.icon.getAttribute("href"), "#i-pause");
+  assert.equal(nodes.app.classList.contains("playing"), true);
+
+  nodes.bars.click({ clientX: 50 });
+  assert.equal(nodes.audio.currentTime, 50);
+  assert.equal(
+    nodes.bars.children.some((bar) => bar.dataset.state === "head"),
+    true,
+  );
+  assert.equal(nodes.bars.children[0].dataset.state, "past");
+
+  nodes.bars.rect = { left: 0, width: 0 };
+  nodes.bars.click({ clientX: 10 });
+  assert.equal(nodes.audio.currentTime, 50);
+
+  nodes.aPlay.click();
+  assert.equal(nodes.audio.paused, true);
+  assert.equal(nodes.aPlay.icon.getAttribute("href"), "#i-play");
+
+  nodes.audio.ended = true;
+  nodes.audio.dispatch("ended");
+  await player.toggle();
+  assert.equal(nodes.audio.currentTime, 0);
+  assert.equal(nodes.audio.paused, false);
+
+  nodes.audio.dispatch("loadstart");
+  assert.equal(nodes.pMode.textContent, "载入合成朗诵");
+  nodes.audio.dispatch("seeked");
+
+  let rejectStale;
+  nodes.audio.play = () =>
+    new Promise((_, reject) => {
+      rejectStale = reject;
+    });
+  const pendingToggle = player.toggle();
+  player.setPoem(poem());
+  rejectStale?.(new Error("aborted"));
+  await pendingToggle;
+  assert.equal(nodes.pMode.textContent, "暂无录音");
+
+  globalThis.document = { getElementById: () => null };
+  assert.throws(() => createPlayer(), /播放器缺少 #app/);
 });

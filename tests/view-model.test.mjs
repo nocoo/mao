@@ -225,6 +225,139 @@ test("分析数据必须完整覆盖正文并唯一引用可见词项", () => {
   const missingAnalysis = { ...analyses };
   delete missingAnalysis["19"];
   assert.throws(() => createLibraryViewModel(library, manifest, missingAnalysis), /分析 19 缺失/);
+
+  assert.throws(() => createLibraryViewModel(library, manifest, null), /analyses 必须/);
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 999: analysis16 }),
+    /不在 library 中/,
+  );
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: null }),
+    /必须是对象/,
+  );
+  assert.throws(
+    () =>
+      createLibraryViewModel(library, manifest, { ...analyses, 16: { ...analysis16, id: "01" } }),
+    /必须与编号键一致/,
+  );
+
+  const badStructure = structuredClone(analysis16);
+  badStructure.structure = null;
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badStructure }),
+    /缺少 structure/,
+  );
+
+  const badFormLabel = structuredClone(analysis16);
+  badFormLabel.structure.formLabel = " ";
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badFormLabel }),
+    /formLabel 必须是非空字符串/,
+  );
+
+  const badDisplayDate = structuredClone(analysis16);
+  badDisplayDate.structure.displayDate = "";
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badDisplayDate }),
+    /displayDate 必须是非空字符串/,
+  );
+
+  const emptyStanzas = structuredClone(analysis16);
+  emptyStanzas.structure.stanzas = [];
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: emptyStanzas }),
+    /stanzas 必须是非空数组/,
+  );
+
+  const dupStanzaLabel = structuredClone(analysis16);
+  dupStanzaLabel.structure.stanzas[1].label = dupStanzaLabel.structure.stanzas[0].label;
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: dupStanzaLabel }),
+    /stanza label .* 重复/,
+  );
+
+  const emptyStanzaIndexes = structuredClone(analysis16);
+  emptyStanzaIndexes.structure.stanzas[0].lineIndexes = [];
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: emptyStanzaIndexes }),
+    /缺少行索引/,
+  );
+
+  const outOfRangeIndex = structuredClone(analysis16);
+  outOfRangeIndex.structure.stanzas[0].lineIndexes[0] = 999;
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: outOfRangeIndex }),
+    /超出正文范围/,
+  );
+
+  const badRhymeMarks = structuredClone(analysis16);
+  badRhymeMarks.structure.rhymeMarks = null;
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badRhymeMarks }),
+    /rhymeMarks 必须是数组/,
+  );
+
+  const badRhymeNote = structuredClone(analysis16);
+  badRhymeNote.structure.rhymeNote = "";
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badRhymeNote }),
+    /rhymeNote 必须是非空字符串/,
+  );
+
+  const midLineRhyme = structuredClone(analysis16);
+  midLineRhyme.structure.rhymeMarks[0] = {
+    lineIndex: 0,
+    offset: 0,
+    character: library.poems.find((p) => p.id === "16").body[0][0],
+  };
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: midLineRhyme }),
+    /必须位于句末/,
+  );
+
+  const badTerm = structuredClone(analysis16);
+  badTerm.inlineTerms[0] = { key: "", source: "品读版", sourceKey: "红军" };
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: badTerm }),
+    /缺少 key/,
+  );
+
+  const dupTerm = structuredClone(analysis16);
+  dupTerm.inlineTerms.push({ ...dupTerm.inlineTerms[0] });
+  assert.throws(
+    () => createLibraryViewModel(library, manifest, { ...analyses, 16: dupTerm }),
+    /词项 .* 重复/,
+  );
+});
+
+test("缺失、失败或元数据不完整的录音返回 null", () => {
+  const onePoem = { ...library, poems: [library.poems.find((poem) => poem.id === "16")] };
+  const oneAnalysis = { 16: analysis16 };
+  assert.equal(createLibraryViewModel(onePoem, { poems: [] }, oneAnalysis)[0].audio, null);
+  assert.equal(
+    createLibraryViewModel(
+      onePoem,
+      { poems: [{ id: "16", file: "16.mp3", seconds: 10, status: "failed" }] },
+      oneAnalysis,
+    )[0].audio,
+    null,
+  );
+  assert.equal(
+    createLibraryViewModel(
+      onePoem,
+      { poems: [{ id: "16", file: null, seconds: 10, status: "ready" }] },
+      oneAnalysis,
+    )[0].audio,
+    null,
+  );
+  assert.equal(
+    createLibraryViewModel(
+      onePoem,
+      { poems: [{ id: "16", file: "16.mp3", seconds: Number.NaN, status: "ready" }] },
+      oneAnalysis,
+    )[0].audio,
+    null,
+  );
 });
 
 test("韵脚依据词体、原注及合行文本逐字定位", () => {

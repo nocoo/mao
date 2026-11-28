@@ -304,7 +304,7 @@ test("多行注释、题解、赏析按来源提取，兼容括号、行内及�
 test("notes 段落不会在空行处截断，下一类别不会串入上一类别", () => {
   assert.deepEqual(
     parseNotes(
-      "[题解]\n第一段。\n\n第二段。\n\n### 注释\n甲。\n\n乙。\n【赏析】同行内容。\n续段。",
+      "[题解]\n第一段。\n\n第二段。\n\n### 注释\n甲。\n\n乙。\n# 新章节\n忽略非注释。\n【赏析】同行内容。\n续段。",
       "初始文本",
     ),
     [
@@ -356,6 +356,12 @@ test("解析器只选择第一个正文，拒绝无正文及不安全或重复�
   assert.throws(
     () => parsePoem(entry, "# 示例\n## 正文\n\n## 品读版原始条目\n七绝·示例"),
     /正文为空/,
+  );
+  assert.throws(() => parsePoem(entry, "# 示例\n## 其他\n内容"), /缺少原始条目/);
+  assert.throws(() => parsePoem(entry, "# 示例\n## 初始文本\n内容"), /缺少正文和品读版/);
+  assert.throws(
+    () => parsePoem(entry, "# 示例\n## 品读版原始条目\n错标题\n第一诗行。"),
+    /无法识别品读版开头的标题/,
   );
   assert.throws(() => parseIndex("## 正编\n| 01 | [示例](<../outside.md>) |"), /路径/);
   assert.throws(
